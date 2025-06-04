@@ -31,7 +31,7 @@ function createWindow() {
 		icon: path.join(
 			process.env.VITE_PUBLIC,
 			process.platform === 'darwin'
-				? 'icon.icns'
+				? 'icon.png'
 				: process.platform === 'win32'
 					? 'icon.ico'
 					: 'icon.png'

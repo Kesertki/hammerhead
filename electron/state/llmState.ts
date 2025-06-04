@@ -1,4 +1,6 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { ChromaClient } from 'chromadb';
 import { State, withLock } from 'lifecycle-utils';
 import {
 	type ChatModelSegmentType,
@@ -13,6 +15,77 @@ import {
 } from 'node-llama-cpp';
 import packageJson from '../../package.json';
 import { modelFunctions } from '../llm/modelFunctions.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const originalUserMessages = new Map<string, string>();
+
+const chromaClient = new ChromaClient({
+	// Configuration options for the Chroma client
+	// For example, if Chroma supports a client-server model:
+	// host: 'localhost',
+	// port: 50051,
+	path: 'http://localhost:8000'
+});
+
+// Add proper types to the function parameters
+async function generateQueryEmbeddings(
+	// model: LlamaModel,
+	query: string
+): Promise<readonly number[]> {
+	const llama = await getLlama();
+	const model = await llama.loadModel({
+		modelPath: path.join(__dirname, '../models', 'bge-small-en-v1.5-q8_0.gguf')
+	});
+
+	// Generate embedding for the query
+	const embeddingContext = await model.createEmbeddingContext();
+	const queryEmbedding = await embeddingContext.getEmbeddingFor(query);
+
+	// Extract the vector from the embedding object
+	const queryVector = (queryEmbedding.vector ??
+		(queryEmbedding as any).values ??
+		queryEmbedding) as readonly number[];
+
+	return queryVector;
+}
+
+async function retrieveRelevantInformation(
+	queryVector: any
+): Promise<string[]> {
+	// Get the collection
+	const collection = await chromaClient.getCollection({
+		name: 'markdown_embeddings'
+	});
+
+	// Query the collection
+	const results = await collection.query({
+		queryEmbeddings: [queryVector],
+		nResults: 5 // Request more than needed
+	});
+
+	// Apply relevance threshold filtering
+	const relevanceThreshold = 35;
+	const filteredDocuments: string[] = [];
+
+	if (
+		results.documents &&
+		results.documents[0] &&
+		results.distances &&
+		results.distances[0]
+	) {
+		results.documents[0].forEach((doc, i) => {
+			if (
+				doc &&
+				results.distances?.[0]?.[i] !== undefined &&
+				results.distances[0][i] < relevanceThreshold
+			) {
+				filteredDocuments.push(doc);
+			}
+		});
+	}
+
+	return filteredDocuments;
+}
 
 export const llmState = new State<LlmState>({
 	appVersion: packageJson.version,
@@ -350,6 +423,8 @@ export const llmFunctions = {
 		async prompt(message: string) {
 			await withLock(llmFunctions, 'chatSession', async () => {
 				if (chatSession == null) throw new Error('Chat session not loaded');
+				// Store original message before augmentation
+				const originalMessage = message.trim();
 
 				llmState.state = {
 					...llmState.state,
@@ -374,7 +449,37 @@ export const llmFunctions = {
 
 				const abortSignal = promptAbortController.signal;
 				try {
-					await chatSession.prompt(message, {
+					let finalQuery = originalMessage;
+
+					try {
+						const queryEmbeddings = await generateQueryEmbeddings(message);
+						const relevantInformation =
+							await retrieveRelevantInformation(queryEmbeddings);
+
+						// Only augment if we actually have relevant information
+						if (
+							Array.isArray(relevantInformation) &&
+							relevantInformation.length > 0
+						) {
+							const formattedContext = relevantInformation
+								.map((doc, i) => `Document ${i + 1}: ${doc}`)
+								.join('\n\n');
+
+							finalQuery = `Context Information:\n${formattedContext}\n\nUser Query: ${message}\n\nPlease answer based on the context provided above.`;
+							console.log('Augmented Prompt:', finalQuery);
+
+							// Store mapping between augmented and original message
+							originalUserMessages.set(finalQuery, originalMessage);
+						} else {
+							// No augmentation needed - use original message
+							finalQuery = originalMessage;
+						}
+					} catch (err) {
+						console.error('Failed to generate query embeddings', err);
+						finalQuery = originalMessage; // Fallback to original message
+					}
+
+					await chatSession.prompt(finalQuery, {
 						signal: abortSignal,
 						stopOnAbortSignal: true,
 						functions: modelFunctions,
@@ -513,9 +618,13 @@ function getSimplifiedChatHistory(
 		.getChatHistory()
 		.flatMap((item): SimplifiedChatItem[] => {
 			if (item.type === 'system') return [];
-			else if (item.type === 'user')
-				return [{ type: 'user', message: item.text }];
-			else if (item.type === 'model')
+			else if (item.type === 'user') {
+				// return [{ type: 'user', message: item.text }];
+				// Use original message if available, otherwise use the augmented one
+				const originalMessage =
+					originalUserMessages.get(item.text) || item.text;
+				return [{ type: 'user', message: originalMessage }];
+			} else if (item.type === 'model')
 				return [
 					{
 						type: 'model',

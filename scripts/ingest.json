@@ -1,0 +1,33 @@
+{
+	"_sources": [
+		{
+			"root": ".",
+			"patterns": ["docs/**/*.md"]
+		}
+	],
+	"sources": [
+		{
+			"root": "../../../alfresco-ng2-components/docs",
+			"patterns": [
+				"core/**/*.md",
+				"content-services/**/*.md",
+				"extensions/**/*.md",
+				"process-services/**/*.md",
+				"process-services-cloud/**/*.md",
+				"tutorials/**/*.md",
+				"user-guide/**/*.md"
+			],
+			"ignore": ["**/node_modules/**", "**/.git/**"]
+		},
+		{
+			"root": "../../../alfresco-content-app",
+			"patterns": [
+				"docs/configuration/**/*.md",
+				"docs/extending/**/*.md",
+				"docs/features/**/*.md",
+				"docs/getting-started/**/*.md",
+				"docs/tutorials/**/*.md"
+			]
+		}
+	]
+}

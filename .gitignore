@@ -7,3 +7,4 @@ node_modules
 /dist-electron
 /release
 /models
+/data

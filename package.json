@@ -11,7 +11,7 @@
 	},
 	"scripts": {
 		"postinstall": "npm run models:pull",
-		"models:pull": "node-llama-cpp pull --dir ./models \"hf:mradermacher/DeepSeek-R1-Distill-Qwen-7B-GGUF:Q8_0\"",
+		"models:pull": "node-llama-cpp pull --dir ./models \"hf:mradermacher/DeepSeek-R1-Distill-Qwen-7B-GGUF:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\"",
 		"start": "vite dev",
 		"start:build": "electron ./dist-electron",
 		"prebuild": "rimraf ./dist ./dist-electron ./release",

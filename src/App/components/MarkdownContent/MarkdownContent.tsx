@@ -2,7 +2,8 @@ import hljs from 'highlight.js';
 import markdownit from 'markdown-it';
 import { useLayoutEffect, useRef } from 'react';
 
-import './MarkdownContent.css';
+// import './MarkdownContent.css';
+import 'highlight.js/styles/github-dark.css';
 
 const md = markdownit({
 	highlight(str, lang): string {

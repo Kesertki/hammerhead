@@ -259,6 +259,7 @@ export const llmFunctions = {
 				model = await llama.loadModel({
 					modelPath,
 					onLoadProgress(loadProgress: number) {
+						// console.log('loadProgress', loadProgress);
 						llmState.state = {
 							...llmState.state,
 							model: {

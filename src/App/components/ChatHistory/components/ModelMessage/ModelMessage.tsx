@@ -1,7 +1,7 @@
-import { SimplifiedModelChatItem } from '../../../../../../electron/state/llmState.js';
-import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.js';
-import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.js';
-import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.js';
+import { SimplifiedModelChatItem } from '@/electron/state/llmState.ts';
+import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.tsx';
+import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
+import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.tsx';
 
 import './ModelMessage.css';
 

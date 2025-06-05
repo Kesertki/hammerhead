@@ -1,7 +1,7 @@
+import { SimplifiedModelChatItem } from '@/electron/state/llmState';
 import classNames from 'classnames';
 import { Check, Copy } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { SimplifiedModelChatItem } from '../../../../../../../../electron/state/llmState.js';
 
 import './ModelMessageCopyButton.css';
 

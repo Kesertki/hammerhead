@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { useMemo } from 'react';
-import { MarkdownContent } from '../MarkdownContent/MarkdownContent.js';
+import { MarkdownContent } from '../MarkdownContent/MarkdownContent';
 
 import './MessageMarkdown.css';
 
@@ -42,6 +42,7 @@ export function MessageMarkdown({
 		<MarkdownContent
 			className={classNames(
 				'appMessageMarkdown',
+				'prose prose-neutral',
 				activeDot && 'active',
 				className
 			)}

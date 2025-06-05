@@ -1,4 +1,4 @@
-import path from 'node:path';
+import path, { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
@@ -66,5 +66,10 @@ export default defineConfig({
 						undefined
 					: {}
 		})
-	]
+	],
+	resolve: {
+		alias: {
+			'@': resolve(__dirname, './src')
+		}
+	}
 });

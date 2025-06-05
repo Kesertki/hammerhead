@@ -1,5 +1,5 @@
-import { SimplifiedUserChatItem } from '../../../../../../electron/state/llmState.js';
-import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.js';
+import { SimplifiedUserChatItem } from '@/electron/state/llmState.ts';
+import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
 
 import './UserMessage.css';
 

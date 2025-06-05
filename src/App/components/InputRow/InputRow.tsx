@@ -1,6 +1,7 @@
+import { Button } from '@/components/ui/button.tsx';
 import classNames from 'classnames';
 import { ArrowUp, CircleStop } from 'lucide-react';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import './InputRow.css';
 
@@ -108,43 +109,72 @@ export function InputRow({
 	}, [autocompleteText]);
 
 	return (
-		<div className={classNames('appInputRow', disabled && 'disabled')}>
-			<div className="inputContainer">
-				<textarea
-					ref={inputRef}
-					onInput={onInput}
-					onKeyDownCapture={onInputKeyDown}
-					className="input"
-					autoComplete="off"
-					spellCheck
-					disabled={disabled}
-					onScroll={resizeInput}
-					placeholder={autocompleteText === '' ? 'Type a message...' : ''}
-				/>
-				<div className="autocomplete" ref={autocompleteRef}>
-					<div
-						className={classNames('content', autocompleteText === '' && 'hide')}
-					>
-						<div className="currentText" ref={autocompleteCurrentTextRef} />
-						<div className="completion">{previewAutocompleteText}</div>
-						<div className="pressTab">Tab</div>
+		<div className="w-full p-3 md:p-4 bg-white">
+			<div
+				className={classNames(
+					'flex flex-row items-end justify-between w-full rounded-lg border border-gray-300 shadow-lg p-3 bg-white z-10 sticky bottom-4',
+					disabled && 'opacity-50'
+				)}
+			>
+				<div className="inputContainer flex-1">
+					<textarea
+						ref={inputRef}
+						onInput={onInput}
+						onKeyDownCapture={onInputKeyDown}
+						className="input w-full border-none resize-none outline-none bg-transparent"
+						autoComplete="off"
+						spellCheck
+						disabled={disabled}
+						onScroll={resizeInput}
+						placeholder={autocompleteText === '' ? 'Message' : ''}
+					/>
+					<div className="autocomplete" ref={autocompleteRef}>
+						<div
+							className={classNames(
+								'content',
+								autocompleteText === '' && 'hide'
+							)}
+						>
+							<div className="currentText" ref={autocompleteCurrentTextRef} />
+							<div className="completion">{previewAutocompleteText}</div>
+							<div className="pressTab">Tab</div>
+						</div>
 					</div>
 				</div>
+
+				<div className="flex items-center space-x-2">
+					<Button
+						variant="outline"
+						size="icon"
+						className={`transition duration-200 ${
+							generatingResult
+								? 'bg-black text-white hover:bg-black hover:text-white'
+								: 'text-gray-300'
+						}`}
+						disabled={disabled || stopGeneration == null || !generatingResult}
+						onClick={stopGeneration}
+						style={{
+							visibility: generatingResult ? 'visible' : 'hidden'
+						}}
+					>
+						<CircleStop />
+					</Button>
+
+					<Button
+						variant="outline"
+						size="icon"
+						className={`transition duration-200 ${
+							inputText.trim() === '' || disabled || generatingResult
+								? 'text-gray-300'
+								: 'bg-black text-white hover:bg-black hover:text-white'
+						}`}
+						disabled={disabled || inputText === '' || generatingResult}
+						onClick={submitPrompt}
+					>
+						<ArrowUp size={24} />
+					</Button>
+				</div>
 			</div>
-			<button
-				className="stopGenerationButton"
-				disabled={disabled || stopGeneration == null || !generatingResult}
-				onClick={stopGeneration}
-			>
-				<CircleStop className="icon" />
-			</button>
-			<button
-				className="sendButton"
-				disabled={disabled || inputText === '' || generatingResult}
-				onClick={submitPrompt}
-			>
-				<ArrowUp className="icon" />
-			</button>
 		</div>
 	);
 }

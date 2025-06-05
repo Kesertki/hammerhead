@@ -28,7 +28,7 @@
 		"noImplicitOverride": true,
 
 		"paths": {
-			"@/app/*": ["./src/*"],
+			"@/*": ["./src/*"],
 			"@/electron/*": ["./electron/*"]
 		}
 	},

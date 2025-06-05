@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import { ChevronRight } from 'lucide-react';
 import prettyMilliseconds from 'pretty-ms';
 import { useCallback, useMemo, useState } from 'react';
-import { MarkdownContent } from '../../../MarkdownContent/MarkdownContent.js';
-import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.js';
+import { MarkdownContent } from '../../../MarkdownContent/MarkdownContent';
+import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
 
 import './ModelResponseThought.css';
 

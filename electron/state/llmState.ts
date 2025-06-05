@@ -27,6 +27,19 @@ const chromaClient = new ChromaClient({
 	path: 'http://localhost:8000'
 });
 
+async function checkChromaConnection(): Promise<boolean> {
+	try {
+		await chromaClient.heartbeat();
+		console.log('Chroma connection successful');
+		return true;
+	} catch (error) {
+		console.error('Failed to connect to Chroma:', error);
+		return false;
+	}
+}
+
+const isChromaConnected = await checkChromaConnection();
+
 // Add proper types to the function parameters
 async function generateQueryEmbeddings(
 	// model: LlamaModel,
@@ -452,27 +465,32 @@ export const llmFunctions = {
 					let finalQuery = originalMessage;
 
 					try {
-						const queryEmbeddings = await generateQueryEmbeddings(message);
-						const relevantInformation =
-							await retrieveRelevantInformation(queryEmbeddings);
+						// const isChromaConnected = await checkChromaConnection();
+						if (isChromaConnected) {
+							const queryEmbeddings = await generateQueryEmbeddings(message);
+							const relevantInformation =
+								await retrieveRelevantInformation(queryEmbeddings);
 
-						// Only augment if we actually have relevant information
-						if (
-							Array.isArray(relevantInformation) &&
-							relevantInformation.length > 0
-						) {
-							const formattedContext = relevantInformation
-								.map((doc, i) => `Document ${i + 1}: ${doc}`)
-								.join('\n\n');
+							// Only augment if we actually have relevant information
+							if (
+								Array.isArray(relevantInformation) &&
+								relevantInformation.length > 0
+							) {
+								const formattedContext = relevantInformation
+									.map((doc, i) => `Document ${i + 1}: ${doc}`)
+									.join('\n\n');
 
-							finalQuery = `Context Information:\n${formattedContext}\n\nUser Query: ${message}\n\nPlease answer based on the context provided above.`;
-							console.log('Augmented Prompt:', finalQuery);
+								finalQuery = `Context Information:\n${formattedContext}\n\nUser Query: ${message}\n\nPlease answer based on the context provided above.`;
+								console.log('Augmented Prompt:', finalQuery);
 
-							// Store mapping between augmented and original message
-							originalUserMessages.set(finalQuery, originalMessage);
+								// Store mapping between augmented and original message
+								originalUserMessages.set(finalQuery, originalMessage);
+							} else {
+								// No augmentation needed - use original message
+								finalQuery = originalMessage;
+							}
 						} else {
-							// No augmentation needed - use original message
-							finalQuery = originalMessage;
+							console.warn('Chroma not connected, using original message');
 						}
 					} catch (err) {
 						console.error('Failed to generate query embeddings', err);

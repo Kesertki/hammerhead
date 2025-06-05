@@ -73,8 +73,8 @@
 	);
 
 	--user-message-background-color: light-dark(
-		rgba(0 0 0 / 16%),
-		rgba(0 0 0 / 48%)
+		rgba(0 0 0 / 5%),
+		rgba(0 0 0 / 20%)
 	);
 	--user-message-text-color: light-dark(#242424, var(--text-color));
 

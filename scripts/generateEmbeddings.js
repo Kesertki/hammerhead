@@ -6,6 +6,7 @@ import { glob } from 'glob';
 import { getLlama } from 'node-llama-cpp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const EMBEDDING_MODEL = 'hf_CompendiumLabs_bge-small-en-v1.5.Q8_0.gguf'; // Adjust as needed
 
 async function loadSettings() {
 	const settingsPath = path.join(__dirname, 'ingest.json');
@@ -180,7 +181,7 @@ async function storeEmbeddingsInChroma(chromaClient, embeddings, texts, files) {
 async function main() {
 	const llama = await getLlama();
 	const model = await llama.loadModel({
-		modelPath: path.join(__dirname, '../models', 'bge-small-en-v1.5-q8_0.gguf'),
+		modelPath: path.join(__dirname, '../models', EMBEDDING_MODEL),
 		embeddingOnly: true, // Set this if it's an embedding-only model
 		verbose: true // For more detailed output
 	});

@@ -16,6 +16,7 @@ import {
 import packageJson from '../../package.json';
 import { modelFunctions } from '../llm/modelFunctions.js';
 
+const EMBEDDING_MODEL = 'hf_CompendiumLabs_bge-small-en-v1.5.Q8_0.gguf';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
 
@@ -47,7 +48,7 @@ async function generateQueryEmbeddings(
 ): Promise<readonly number[]> {
 	const llama = await getLlama();
 	const model = await llama.loadModel({
-		modelPath: path.join(__dirname, '../models', 'bge-small-en-v1.5-q8_0.gguf')
+		modelPath: path.join(__dirname, '../models', EMBEDDING_MODEL)
 	});
 
 	// Generate embedding for the query

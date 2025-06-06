@@ -1,15 +1,26 @@
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
-
+import { SearchForm } from '@/App/components/search-form.tsx';
 import {
 	Sidebar,
 	SidebarContent,
+	SidebarFooter,
 	SidebarGroup,
 	SidebarGroupContent,
 	SidebarGroupLabel,
+	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
+import { NavUser } from './nav-user';
+
+const data = {
+	user: {
+		name: 'denys',
+		email: 'denys@example.com',
+		avatar: '/avatars/denys.jpeg'
+	}
+};
 
 // Menu items.
 const items = [
@@ -43,6 +54,10 @@ const items = [
 export function AppSidebar() {
 	return (
 		<Sidebar>
+			<SidebarHeader>
+				{/*<WorkspaceSwitcher />*/}
+				<SearchForm />
+			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
 					<SidebarGroupLabel>Application</SidebarGroupLabel>
@@ -62,6 +77,9 @@ export function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
+			<SidebarFooter>
+				<NavUser user={data.user} />
+			</SidebarFooter>
 		</Sidebar>
 	);
 }

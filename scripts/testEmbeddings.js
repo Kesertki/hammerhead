@@ -4,6 +4,7 @@ import { ChromaClient } from 'chromadb';
 import { getLlama } from 'node-llama-cpp';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const EMBEDDING_MODEL = 'hf_CompendiumLabs_bge-small-en-v1.5.Q8_0.gguf'; // Adjust as needed
 
 async function testEmbeddings() {
 	// Initialize ChromaDB client with the correct URL
@@ -19,11 +20,7 @@ async function testEmbeddings() {
 		// Initialize LLama
 		const llama = await getLlama();
 		const model = await llama.loadModel({
-			modelPath: path.join(
-				__dirname,
-				'../models',
-				'bge-small-en-v1.5-q8_0.gguf'
-			),
+			modelPath: path.join(__dirname, '../models', EMBEDDING_MODEL),
 			embeddingOnly: true,
 			verbose: true
 		});

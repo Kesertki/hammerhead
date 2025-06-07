@@ -1,6 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BrowserWindow, app, shell } from 'electron';
+import { BrowserWindow, app, ipcMain, shell } from 'electron';
+import { getMcpServers, setMcpServers } from './mcp/store.ts';
+import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -79,5 +81,16 @@ app.on('activate', () => {
 		createWindow();
 	}
 });
+
+ipcMain.handle('get-mcp-servers', async () => {
+	return await getMcpServers();
+});
+
+ipcMain.handle(
+	'set-mcp-servers',
+	async (_event, connections: MCPConnection[]) => {
+		await setMcpServers(connections);
+	}
+);
 
 app.whenReady().then(createWindow);

@@ -23,6 +23,15 @@ Start the project:
 npm start
 ```
 
+## Models
+
+Suggested models are available in the `./models` directory. You can download them from Hugging Face or other sources.
+
+- hf:bartowski/Mistral-Nemo-Instruct-2407-GGUF:Q6_K
+- hf:bartowski/Qwen2.5.1-Coder-7B-Instruct-GGUF:Q6_K_L
+- hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L
+- hf:bartowski/Mistral-Nemo-Instruct-2407-GGUF:Q6_K
+
 ## RAG (Retrieval-Augmented Generation)
 
 To enable RAG functionality, you need to set up a vector database and configure the application to use it. Follow these steps:

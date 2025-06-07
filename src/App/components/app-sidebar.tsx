@@ -1,3 +1,4 @@
+import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import { SearchForm } from '@/App/components/search-form.tsx';
 import {
 	Sidebar,
@@ -11,7 +12,15 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem
 } from '@/components/ui/sidebar';
-import { Calendar, Home, Inbox, Search, Settings } from 'lucide-react';
+import {
+	Calendar,
+	Database,
+	Home,
+	Inbox,
+	Search,
+	Server,
+	Settings
+} from 'lucide-react';
 import { NavUser } from './nav-user';
 
 const data = {
@@ -45,6 +54,16 @@ const items = [
 		icon: Search
 	},
 	{
+		title: 'MCP Servers',
+		url: '/mcp-servers',
+		icon: Server
+	},
+	{
+		title: 'Knowledge Base (RAG)',
+		url: '/knowledge-base',
+		icon: Database
+	},
+	{
 		title: 'Settings',
 		url: '/settings',
 		icon: Settings
@@ -53,9 +72,9 @@ const items = [
 
 export function AppSidebar() {
 	return (
-		<Sidebar>
+		<Sidebar variant="inset">
 			<SidebarHeader>
-				{/*<WorkspaceSwitcher />*/}
+				<WorkspaceSwitcher />
 				<SearchForm />
 			</SidebarHeader>
 			<SidebarContent>

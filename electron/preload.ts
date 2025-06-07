@@ -24,3 +24,9 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 	// You can expose other APIs you need here
 	// ...
 });
+
+contextBridge.exposeInMainWorld('electronAPI', {
+	getMCPServers: () => ipcRenderer.invoke('get-mcp-servers'),
+	setMCPServers: (servers: any[]) =>
+		ipcRenderer.invoke('set-mcp-servers', servers)
+});

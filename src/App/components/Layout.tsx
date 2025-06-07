@@ -73,10 +73,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					)}
 
 					{/*<div>{state.model.loadProgress * 100}</div>*/}
-					<div>{state.appVersion}</div>
-					<div className="ml-auto px-3">
-						<NavActions />
-					</div>
+					{/*<div>{state.appVersion}</div>*/}
+					{/*<div className="ml-auto px-3">*/}
+					<NavActions />
+					{/*</div>*/}
 				</header>
 				<div className="flex-1 h-full overflow-hidden">{children}</div>
 			</SidebarInset>

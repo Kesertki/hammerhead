@@ -13,6 +13,46 @@ export class ElectronLlmRpc {
 	>;
 
 	public readonly functions = {
+		async exportChatSession(): Promise<boolean> {
+			if (llmState.state.chatSession.loaded) {
+				const res = await dialog.showSaveDialog({
+					message: 'Save chat session',
+					title: 'Save chat session',
+					filters: [{ name: 'Chat session', extensions: ['json'] }],
+					buttonLabel: 'Save',
+					defaultPath: path.join(
+						modelDirectoryPath,
+						`${llmState.state.selectedModelFilePath!.split(path.sep).pop()!}.json`
+					)
+				});
+
+				if (!res.canceled && res.filePath) {
+					return await llmFunctions.chatSession.exportChatSession(
+						path.resolve(res.filePath)
+					);
+				}
+			}
+			return false;
+		},
+		async importChatSession(): Promise<boolean> {
+			const res = await dialog.showOpenDialog({
+				message: 'Select a chat session file',
+				title: 'Select a chat session file',
+				filters: [{ name: 'Chat session', extensions: ['json'] }],
+				buttonLabel: 'Open',
+				defaultPath: (await pathExists(modelDirectoryPath))
+					? modelDirectoryPath
+					: undefined,
+				properties: ['openFile']
+			});
+			if (!res.canceled && res.filePaths.length > 0) {
+				const filePath = path.resolve(res.filePaths[0]!);
+				if (await pathExists(filePath)) {
+					return await llmFunctions.chatSession.importChatSession(filePath);
+				}
+			}
+			return false;
+		},
 		async selectModelFileAndLoad() {
 			const res = await dialog.showOpenDialog({
 				message: 'Select a model file',

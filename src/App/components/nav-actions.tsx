@@ -13,6 +13,9 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem
 } from '@/components/ui/sidebar';
+import { useExternalState } from '@/hooks/useExternalState.ts';
+import { electronLlmRpc } from '@/rpc/llmRpc.ts';
+import { llmState } from '@/state/llmState.ts';
 // import { updatePin } from '@/lib/client';
 // import { useChatListStore } from '@/stores/chatListStore';
 // import { useChatStore } from '@/stores/chatStore';
@@ -34,71 +37,21 @@ import {
 	Trash,
 	Trash2
 } from 'lucide-react';
+import React, { useCallback } from 'react';
+import { toast } from 'sonner';
 
-const data = [
-	[
-		{
-			label: 'Customize Page',
-			icon: Settings2
-		},
-		{
-			label: 'Turn into wiki',
-			icon: FileText
-		}
-	],
-	[
-		{
-			label: 'Copy Link',
-			icon: Link
-		},
-		{
-			label: 'Duplicate',
-			icon: Copy
-		},
-		{
-			label: 'Move to',
-			icon: CornerUpRight
-		},
-		{
-			label: 'Move to Trash',
-			icon: Trash2
-		}
-	],
-	[
-		{
-			label: 'Undo',
-			icon: CornerUpLeft
-		},
-		{
-			label: 'View analytics',
-			icon: LineChart
-		},
-		{
-			label: 'Version History',
-			icon: GalleryVerticalEnd
-		},
-		{
-			label: 'Show delete pages',
-			icon: Trash
-		},
-		{
-			label: 'Notifications',
-			icon: Bell
-		}
-	],
-	[
-		{
-			label: 'Import',
-			icon: ArrowUp
-		},
-		{
-			label: 'Export',
-			icon: ArrowDown
-		}
-	]
-];
+interface ActionGroup {
+	label: string;
+	icon: React.ComponentType<any>;
+	action?: string; // Optional action for specific items
+	onClick?: () => void; // Optional click handler
+	disabled?: boolean;
+}
 
 export function NavActions() {
+	const state = useExternalState(llmState);
+	const hasModel = state.model != null && state.model.name != null;
+
 	// const { sessionId } = useChatStore();
 	// const { setPin } = useChatListStore();
 	// const chat = useChatListStore((state) =>
@@ -111,6 +64,102 @@ export function NavActions() {
 		// 	setPin(chatId, value);
 		// }
 	};
+
+	// const runAction = async (action?: string) => {
+	// 	if (action === 'import') {
+	// 		await importChat();
+	// 	} else if (action === 'export') {
+	// 		await exportChat();
+	// 	}
+	// };
+
+	const exportChat = useCallback(async () => {
+		const result = await electronLlmRpc.exportChatSession();
+
+		if (result) {
+			toast.success('Chat exported successfully!');
+		} else {
+			toast.error('Failed to export chat.');
+		}
+	}, []);
+
+	const importChat = useCallback(async () => {
+		const result = await electronLlmRpc.importChatSession();
+		if (result) {
+			toast.success('Chat imported successfully!');
+		} else {
+			toast.error('Failed to import chat.');
+		}
+	}, []);
+
+	const data: Array<ActionGroup[]> = [
+		[
+			{
+				label: 'Customize Page',
+				icon: Settings2
+			},
+			{
+				label: 'Turn into wiki',
+				icon: FileText
+			}
+		],
+		[
+			{
+				label: 'Copy Link',
+				icon: Link
+			},
+			{
+				label: 'Duplicate',
+				icon: Copy
+			},
+			{
+				label: 'Move to',
+				icon: CornerUpRight
+			},
+			{
+				label: 'Move to Trash',
+				icon: Trash2
+			}
+		],
+		[
+			{
+				label: 'Undo',
+				icon: CornerUpLeft
+			},
+			{
+				label: 'View analytics',
+				icon: LineChart
+			},
+			{
+				label: 'Version History',
+				icon: GalleryVerticalEnd
+			},
+			{
+				label: 'Show delete pages',
+				icon: Trash
+			},
+			{
+				label: 'Notifications',
+				icon: Bell
+			}
+		],
+		[
+			{
+				label: 'Import',
+				action: 'import',
+				icon: ArrowUp,
+				disabled: !hasModel,
+				onClick: importChat
+			},
+			{
+				label: 'Export',
+				action: 'export',
+				icon: ArrowDown,
+				disabled: !hasModel,
+				onClick: exportChat
+			}
+		]
+	];
 
 	return (
 		<div className="flex items-center gap-2 text-sm">
@@ -152,7 +201,10 @@ export function NavActions() {
 										<SidebarMenu>
 											{group.map((item, index) => (
 												<SidebarMenuItem key={index}>
-													<SidebarMenuButton>
+													<SidebarMenuButton
+														disabled={item.disabled}
+														onClick={() => item.onClick && item.onClick()}
+													>
 														<item.icon /> <span>{item.label}</span>
 													</SidebarMenuButton>
 												</SidebarMenuItem>

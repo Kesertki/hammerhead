@@ -1,8 +1,9 @@
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ChromaClient } from 'chromadb';
 import { State, withLock } from 'lifecycle-utils';
 import {
+	ChatHistoryItem,
 	type ChatModelSegmentType,
 	Llama,
 	LlamaChatSession,
@@ -14,92 +15,18 @@ import {
 	isChatModelResponseSegment
 } from 'node-llama-cpp';
 import packageJson from '../../package.json';
-import { modelFunctions } from '../llm/modelFunctions.js';
+import {
+	generateQueryEmbeddings,
+	isChromaConnected,
+	retrieveRelevantInformation
+} from '../embeddings/chroma.ts';
+import { loadMcpTools } from '../mcp/client.ts';
 
-const EMBEDDING_MODEL = 'hf_CompendiumLabs_bge-small-en-v1.5.Q8_0.gguf';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
 
-const chromaClient = new ChromaClient({
-	// Configuration options for the Chroma client
-	// For example, if Chroma supports a client-server model:
-	// host: 'localhost',
-	// port: 50051,
-	path: 'http://localhost:8000'
-});
-
-async function checkChromaConnection(): Promise<boolean> {
-	try {
-		await chromaClient.heartbeat();
-		console.log('Chroma connection successful');
-		return true;
-	} catch (error) {
-		console.error('Failed to connect to Chroma:', error);
-		return false;
-	}
-}
-
-const isChromaConnected = await checkChromaConnection();
-
-// Add proper types to the function parameters
-async function generateQueryEmbeddings(
-	// model: LlamaModel,
-	query: string
-): Promise<readonly number[]> {
-	const llama = await getLlama();
-	const model = await llama.loadModel({
-		modelPath: path.join(__dirname, '../models', EMBEDDING_MODEL)
-	});
-
-	// Generate embedding for the query
-	const embeddingContext = await model.createEmbeddingContext();
-	const queryEmbedding = await embeddingContext.getEmbeddingFor(query);
-
-	// Extract the vector from the embedding object
-	const queryVector = (queryEmbedding.vector ??
-		(queryEmbedding as any).values ??
-		queryEmbedding) as readonly number[];
-
-	return queryVector;
-}
-
-async function retrieveRelevantInformation(
-	queryVector: any
-): Promise<string[]> {
-	// Get the collection
-	const collection = await chromaClient.getCollection({
-		name: 'markdown_embeddings'
-	});
-
-	// Query the collection
-	const results = await collection.query({
-		queryEmbeddings: [queryVector],
-		nResults: 5 // Request more than needed
-	});
-
-	// Apply relevance threshold filtering
-	const relevanceThreshold = 35;
-	const filteredDocuments: string[] = [];
-
-	if (
-		results.documents &&
-		results.documents[0] &&
-		results.distances &&
-		results.distances[0]
-	) {
-		results.documents[0].forEach((doc, i) => {
-			if (
-				doc &&
-				results.distances?.[0]?.[i] !== undefined &&
-				results.distances[0][i] < relevanceThreshold
-			) {
-				filteredDocuments.push(doc);
-			}
-		});
-	}
-
-	return filteredDocuments;
-}
+// Initialize MCP connections and load tools
+const mcpFunctions = await loadMcpTools();
 
 export const llmState = new State<LlmState>({
 	appVersion: packageJson.version,
@@ -375,6 +302,52 @@ export const llmFunctions = {
 		});
 	},
 	chatSession: {
+		async exportChatSession(outputPath: string): Promise<boolean> {
+			return await withLock(llmFunctions, 'chatSession', async () => {
+				const messages = chatSession?.getChatHistory();
+				if (messages && messages.length > 0) {
+					const outputContent = JSON.stringify(
+						{
+							version: '1.0',
+							model: llmState.state.model.name,
+							created_at: new Date().toISOString(),
+							messages
+						},
+						null,
+						2
+					);
+
+					try {
+						await fs.writeFile(outputPath, outputContent, 'utf8');
+						return true;
+					} catch (err) {
+						console.error('Failed to save chat session', err);
+						// throw new Error(`Failed to save chat session: ${err}`);
+						return false;
+					}
+				}
+				console.warn('No chat messages to save');
+				return false;
+			});
+		},
+		async importChatSession(inputPath: string): Promise<boolean> {
+			return await withLock(llmFunctions, 'chatSession', async () => {
+				try {
+					const content = await fs.readFile(inputPath, 'utf8');
+					const data = JSON.parse(content);
+					if (data && data.version === '1.0' && Array.isArray(data.messages)) {
+						llmFunctions.chatSession.resetChatHistory(true, data.messages);
+						return true;
+					} else {
+						console.error('Invalid chat session format');
+						return false;
+					}
+				} catch (err) {
+					console.error('Failed to import chat session', err);
+					return false;
+				}
+			});
+		},
 		async createChatSession() {
 			await withLock(llmFunctions, 'chatSession', async () => {
 				if (contextSequence == null)
@@ -502,7 +475,7 @@ export const llmFunctions = {
 					await chatSession.prompt(finalQuery, {
 						signal: abortSignal,
 						stopOnAbortSignal: true,
-						functions: modelFunctions,
+						functions: mcpFunctions,
 						onResponseChunk(chunk) {
 							inProgressResponse = squashMessageIntoModelChatMessages(
 								inProgressResponse,
@@ -556,7 +529,10 @@ export const llmFunctions = {
 		stopActivePrompt() {
 			promptAbortController?.abort();
 		},
-		resetChatHistory(markAsLoaded: boolean = true) {
+		resetChatHistory(
+			markAsLoaded: boolean = true,
+			messages?: ChatHistoryItem[]
+		) {
 			if (contextSequence == null) return;
 
 			chatSession?.dispose();
@@ -564,6 +540,9 @@ export const llmFunctions = {
 				contextSequence,
 				autoDisposeSequence: false
 			});
+
+			chatSession.setChatHistory(messages ?? []);
+
 			chatSessionCompletionEngine = chatSession.createPromptCompletionEngine({
 				onGeneration(prompt, completion) {
 					if (llmState.state.chatSession.draftPrompt.prompt === prompt) {
@@ -586,7 +565,7 @@ export const llmFunctions = {
 				chatSession: {
 					loaded: markAsLoaded ? true : llmState.state.chatSession.loaded,
 					generatingResult: false,
-					simplifiedChat: [],
+					simplifiedChat: getSimplifiedChatHistory(false),
 					draftPrompt: {
 						prompt: llmState.state.chatSession.draftPrompt.prompt,
 						completion:

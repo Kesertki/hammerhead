@@ -105,7 +105,11 @@ export async function connect() {
 
 			console.log(`Connecting to MCP server: ${connection.name}...`);
 			try {
-				await client.connect(transport);
+				await client.connect(transport, {
+					timeout: 60000,
+					maxTotalTimeout: 60000,
+					resetTimeoutOnProgress: true
+				});
 				console.log(`Connected to MCP server: ${connection.name}`);
 
 				const channel: Channel = {

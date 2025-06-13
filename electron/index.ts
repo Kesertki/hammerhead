@@ -4,6 +4,11 @@ import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import { getMcpServers, setMcpServers } from './mcp/store.ts';
 import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
+import {
+	SystemPromptConfig,
+	getSystemPrompts,
+	setSystemPrompts
+} from './settings/prompts.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -90,6 +95,17 @@ ipcMain.handle(
 	'set-mcp-servers',
 	async (_event, connections: MCPConnection[]) => {
 		await setMcpServers(connections);
+	}
+);
+
+ipcMain.handle('get-system-prompts', async () => {
+	return await getSystemPrompts();
+});
+
+ipcMain.handle(
+	'set-system-prompts',
+	async (_event, prompts: SystemPromptConfig) => {
+		await setSystemPrompts(prompts);
 	}
 );
 

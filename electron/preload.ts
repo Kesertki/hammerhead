@@ -28,5 +28,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 contextBridge.exposeInMainWorld('electronAPI', {
 	getMCPServers: () => ipcRenderer.invoke('get-mcp-servers'),
 	setMCPServers: (servers: any[]) =>
-		ipcRenderer.invoke('set-mcp-servers', servers)
+		ipcRenderer.invoke('set-mcp-servers', servers),
+	getSystemPrompts: () => ipcRenderer.invoke('get-system-prompts'),
+	setSystemPrompts: (prompts: any) =>
+		ipcRenderer.invoke('set-system-prompts', prompts)
 });

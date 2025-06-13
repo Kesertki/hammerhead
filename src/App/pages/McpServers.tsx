@@ -18,25 +18,9 @@ import {
 	TableRow
 } from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
+import { Connection } from '@/types.ts';
 import { Pencil, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-
-interface Connection {
-	name: string;
-	transport: 'stdio' | 'streamable http';
-	command: string;
-	args: string;
-	env: string;
-}
-
-declare global {
-	interface Window {
-		electronAPI: {
-			getMCPServers: () => Promise<Connection[]>;
-			setMCPServers: (servers: Connection[]) => Promise<void>;
-		};
-	}
-}
 
 export default function MCPConnectionsPage() {
 	const [connections, setConnections] = useState<Connection[]>([]);

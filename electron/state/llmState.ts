@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SystemPrompt } from '@/types.ts';
 import { State, withLock } from 'lifecycle-utils';
 import {
 	ChatHistoryItem,
@@ -21,12 +22,23 @@ import {
 	retrieveRelevantInformation
 } from '../embeddings/chroma.ts';
 import { loadMcpTools } from '../mcp/client.ts';
+import { getSelectedPrompt } from '../settings/prompts.ts';
+import { eventBus } from '../utils/eventBus.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
 
 // Initialize MCP connections and load tools
 const mcpFunctions = await loadMcpTools();
+
+function getCurrentSystemPrompt() {
+	return (
+		getSelectedPrompt()?.prompt ??
+		`You are a helpful, respectful and honest assistant. Always answer as helpfully as possible.\n" +
+            "If a question does not make any sense, or is not factually coherent, explain why instead of answering something incorrectly. " +
+            "If you don't know the answer to a question, don't share false information.`
+	);
+}
 
 export const llmState = new State<LlmState>({
 	appVersion: packageJson.version,
@@ -119,6 +131,36 @@ let chatSessionCompletionEngine: LlamaChatSessionPromptCompletionEngine | null =
 	null;
 let promptAbortController: AbortController | null = null;
 let inProgressResponse: SimplifiedModelChatItem['message'] = [];
+
+eventBus.on('selected-prompt-changed', (prompt: SystemPrompt) => {
+	console.log('Selected prompt changed', prompt);
+	// If a chat session exists, update its system prompt
+	if (chatSession) {
+		const history = chatSession.getChatHistory();
+
+		// Find system message and update it
+		const systemMessageIndex = history.findIndex(
+			(msg) => msg.type === 'system'
+		);
+		if (systemMessageIndex !== -1) {
+			history[systemMessageIndex] = {
+				type: 'system',
+				text: prompt.prompt || getCurrentSystemPrompt()
+			};
+
+			chatSession.setChatHistory(history);
+
+			// Update UI if needed
+			llmState.state = {
+				...llmState.state,
+				chatSession: {
+					...llmState.state.chatSession,
+					simplifiedChat: getSimplifiedChatHistory(false)
+				}
+			};
+		}
+	}
+});
 
 export const llmFunctions = {
 	async loadLlama() {
@@ -541,7 +583,14 @@ export const llmFunctions = {
 				autoDisposeSequence: false
 			});
 
-			chatSession.setChatHistory(messages ?? []);
+			chatSession.setChatHistory(
+				messages ?? [
+					{
+						type: 'system',
+						text: getCurrentSystemPrompt()
+					}
+				]
+			);
 
 			chatSessionCompletionEngine = chatSession.createPromptCompletionEngine({
 				onGeneration(prompt, completion) {

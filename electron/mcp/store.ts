@@ -1,8 +1,6 @@
-import Store from 'electron-store';
+import { store } from '../settings/store';
 import { connect } from './client.ts';
 import { MCPConnection } from './types.ts';
-
-const store = new Store<{ mcpServers: MCPConnection[] }>();
 
 export async function getMcpServers(): Promise<MCPConnection[]> {
 	return store.get('mcpServers', []);

@@ -13,13 +13,15 @@ import {
 	SidebarMenuItem
 } from '@/components/ui/sidebar';
 import {
+	BotMessageSquare,
 	Calendar,
 	Database,
 	Home,
 	Inbox,
 	Search,
 	Server,
-	Settings
+	Settings,
+	SquareTerminal
 } from 'lucide-react';
 import { NavUser } from './nav-user';
 
@@ -34,25 +36,25 @@ const data = {
 // Menu items.
 const items = [
 	{
-		title: 'Home',
+		title: 'Assistant',
 		url: '/',
-		icon: Home
+		icon: BotMessageSquare
 	},
-	{
-		title: 'Inbox',
-		url: '/inbox',
-		icon: Inbox
-	},
-	{
-		title: 'Calendar',
-		url: '/calendar',
-		icon: Calendar
-	},
-	{
-		title: 'Search',
-		url: '/search',
-		icon: Search
-	},
+	// {
+	// 	title: 'Inbox',
+	// 	url: '/inbox',
+	// 	icon: Inbox
+	// },
+	// {
+	// 	title: 'Calendar',
+	// 	url: '/calendar',
+	// 	icon: Calendar
+	// },
+	// {
+	// 	title: 'Search',
+	// 	url: '/search',
+	// 	icon: Search
+	// },
 	{
 		title: 'MCP Servers',
 		url: '/mcp-servers',
@@ -62,6 +64,11 @@ const items = [
 		title: 'Knowledge Base (RAG)',
 		url: '/knowledge-base',
 		icon: Database
+	},
+	{
+		title: 'System Prompt',
+		url: '/system-prompt',
+		icon: SquareTerminal
 	},
 	{
 		title: 'Settings',

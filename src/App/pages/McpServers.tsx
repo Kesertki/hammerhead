@@ -21,6 +21,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Connection } from '@/types.ts';
 import { Pencil, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 export default function MCPConnectionsPage() {
 	const [connections, setConnections] = useState<Connection[]>([]);
@@ -35,6 +36,14 @@ export default function MCPConnectionsPage() {
 	const saveToStore = (updated: Connection[]) => {
 		window.electronAPI.setMCPServers(updated);
 		setConnections(updated);
+		toast.success('MCP connections updated successfully');
+	};
+
+	const refreshConnections = () => {
+		window.electronAPI.getMCPServers().then((data) => {
+			setConnections(data);
+			saveToStore(data);
+		});
 	};
 
 	const handleAdd = () => {
@@ -148,6 +157,13 @@ export default function MCPConnectionsPage() {
 							}}
 						>
 							Add New Connection
+						</Button>
+						<Button
+							onClick={() => refreshConnections()}
+							variant="outline"
+							className="ml-2"
+						>
+							Refresh Connections
 						</Button>
 					</CardFooter>
 				</Card>

@@ -2,7 +2,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { defineChatSessionFunction } from 'node-llama-cpp';
 import { modelFunctions } from '../llm/modelFunctions.js';
-import { getMcpServers } from './store.ts';
+import { getMcpServers } from '../settings/mcp.ts';
 import { MCPConnection } from './types';
 
 interface Channel {
@@ -75,7 +75,7 @@ export async function loadMcpTools() {
 	return mcpFunctions;
 }
 
-export async function connect() {
+async function connect() {
 	const connections = await getMcpServers();
 	console.log('Connections:', connections);
 

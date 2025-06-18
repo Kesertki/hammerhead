@@ -29,7 +29,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
 
 // Initialize MCP connections and load tools
-const mcpFunctions = await loadMcpTools();
+let mcpFunctions = await loadMcpTools();
 
 function getCurrentSystemPrompt() {
 	return (
@@ -159,6 +159,15 @@ eventBus.on('selected-prompt-changed', (prompt: SystemPrompt) => {
 				}
 			};
 		}
+	}
+});
+
+eventBus.on('mcp-servers-changed', async () => {
+	try {
+		console.log('MCP servers changed, reloading tools');
+		mcpFunctions = await loadMcpTools();
+	} catch (err) {
+		console.error('Failed to reload MCP tools', err);
 	}
 });
 

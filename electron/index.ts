@@ -1,9 +1,9 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
-import { getMcpServers, setMcpServers } from './mcp/store.ts';
 import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
+import { getMcpServers, setMcpServers } from './settings';
 import {
 	SystemPromptConfig,
 	getSystemPrompts,

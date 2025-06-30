@@ -1,5 +1,5 @@
 import { Download, Search } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useExternalState } from '../hooks/useExternalState.ts';
 import { electronLlmRpc } from '../rpc/llmRpc.ts';
 import { llmState } from '../state/llmState.ts';
@@ -14,38 +14,90 @@ export function Chat() {
 
 	// Create a ref for the chat container
 	const chatHistoryRef = useRef<HTMLDivElement>(null);
+	const [isUserScrolling, setIsUserScrolling] = useState(false);
+	const userScrollTimeoutRef = useRef<number | undefined>(undefined);
 
-	// Function to scroll to the bottom of the chat
+	// Simple function to scroll to bottom
 	const scrollToBottom = useCallback(() => {
-		if (chatHistoryRef.current) {
-			const container = chatHistoryRef.current;
-			container.scrollTop = container.scrollHeight;
-		}
-	}, []);
+		if (isUserScrolling || !chatHistoryRef.current) return;
 
-	// Scroll to bottom when new messages arrive
+		const container = chatHistoryRef.current;
+		container.scrollTop = container.scrollHeight;
+	}, [isUserScrolling]);
+
+	// Track user scrolling behavior with timeout
 	useEffect(() => {
-		if (state.chatSession.simplifiedChat.length > 0) {
-			// Small delay to ensure content is rendered
-			setTimeout(scrollToBottom, 50);
-		}
-	}, [state.chatSession.simplifiedChat.length, scrollToBottom]);
+		const container = chatHistoryRef.current;
+		if (!container) return;
 
-	// Scroll to bottom when a message is being generated
-	useEffect(() => {
-		let intervalId: number | undefined;
+		const handleScroll = () => {
+			const { scrollTop, scrollHeight, clientHeight } = container;
+			const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
 
-		if (generatingResult) {
-			// During generation, check scroll position frequently
-			intervalId = window.setInterval(scrollToBottom, 100);
-		}
+			if (!isAtBottom) {
+				// User is scrolling up - immediately disable auto-scroll
+				setIsUserScrolling(true);
+
+				// Clear any existing timeout
+				if (userScrollTimeoutRef.current) {
+					clearTimeout(userScrollTimeoutRef.current);
+				}
+
+				// Set a timeout to check if user has stopped scrolling
+				userScrollTimeoutRef.current = window.setTimeout(() => {
+					// After user stops scrolling, check if they're at bottom
+					const {
+						scrollTop: newScrollTop,
+						scrollHeight: newScrollHeight,
+						clientHeight: newClientHeight
+					} = container;
+					const stillAtBottom =
+						newScrollHeight - newScrollTop - newClientHeight < 10;
+					if (stillAtBottom) {
+						setIsUserScrolling(false);
+					}
+				}, 500); // Wait 500ms after user stops scrolling
+			}
+		};
+
+		container.addEventListener('scroll', handleScroll);
 
 		return () => {
-			if (intervalId) clearInterval(intervalId);
+			container.removeEventListener('scroll', handleScroll);
+			if (userScrollTimeoutRef.current) {
+				clearTimeout(userScrollTimeoutRef.current);
+			}
 		};
-	}, [generatingResult, scrollToBottom]);
+	}, []);
 
-	// Initial scroll when component mounts
+	// Auto-scroll during generation
+	useEffect(() => {
+		if (!generatingResult || isUserScrolling) return;
+
+		const intervalId = setInterval(() => {
+			scrollToBottom();
+		}, 100);
+
+		return () => clearInterval(intervalId);
+	}, [generatingResult, isUserScrolling, scrollToBottom]);
+
+	// Auto-scroll on new messages (when not generating)
+	useEffect(() => {
+		if (
+			state.chatSession.simplifiedChat.length > 0 &&
+			!generatingResult &&
+			!isUserScrolling
+		) {
+			setTimeout(scrollToBottom, 50);
+		}
+	}, [
+		state.chatSession.simplifiedChat.length,
+		generatingResult,
+		isUserScrolling,
+		scrollToBottom
+	]);
+
+	// Initial scroll on mount
 	useEffect(() => {
 		setTimeout(scrollToBottom, 100);
 	}, [scrollToBottom]);

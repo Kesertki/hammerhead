@@ -11,7 +11,7 @@
 	},
 	"scripts": {
 		"postinstall": "npm run models:pull",
-		"models:pull": "node-llama-cpp pull --dir ./models \"hf:CompendiumLabs/bge-small-en-v1.5-gguf:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Mistral-Nemo-Instruct-2407-GGUF:Q6_K\"",
+		"models:pull": "node-llama-cpp pull --dir ./models \"hf:CompendiumLabs/bge-small-en-v1.5-gguf:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K\"",
 		"start": "vite dev",
 		"start:build": "electron ./dist-electron",
 		"prebuild": "rimraf ./dist ./dist-electron ./release",
@@ -47,7 +47,7 @@
 		"lucide-react": "^0.511.0",
 		"markdown-it": "^14.1.0",
 		"next-themes": "^0.4.6",
-		"node-llama-cpp": "^3.8.1",
+		"node-llama-cpp": "^3.10.0",
 		"pretty-ms": "^9.2.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",

@@ -22,23 +22,23 @@ function parseArgs(args: string): string[] {
 		.filter((line) => line.length > 0);
 }
 
-// function parseEnv(env: string): Record<string, string> {
-// 	return env
-// 		.split('\n')
-// 		.map((line) => line.trim())
-// 		.filter((line) => line.includes('='))
-// 		.reduce(
-// 			(acc, line) => {
-// 				const [key, ...rest] = line.split('=');
-// 				if (!key || rest.length === 0) {
-// 					return acc; // Skip invalid lines
-// 				}
-// 				acc[key.trim()] = rest.join('=').trim();
-// 				return acc;
-// 			},
-// 			{} as Record<string, string>
-// 		);
-// }
+function parseEnv(env: string): Record<string, string> {
+	return env
+		.split('\n')
+		.map((line) => line.trim())
+		.filter((line) => line.includes('='))
+		.reduce(
+			(acc, line) => {
+				const [key, ...rest] = line.split('=');
+				if (!key || rest.length === 0) {
+					return acc; // Skip invalid lines
+				}
+				acc[key.trim()] = rest.join('=').trim();
+				return acc;
+			},
+			{} as Record<string, string>
+		);
+}
 
 async function registerTools(client: Client) {
 	const { tools } = await client.listTools();
@@ -92,10 +92,13 @@ async function connect() {
 
 	for (const connection of connections) {
 		if (connection.transport === 'stdio') {
+			const envVars = connection.env ? parseEnv(connection.env) : undefined;
+			const args = connection.args ? parseArgs(connection.args) : undefined;
+
 			const transport = new StdioClientTransport({
 				command: connection.command,
-				args: parseArgs(connection.args)
-				// env: parseEnv(connection.env)
+				args: args,
+				env: envVars
 			});
 
 			const client = new Client({
@@ -104,6 +107,9 @@ async function connect() {
 			});
 
 			console.log(`Connecting to MCP server: ${connection.name}...`);
+			console.log('Arguments:', args);
+			console.log('Environment variables:', envVars);
+
 			try {
 				await client.connect(transport, {
 					timeout: 60000,

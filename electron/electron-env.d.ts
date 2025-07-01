@@ -24,4 +24,11 @@ declare namespace NodeJS {
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
 	ipcRenderer: import('electron').IpcRenderer;
+	electronAPI: {
+		getMCPServers: () => Promise<any>;
+		setMCPServers: (servers: any[]) => Promise<void>;
+		getSystemPrompts: () => Promise<any>;
+		setSystemPrompts: (prompts: any) => Promise<void>;
+		openExternal: (url: string) => Promise<void>;
+	};
 }

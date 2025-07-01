@@ -60,6 +60,30 @@ export function MarkdownContent({
 		if (inline) divRef.current.innerHTML = md.renderInline(children ?? '');
 		else divRef.current.innerHTML = md.render(children ?? '');
 
+		// Add click handler for external links
+		const handleLinkClick = (event: Event) => {
+			const target = event.target as HTMLElement;
+			if (target.tagName === 'A') {
+				const href = (target as HTMLAnchorElement).href;
+				if (
+					href &&
+					(href.startsWith('http://') || href.startsWith('https://'))
+				) {
+					event.preventDefault();
+					// Check if we're in Electron environment
+					if (window.electronAPI?.openExternal) {
+						window.electronAPI.openExternal(href);
+					} else {
+						// Fallback for non-Electron environments
+						window.open(href, '_blank');
+					}
+				}
+			}
+		};
+
+		// Add event listener for link clicks
+		divRef.current.addEventListener('click', handleLinkClick);
+
 		// Add copy buttons to code blocks
 		if (!inline) {
 			const codeBlocks = divRef.current.querySelectorAll('pre code');
@@ -91,6 +115,11 @@ export function MarkdownContent({
 				}
 			});
 		}
+
+		// Cleanup function
+		return () => {
+			divRef.current?.removeEventListener('click', handleLinkClick);
+		};
 	}, [inline, children]);
 
 	return <div className={className} ref={divRef} dir={dir} />;

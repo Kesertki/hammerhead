@@ -109,4 +109,8 @@ ipcMain.handle(
 	}
 );
 
+ipcMain.handle('open-external', async (_event, url: string) => {
+	await shell.openExternal(url);
+});
+
 app.whenReady().then(createWindow);

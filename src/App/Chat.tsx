@@ -16,6 +16,9 @@ export function Chat() {
 	const chatHistoryRef = useRef<HTMLDivElement>(null);
 	const [isUserScrolling, setIsUserScrolling] = useState(false);
 	const userScrollTimeoutRef = useRef<number | undefined>(undefined);
+	const lastScrollHeightRef = useRef<number>(0);
+	const wasAtBottomRef = useRef<boolean>(true);
+	const scrollLockTimeoutRef = useRef<number | undefined>(undefined);
 
 	// Simple function to scroll to bottom
 	const scrollToBottom = useCallback(() => {
@@ -23,9 +26,11 @@ export function Chat() {
 
 		const container = chatHistoryRef.current;
 		container.scrollTop = container.scrollHeight;
+		lastScrollHeightRef.current = container.scrollHeight;
+		wasAtBottomRef.current = true;
 	}, [isUserScrolling]);
 
-	// Track user scrolling behavior with timeout
+	// Track user scrolling behavior
 	useEffect(() => {
 		const container = chatHistoryRef.current;
 		if (!container) return;
@@ -34,41 +39,72 @@ export function Chat() {
 			const { scrollTop, scrollHeight, clientHeight } = container;
 			const isAtBottom = scrollHeight - scrollTop - clientHeight < 10;
 
-			if (!isAtBottom) {
-				// User is scrolling up - immediately disable auto-scroll
-				setIsUserScrolling(true);
+			// Check if scroll height changed (content was added)
+			const contentChanged = scrollHeight !== lastScrollHeightRef.current;
+			lastScrollHeightRef.current = scrollHeight;
 
+			if (contentChanged && wasAtBottomRef.current && generatingResult) {
+				// Content was added while we were at bottom during generation
+				// This is not user scrolling, just content expansion
+				wasAtBottomRef.current = isAtBottom;
+				return;
+			}
+
+			// If user scrolled up from bottom position
+			if (wasAtBottomRef.current && !isAtBottom && !contentChanged) {
 				// Clear any existing timeout
 				if (userScrollTimeoutRef.current) {
 					clearTimeout(userScrollTimeoutRef.current);
 				}
+				if (scrollLockTimeoutRef.current) {
+					clearTimeout(scrollLockTimeoutRef.current);
+				}
 
-				// Set a timeout to check if user has stopped scrolling
-				userScrollTimeoutRef.current = window.setTimeout(() => {
-					// After user stops scrolling, check if they're at bottom
+				setIsUserScrolling(true);
+				wasAtBottomRef.current = false;
+
+				// Set a lock timeout to prevent immediate re-enabling
+				scrollLockTimeoutRef.current = window.setTimeout(() => {
+					// Check if user is back at bottom after the delay
 					const {
-						scrollTop: newScrollTop,
-						scrollHeight: newScrollHeight,
-						clientHeight: newClientHeight
+						scrollTop: currentScrollTop,
+						scrollHeight: currentScrollHeight,
+						clientHeight: currentClientHeight
 					} = container;
-					const stillAtBottom =
-						newScrollHeight - newScrollTop - newClientHeight < 10;
-					if (stillAtBottom) {
+					const backAtBottom =
+						currentScrollHeight - currentScrollTop - currentClientHeight < 10;
+
+					if (backAtBottom) {
 						setIsUserScrolling(false);
+						wasAtBottomRef.current = true;
 					}
-				}, 500); // Wait 500ms after user stops scrolling
+				}, 1500); // 1.5 second delay
+			} else if (!wasAtBottomRef.current && isAtBottom) {
+				// User scrolled back to bottom
+				if (userScrollTimeoutRef.current) {
+					clearTimeout(userScrollTimeoutRef.current);
+				}
+				if (scrollLockTimeoutRef.current) {
+					clearTimeout(scrollLockTimeoutRef.current);
+				}
+
+				setIsUserScrolling(false);
+				wasAtBottomRef.current = true;
 			}
 		};
 
-		container.addEventListener('scroll', handleScroll);
+		container.addEventListener('scroll', handleScroll, { passive: true });
 
 		return () => {
 			container.removeEventListener('scroll', handleScroll);
 			if (userScrollTimeoutRef.current) {
 				clearTimeout(userScrollTimeoutRef.current);
 			}
+			if (scrollLockTimeoutRef.current) {
+				clearTimeout(scrollLockTimeoutRef.current);
+			}
 		};
-	}, []);
+	}, [generatingResult]);
 
 	// Auto-scroll during generation
 	useEffect(() => {
@@ -76,7 +112,7 @@ export function Chat() {
 
 		const intervalId = setInterval(() => {
 			scrollToBottom();
-		}, 100);
+		}, 150); // Slightly reduced frequency
 
 		return () => clearInterval(intervalId);
 	}, [generatingResult, isUserScrolling, scrollToBottom]);

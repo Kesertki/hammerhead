@@ -1,6 +1,15 @@
+import { Button } from '@/components/ui/button';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle
+} from '@/components/ui/card';
 import Editor, { loader } from '@monaco-editor/react';
 import type * as Monaco from 'monaco-editor';
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
 
 // Set up Monaco environment for Electron before loader config
@@ -22,15 +31,131 @@ const defaultMcpConfig = `{
   }
 }`;
 
+interface McpConfig {
+	inputs?: Array<{
+		type: string;
+		id: string;
+		description: string;
+		password?: boolean;
+	}>;
+	servers: {
+		[key: string]: {
+			type?: 'stdio' | 'sse';
+			command?: string;
+			args?: string[];
+			env?: { [key: string]: string };
+			cwd?: string;
+			url?: string;
+			headers?: { [key: string]: string };
+		};
+	};
+}
+
 export default function McpServersConfig() {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<typeof Monaco | null>(null);
+	const [currentConfig, setCurrentConfig] = useState<string>(defaultMcpConfig);
+	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [validationErrors, setValidationErrors] = useState<
+		Monaco.editor.IMarker[]
+	>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [isUserEditing, setIsUserEditing] = useState(false);
+
+	useEffect(() => {
+		loadConfig();
+	}, []);
+
+	// Update editor when currentConfig changes (after loading) - but not during user editing
+	useEffect(() => {
+		if (editorRef.current && !isLoading && !isUserEditing) {
+			editorRef.current.setValue(currentConfig);
+		}
+	}, [currentConfig, isLoading, isUserEditing]);
+
+	const loadConfig = async () => {
+		try {
+			setIsLoading(true);
+			setIsUserEditing(false); // Allow setValue when loading
+			// Load the existing MCP config from Electron store
+			const config = await window.electronAPI.getMCPConfig();
+			if (config) {
+				const configString = JSON.stringify(config, null, 2);
+				setCurrentConfig(configString);
+				setHasUnsavedChanges(false);
+			}
+		} catch (error) {
+			console.error('Error loading MCP config:', error);
+			toast.error('Failed to load MCP configuration');
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const saveConfig = async () => {
+		try {
+			// Validate JSON syntax first
+			let parsedConfig: McpConfig;
+			try {
+				parsedConfig = JSON.parse(currentConfig);
+			} catch (parseError) {
+				toast.error(
+					'Invalid JSON syntax. Please fix the syntax errors before saving.'
+				);
+				return;
+			}
+
+			// Check if there are schema validation errors
+			if (validationErrors.length > 0) {
+				const errorMessages = validationErrors
+					.map((error) => error.message)
+					.join(', ');
+				toast.error(`Schema validation errors: ${errorMessages}`);
+				return;
+			}
+
+			// Save to Electron store
+			await window.electronAPI.setMCPConfig(parsedConfig);
+			setHasUnsavedChanges(false);
+			toast.success('MCP configuration saved successfully');
+		} catch (error) {
+			console.error('Error saving MCP config:', error);
+			toast.error('Failed to save MCP configuration');
+		}
+	};
+
+	const resetConfig = () => {
+		setIsUserEditing(false); // Allow setValue when resetting
+		setCurrentConfig(defaultMcpConfig);
+		setHasUnsavedChanges(true);
+		if (editorRef.current) {
+			editorRef.current.setValue(defaultMcpConfig);
+		}
+	};
+
+	const formatConfig = () => {
+		try {
+			const parsed = JSON.parse(currentConfig);
+			const formatted = JSON.stringify(parsed, null, 2);
+			setIsUserEditing(false); // Allow setValue when formatting
+			setCurrentConfig(formatted);
+			if (editorRef.current) {
+				editorRef.current.setValue(formatted);
+			}
+		} catch (error) {
+			toast.error('Cannot format invalid JSON');
+		}
+	};
 
 	function handleEditorChange(
 		value: string | undefined,
 		event: Monaco.editor.IModelContentChangedEvent
 	) {
-		// here is the current value
+		if (value !== undefined) {
+			setIsUserEditing(true); // Prevent setValue during user editing
+			setCurrentConfig(value);
+			setHasUnsavedChanges(true);
+		}
 	}
 
 	function handleEditorDidMount(
@@ -41,6 +166,11 @@ export default function McpServersConfig() {
 		console.log('onMount: the monaco instance:', monaco);
 		editorRef.current = editor;
 		monacoRef.current = monaco;
+
+		// Set the current config value only if loading is complete
+		if (!isLoading) {
+			editor.setValue(currentConfig);
+		}
 	}
 
 	function handleEditorWillMount(monaco: typeof Monaco) {
@@ -62,31 +192,74 @@ export default function McpServersConfig() {
 	}
 
 	function handleEditorValidation(markers: Monaco.editor.IMarker[]) {
-		// model markers
-		// markers.forEach(marker => console.log('onValidate:', marker.message));
+		setValidationErrors(markers);
+		// Optional: log validation errors
+		// markers.forEach(marker => console.log('Validation error:', marker.message));
 	}
 
 	return (
-		<div className="w-full h-full">
-			<Editor
-				height="90vh"
-				width="100%"
-				defaultLanguage="json"
-				defaultValue={defaultMcpConfig}
-				onChange={handleEditorChange}
-				onMount={handleEditorDidMount}
-				beforeMount={handleEditorWillMount}
-				onValidate={handleEditorValidation}
-				options={{
-					// Additional options for better offline experience
-					automaticLayout: true,
-					minimap: { enabled: false },
-					scrollBeyondLastLine: false,
-					wordWrap: 'on',
-					formatOnPaste: true,
-					formatOnType: true
-				}}
-			/>
+		<div className="h-full flex flex-col">
+			{/* Header with action buttons */}
+			<Card className="m-4">
+				<CardHeader>
+					<CardTitle>MCP Server Configuration</CardTitle>
+					<CardDescription>
+						Edit your MCP server configuration using JSON format
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="flex gap-2 flex-wrap">
+						<Button
+							onClick={saveConfig}
+							disabled={!hasUnsavedChanges || validationErrors.length > 0}
+						>
+							Save Configuration
+						</Button>
+						<Button variant="outline" onClick={loadConfig}>
+							Reload
+						</Button>
+						<Button variant="outline" onClick={formatConfig}>
+							Format JSON
+						</Button>
+						<Button variant="outline" onClick={resetConfig}>
+							Reset to Default
+						</Button>
+						{hasUnsavedChanges && (
+							<span className="text-sm text-orange-600 self-center ml-2">
+								• Unsaved changes
+							</span>
+						)}
+						{validationErrors.length > 0 && (
+							<span className="text-sm text-red-600 self-center ml-2">
+								• {validationErrors.length} validation error(s)
+							</span>
+						)}
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Monaco Editor */}
+			<div className="flex-1">
+				<Editor
+					height="100%"
+					width="100%"
+					defaultLanguage="json"
+					value={currentConfig}
+					onChange={handleEditorChange}
+					onMount={handleEditorDidMount}
+					beforeMount={handleEditorWillMount}
+					onValidate={handleEditorValidation}
+					options={{
+						automaticLayout: true,
+						minimap: { enabled: false },
+						scrollBeyondLastLine: false,
+						wordWrap: 'on',
+						formatOnPaste: true,
+						formatOnType: true
+						// theme: 'vs-dark' // Optional: dark theme
+					}}
+				/>
+			</div>
 		</div>
 	);
 }

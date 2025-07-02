@@ -3,7 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
 import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
-import { getMcpServers, setMcpServers } from './settings';
+import {
+	getMcpConfig,
+	getMcpServers,
+	setMcpConfig,
+	setMcpServers
+} from './settings';
 import {
 	SystemPromptConfig,
 	getSystemPrompts,
@@ -114,6 +119,14 @@ ipcMain.handle(
 
 ipcMain.handle('open-external', async (_event, url: string) => {
 	await shell.openExternal(url);
+});
+
+ipcMain.handle('get-mcp-config', async () => {
+	return await getMcpConfig();
+});
+
+ipcMain.handle('set-mcp-config', async (_event, config: any) => {
+	await setMcpConfig(config);
 });
 
 app.whenReady().then(createWindow);

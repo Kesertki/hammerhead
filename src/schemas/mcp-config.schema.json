@@ -1,0 +1,146 @@
+{
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"title": "MCP Configuration",
+	"description": "Model Context Protocol server configuration",
+	"type": "object",
+	"properties": {
+		"inputs": {
+			"type": "array",
+			"description": "Input prompts for configuration values",
+			"items": {
+				"type": "object",
+				"properties": {
+					"type": {
+						"type": "string",
+						"enum": ["promptString"],
+						"description": "Type of input prompt"
+					},
+					"id": {
+						"type": "string",
+						"description": "Unique identifier for the input"
+					},
+					"description": {
+						"type": "string",
+						"description": "Description shown to the user"
+					},
+					"password": {
+						"type": "boolean",
+						"description": "Whether this is a password field",
+						"default": false
+					}
+				},
+				"required": ["type", "id", "description"],
+				"additionalProperties": false
+			}
+		},
+		"servers": {
+			"type": "object",
+			"description": "MCP server configurations",
+			"patternProperties": {
+				"^[a-zA-Z0-9_-]+$": {
+					"type": "object",
+					"description": "MCP Server configuration",
+					"properties": {
+						"type": {
+							"type": "string",
+							"enum": ["stdio", "sse"],
+							"description": "Server connection type",
+							"default": "stdio"
+						},
+						"command": {
+							"type": "string",
+							"description": "Command to run the server (for stdio type)",
+							"examples": ["npx", "uvx", "python", "node", "docker"]
+						},
+						"args": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							},
+							"description": "Arguments for the server command",
+							"examples": [
+								["-y", "@modelcontextprotocol/server-filesystem"],
+								["mcp-server-fetch"],
+								[
+									"run",
+									"-i",
+									"--rm",
+									"-e",
+									"PERPLEXITY_API_KEY",
+									"mcp/perplexity-ask"
+								]
+							]
+						},
+						"env": {
+							"type": "object",
+							"additionalProperties": {
+								"type": "string"
+							},
+							"description": "Environment variables for the server",
+							"examples": [
+								{
+									"GITHUB_TOKEN": "${input:github-token}",
+									"PERPLEXITY_API_KEY": "${input:perplexity-key}",
+									"API_KEY": "your-api-key"
+								}
+							]
+						},
+						"cwd": {
+							"type": "string",
+							"description": "Working directory for the server"
+						},
+						"url": {
+							"type": "string",
+							"description": "URL for SSE server type",
+							"format": "uri"
+						},
+						"headers": {
+							"type": "object",
+							"additionalProperties": {
+								"type": "string"
+							},
+							"description": "Headers for SSE server type"
+						}
+					},
+					"allOf": [
+						{
+							"if": {
+								"anyOf": [
+									{ "properties": { "type": { "const": "stdio" } } },
+									{ "not": { "properties": { "type": {} } } }
+								]
+							},
+							"then": {
+								"required": ["command"],
+								"not": {
+									"anyOf": [
+										{ "required": ["url"] },
+										{ "required": ["headers"] }
+									]
+								}
+							}
+						},
+						{
+							"if": {
+								"properties": { "type": { "const": "sse" } }
+							},
+							"then": {
+								"required": ["url"],
+								"not": {
+									"anyOf": [
+										{ "required": ["command"] },
+										{ "required": ["args"] }
+									]
+								}
+							}
+						}
+					],
+					"additionalProperties": false
+				}
+			},
+			"additionalProperties": false
+		}
+	},
+	"required": ["servers"],
+	"additionalProperties": false
+}

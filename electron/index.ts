@@ -44,7 +44,10 @@ function createWindow() {
 					: 'icon.png'
 		),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.mjs')
+			preload: path.join(__dirname, 'preload.mjs'),
+			contextIsolation: true,
+			enableRemoteModule: false,
+			nodeIntegration: false
 		},
 		width: 1000,
 		height: 700

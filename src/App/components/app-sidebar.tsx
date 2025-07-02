@@ -61,6 +61,11 @@ const items = [
 		icon: Server
 	},
 	{
+		title: 'MCP Servers (new)',
+		url: '/mcp-servers-new',
+		icon: Server
+	},
+	{
 		title: 'Knowledge Base (RAG)',
 		url: '/knowledge-base',
 		icon: Database

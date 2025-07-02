@@ -1,3 +1,4 @@
+import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
@@ -53,6 +54,7 @@ export function App() {
 					<Route path="/search" element={<Search />} />
 					<Route path="/settings" element={<Settings />} />
 					<Route path="/mcp-servers" element={<MCPConnectionsPage />} />
+					<Route path="/mcp-servers-new" element={<McpServersConfig />} />
 					<Route path="/knowledge-base" element={<KnowledgeBase />} />
 					<Route path="/system-prompt" element={<SystemPrompt />} />
 				</Routes>

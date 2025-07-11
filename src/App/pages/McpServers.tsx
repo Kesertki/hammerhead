@@ -30,20 +30,20 @@ export default function MCPConnectionsPage() {
 	const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
 	useEffect(() => {
-		window.electronAPI.getMCPServers().then(setConnections);
+		// window.electronAPI.getMCPServers().then(setConnections);
 	}, []);
 
 	const saveToStore = (updated: Connection[]) => {
-		window.electronAPI.setMCPServers(updated);
+		// window.electronAPI.setMCPServers(updated);
 		setConnections(updated);
 		toast.success('MCP connections updated successfully');
 	};
 
 	const refreshConnections = () => {
-		window.electronAPI.getMCPServers().then((data) => {
-			setConnections(data);
-			saveToStore(data);
-		});
+		// window.electronAPI.getMCPServers().then((data) => {
+		// 	setConnections(data);
+		// 	saveToStore(data);
+		// });
 	};
 
 	const handleAdd = () => {

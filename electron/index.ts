@@ -1,9 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
-import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
-import { getMcpServers, setMcpServers } from './settings';
+import { getMcpConfig, setMcpConfig } from './settings';
 import {
 	SystemPromptConfig,
 	getSystemPrompts,
@@ -44,7 +43,10 @@ function createWindow() {
 					: 'icon.png'
 		),
 		webPreferences: {
-			preload: path.join(__dirname, 'preload.mjs')
+			preload: path.join(__dirname, 'preload.mjs'),
+			contextIsolation: true,
+			enableRemoteModule: false,
+			nodeIntegration: false
 		},
 		width: 1000,
 		height: 700
@@ -87,17 +89,6 @@ app.on('activate', () => {
 	}
 });
 
-ipcMain.handle('get-mcp-servers', async () => {
-	return await getMcpServers();
-});
-
-ipcMain.handle(
-	'set-mcp-servers',
-	async (_event, connections: MCPConnection[]) => {
-		await setMcpServers(connections);
-	}
-);
-
 ipcMain.handle('get-system-prompts', async () => {
 	return await getSystemPrompts();
 });
@@ -111,6 +102,14 @@ ipcMain.handle(
 
 ipcMain.handle('open-external', async (_event, url: string) => {
 	await shell.openExternal(url);
+});
+
+ipcMain.handle('get-mcp-config', async () => {
+	return await getMcpConfig();
+});
+
+ipcMain.handle('set-mcp-config', async (_event, config: any) => {
+	await setMcpConfig(config);
 });
 
 app.whenReady().then(createWindow);

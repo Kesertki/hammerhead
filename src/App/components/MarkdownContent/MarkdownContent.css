@@ -20,7 +20,9 @@
 	font-size: 12px !important;
 	padding: 4px 8px !important;
 	height: auto !important;
-	transition: background-color 0.2s ease, color 0.2s ease !important;
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease !important;
 }
 
 /* Show the button more clearly on hover */

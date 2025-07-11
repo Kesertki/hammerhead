@@ -107,7 +107,8 @@
 			opacity: 0.6;
 			font-weight: bold;
 
-			mask: linear-gradient(
+			mask:
+				linear-gradient(
 					to right,
 					rgb(0 0 0 / 48%) 34%,
 					black,
@@ -144,8 +145,9 @@
 	font-weight: 500;
 	font-family: inherit;
 	cursor: pointer;
-	transition: border-color 0.3s var(--transition-easing), opacity 0.3s
-		var(--transition-easing);
+	transition:
+		border-color 0.3s var(--transition-easing),
+		opacity 0.3s var(--transition-easing);
 
 	&[disabled] {
 		opacity: 0.52;

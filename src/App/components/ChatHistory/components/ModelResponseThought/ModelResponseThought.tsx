@@ -22,7 +22,7 @@ export function ModelResponseThought({
 
 	const title = useMemo(() => {
 		if (active) return 'Thinking';
-		else if (duration != null) {
+		if (duration != null) {
 			const formattedDuration = prettyMilliseconds(duration, {
 				secondsDecimalDigits: duration < 1000 * 10 ? 2 : 0,
 				verbose: true

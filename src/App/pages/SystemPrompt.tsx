@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
 	Select,
@@ -8,8 +10,6 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { SystemPromptConfig } from '@/types.ts';
-import { useEffect, useState } from 'react';
-import { toast } from 'sonner';
 
 const SystemPrompt = () => {
 	const [systemPrompts, setSystemPrompts] = useState<SystemPromptConfig>();
@@ -24,7 +24,7 @@ const SystemPrompt = () => {
 
 			// Set the prompt text for the selected prompt
 			const selectedPrompt = config.prompts.find(
-				(p) => p.id === config.selectedPromptId
+				(p: any) => p.id === config.selectedPromptId
 			);
 			if (selectedPrompt) {
 				setPromptText(selectedPrompt.prompt);
@@ -106,7 +106,10 @@ const SystemPrompt = () => {
 	return (
 		<div className="flex flex-col h-full p-4">
 			<div className="flex items-center justify-between mb-4">
-				<Select value={activePromptId} onValueChange={handlePromptChange}>
+				<Select
+					value={activePromptId}
+					onValueChange={handlePromptChange}
+				>
 					<SelectTrigger className="w-[200px]">
 						<SelectValue placeholder="Select a prompt" />
 					</SelectTrigger>

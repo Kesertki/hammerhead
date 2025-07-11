@@ -50,7 +50,13 @@
 						"command": {
 							"type": "string",
 							"description": "Command to run the server (for stdio type)",
-							"examples": ["npx", "uvx", "python", "node", "docker"]
+							"examples": [
+								"npx",
+								"uvx",
+								"python",
+								"node",
+								"docker"
+							]
 						},
 						"args": {
 							"type": "array",
@@ -59,7 +65,10 @@
 							},
 							"description": "Arguments for the server command",
 							"examples": [
-								["-y", "@modelcontextprotocol/server-filesystem"],
+								[
+									"-y",
+									"@modelcontextprotocol/server-filesystem"
+								],
 								["mcp-server-fetch"],
 								[
 									"run",
@@ -106,7 +115,11 @@
 						{
 							"if": {
 								"anyOf": [
-									{ "properties": { "type": { "const": "stdio" } } },
+									{
+										"properties": {
+											"type": { "const": "stdio" }
+										}
+									},
 									{ "not": { "properties": { "type": {} } } }
 								]
 							},

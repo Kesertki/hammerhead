@@ -42,11 +42,12 @@ export const ChatHistory = forwardRef<HTMLDivElement, ChatHistoryProps>(
 								key={index}
 								modelMessage={item}
 								active={
-									index === renderChatItems.length - 1 && generatingResult
+									index === renderChatItems.length - 1 &&
+									generatingResult
 								}
 							/>
 						);
-					else if (item.type === 'user')
+					if (item.type === 'user')
 						return <UserMessage key={index} message={item} />;
 
 					return null;

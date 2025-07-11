@@ -9,16 +9,21 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
 	return (
 		<div className="message model">
 			{modelMessage.message.map((message, responseIndex) => {
-				const isLastMessage = responseIndex === modelMessage.message.length - 1;
+				const isLastMessage =
+					responseIndex === modelMessage.message.length - 1;
 
-				if (message.type === 'segment' && message.segmentType === 'thought') {
+				if (
+					message.type === 'segment' &&
+					message.segmentType === 'thought'
+				) {
 					return (
 						<ModelResponseThought
 							key={responseIndex}
 							text={message.text}
 							active={isLastMessage && active}
 							duration={
-								message.startTime != null && message.endTime != null
+								message.startTime != null &&
+								message.endTime != null
 									? new Date(message.endTime).getTime() -
 										new Date(message.startTime).getTime()
 									: undefined

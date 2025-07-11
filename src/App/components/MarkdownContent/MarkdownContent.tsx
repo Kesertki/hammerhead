@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
 import hljs from 'highlight.js';
 import { Check, Copy } from 'lucide-react';
 import markdownit from 'markdown-it';
 import React, { useLayoutEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Button } from '@/components/ui/button';
 
 import 'highlight.js/styles/github-dark.css';
 import './MarkdownContent.css';
@@ -13,7 +13,7 @@ const md = markdownit({
 		if (hljs.getLanguage(lang) != null) {
 			try {
 				return hljs.highlight(str, { language: lang }).value;
-			} catch (err) {
+			} catch {
 				// do nothing
 			}
 		}

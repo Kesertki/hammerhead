@@ -1,11 +1,11 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BrowserWindow, app, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { getMcpConfig, setMcpConfig } from './settings';
 import {
-	SystemPromptConfig,
 	getSystemPrompts,
+	SystemPromptConfig,
 	setSystemPrompts
 } from './settings/prompts.ts';
 
@@ -64,7 +64,10 @@ function createWindow() {
 
 	// Test active push message to Renderer-process.
 	win.webContents.on('did-finish-load', () => {
-		win?.webContents.send('main-process-message', new Date().toLocaleString());
+		win?.webContents.send(
+			'main-process-message',
+			new Date().toLocaleString()
+		);
 	});
 
 	if (VITE_DEV_SERVER_URL) void win.loadURL(VITE_DEV_SERVER_URL);

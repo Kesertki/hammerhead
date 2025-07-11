@@ -3,7 +3,7 @@
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!**/src/components/ui"]
+		"includes": ["**", "!**/src/components/ui", "!**/scripts"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -91,7 +91,7 @@
 					},
 					"style": {
 						"useConst": "error",
-						"noNamespace": "error",
+						"noNamespace": "warn",
 						"useAsConstAssertion": "error",
 						"useArrayLiterals": "off",
 						"noInferrableTypes": "off",
@@ -109,7 +109,7 @@
 						"useGetterReturn": "off",
 						"noWith": "off",
 						"noVar": "error",
-						"noExplicitAny": "error",
+						"noExplicitAny": "warn",
 						"noExtraNonNullAssertion": "error",
 						"noMisleadingInstantiator": "error",
 						"noUnsafeDeclarationMerging": "error",

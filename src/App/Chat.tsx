@@ -72,7 +72,10 @@ export function Chat() {
 						clientHeight: currentClientHeight
 					} = container;
 					const backAtBottom =
-						currentScrollHeight - currentScrollTop - currentClientHeight < 10;
+						currentScrollHeight -
+							currentScrollTop -
+							currentClientHeight <
+						10;
 
 					if (backAtBottom) {
 						setIsUserScrolling(false);
@@ -179,7 +182,9 @@ export function Chat() {
 			<div className="app">
 				{showMessage && (
 					<div className="message">
-						{error != null && <div className="error">{String(error)}</div>}
+						{error != null && (
+							<div className="error">{String(error)}</div>
+						)}
 						{loading && <div className="loading">Loading...</div>}
 						{(state.selectedModelFilePath == null ||
 							state.llama.error != null) && (
@@ -188,7 +193,9 @@ export function Chat() {
 									Click the button above to load a model
 								</div>
 								<div className="actions">
-									<div className="title">DeepSeek R1 Distill Qwen model</div>
+									<div className="title">
+										DeepSeek R1 Distill Qwen model
+									</div>
 									<div className="links">
 										<a
 											target="_blank"
@@ -223,7 +230,9 @@ export function Chat() {
 											href="https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.Q4_K_M.gguf"
 										>
 											<Download />
-											<div className="text">Get Llama 3.1 8B</div>
+											<div className="text">
+												Get Llama 3.1 8B
+											</div>
 										</a>
 										<div className="separator" />
 										<a
@@ -231,7 +240,9 @@ export function Chat() {
 											href="https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf"
 										>
 											<Download />
-											<div className="text">Get Gemma 2 2B</div>
+											<div className="text">
+												Get Gemma 2 2B
+											</div>
 										</a>
 									</div>
 
@@ -242,7 +253,9 @@ export function Chat() {
 										href="https://huggingface.co/models?pipeline_tag=text-generation&library=gguf&sort=trending"
 									>
 										<Search />
-										<div className="text">Find more models</div>
+										<div className="text">
+											Find more models
+										</div>
 									</a>
 								</div>
 							</div>
@@ -266,13 +279,21 @@ export function Chat() {
 					/>
 				)}
 				<InputRow
-					disabled={!state.model.loaded || !state.contextSequence.loaded}
-					stopGeneration={generatingResult ? stopActivePrompt : undefined}
+					disabled={
+						!state.model.loaded || !state.contextSequence.loaded
+					}
+					stopGeneration={
+						generatingResult ? stopActivePrompt : undefined
+					}
 					onPromptInput={onPromptInput}
 					sendPrompt={sendPrompt}
 					generatingResult={generatingResult}
-					autocompleteInputDraft={state.chatSession.draftPrompt.prompt}
-					autocompleteCompletion={state.chatSession.draftPrompt.completion}
+					autocompleteInputDraft={
+						state.chatSession.draftPrompt.prompt
+					}
+					autocompleteCompletion={
+						state.chatSession.draftPrompt.completion
+					}
 				/>
 			</div>
 		</div>

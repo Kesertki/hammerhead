@@ -1,21 +1,3 @@
-import { Button } from '@/components/ui/button';
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger
-} from '@/components/ui/popover';
-import {
-	Sidebar,
-	SidebarContent,
-	SidebarGroup,
-	SidebarGroupContent,
-	SidebarMenu,
-	SidebarMenuButton,
-	SidebarMenuItem
-} from '@/components/ui/sidebar';
-import { useExternalState } from '@/hooks/useExternalState.ts';
-import { electronLlmRpc } from '@/rpc/llmRpc.ts';
-import { llmState } from '@/state/llmState.ts';
 // import { updatePin } from '@/lib/client';
 // import { useChatListStore } from '@/stores/chatListStore';
 // import { useChatStore } from '@/stores/chatStore';
@@ -39,6 +21,24 @@ import {
 } from 'lucide-react';
 import React, { useCallback } from 'react';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger
+} from '@/components/ui/popover';
+import {
+	Sidebar,
+	SidebarContent,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarMenu,
+	SidebarMenuButton,
+	SidebarMenuItem
+} from '@/components/ui/sidebar';
+import { useExternalState } from '@/hooks/useExternalState.ts';
+import { electronLlmRpc } from '@/rpc/llmRpc.ts';
+import { llmState } from '@/state/llmState.ts';
 
 interface ActionGroup {
 	label: string;
@@ -58,12 +58,12 @@ export function NavActions() {
 	// 	state.chats.find((chat) => chat.id === sessionId)
 	// );
 
-	const togglePin = async (chatId: string, value: boolean) => {
-		// const result = await updatePin(chatId, value);
-		// if (result) {
-		// 	setPin(chatId, value);
-		// }
-	};
+	// const togglePin = async (chatId: string, value: boolean) => {
+	// 	// const result = await updatePin(chatId, value);
+	// 	// if (result) {
+	// 	// 	setPin(chatId, value);
+	// 	// }
+	// };
 
 	// const runAction = async (action?: string) => {
 	// 	if (action === 'import') {
@@ -196,16 +196,25 @@ export function NavActions() {
 					<Sidebar collapsible="none" className="bg-transparent">
 						<SidebarContent>
 							{data.map((group, index) => (
-								<SidebarGroup key={index} className="border-b last:border-none">
+								<SidebarGroup
+									key={index}
+									className="border-b last:border-none"
+								>
 									<SidebarGroupContent className="gap-0">
 										<SidebarMenu>
 											{group.map((item, index) => (
 												<SidebarMenuItem key={index}>
 													<SidebarMenuButton
 														disabled={item.disabled}
-														onClick={() => item.onClick && item.onClick()}
+														onClick={() =>
+															item.onClick &&
+															item.onClick()
+														}
 													>
-														<item.icon /> <span>{item.label}</span>
+														<item.icon />{' '}
+														<span>
+															{item.label}
+														</span>
 													</SidebarMenuButton>
 												</SidebarMenuItem>
 											))}

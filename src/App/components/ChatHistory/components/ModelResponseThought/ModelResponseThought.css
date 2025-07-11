@@ -66,10 +66,14 @@
 
 			> .title {
 				--animation-mask-transparency-color: rgb(0 0 0 / 100%);
-				transition: font-weight 0.3s var(--transition-easing), opacity 0.3s
-					var(--transition-easing), --animation-mask-transparency-color 0.3s
-					var(--transition-easing), margin-bottom 0.3s var(--transition-easing);
-				mask: linear-gradient(
+				transition:
+					font-weight 0.3s var(--transition-easing),
+					opacity 0.3s var(--transition-easing),
+					--animation-mask-transparency-color 0.3s
+					var(--transition-easing),
+					margin-bottom 0.3s var(--transition-easing);
+				mask:
+					linear-gradient(
 						to right,
 						var(--animation-mask-transparency-color) 34%,
 						black,
@@ -90,8 +94,9 @@
 				opacity: 0.64;
 
 				transform-origin: 56% 56%;
-				transition: transform 0.2s var(--transition-easing), opacity 0.3s
-					var(--transition-easing);
+				transition:
+					transform 0.2s var(--transition-easing),
+					opacity 0.3s var(--transition-easing);
 			}
 		}
 
@@ -110,8 +115,9 @@
 			padding-inline-end: 24px;
 
 			interpolate-size: allow-keywords;
-			transition: height 0.5s var(--transition-easing), opacity 0.3s 0.2s
-				var(--transition-easing);
+			transition:
+				height 0.5s var(--transition-easing),
+				opacity 0.3s 0.2s var(--transition-easing);
 
 			&.hide {
 				height: 0px;
@@ -131,8 +137,10 @@
 		overflow: clip;
 
 		interpolate-size: allow-keywords;
-		transition: height 0.5s var(--transition-easing), margin-bottom 0.5s
-			var(--transition-easing), opacity 0.3s 0.2s var(--transition-easing);
+		transition:
+			height 0.5s var(--transition-easing),
+			margin-bottom 0.5s var(--transition-easing),
+			opacity 0.3s 0.2s var(--transition-easing);
 
 		&:before {
 			content: "";

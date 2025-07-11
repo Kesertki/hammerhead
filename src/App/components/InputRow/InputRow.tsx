@@ -22,7 +22,8 @@ export function InputRow({
 	const autocompleteText = useMemo(() => {
 		const fullText =
 			(autocompleteInputDraft ?? '') + (autocompleteCompletion ?? '');
-		if (fullText.startsWith(inputText)) return fullText.slice(inputText.length);
+		if (fullText.startsWith(inputText))
+			return fullText.slice(inputText.length);
 
 		return '';
 	}, [inputText, autocompleteInputDraft, autocompleteCompletion]);
@@ -57,14 +58,24 @@ export function InputRow({
 		resizeInput();
 		onPromptInput?.('');
 		sendPrompt(message);
-	}, [setInputValue, generatingResult, resizeInput, sendPrompt, onPromptInput]);
+	}, [
+		setInputValue,
+		generatingResult,
+		resizeInput,
+		sendPrompt,
+		onPromptInput
+	]);
 
 	const onInput = useCallback(() => {
 		setInputText(inputRef.current?.value ?? '');
 		resizeInput();
 
-		if (autocompleteCurrentTextRef.current != null && inputRef.current != null)
-			autocompleteCurrentTextRef.current.innerText = inputRef.current?.value;
+		if (
+			autocompleteCurrentTextRef.current != null &&
+			inputRef.current != null
+		)
+			autocompleteCurrentTextRef.current.innerText =
+				inputRef.current?.value;
 
 		if (inputRef.current != null && onPromptInput != null)
 			onPromptInput(inputRef.current?.value);
@@ -98,7 +109,13 @@ export function InputRow({
 				resizeInput();
 			}
 		},
-		[submitPrompt, setInputValue, onPromptInput, resizeInput, autocompleteText]
+		[
+			submitPrompt,
+			setInputValue,
+			onPromptInput,
+			resizeInput,
+			autocompleteText
+		]
 	);
 
 	const previewAutocompleteText = useMemo(() => {
@@ -135,8 +152,13 @@ export function InputRow({
 								autocompleteText === '' && 'hide'
 							)}
 						>
-							<div className="currentText" ref={autocompleteCurrentTextRef} />
-							<div className="completion">{previewAutocompleteText}</div>
+							<div
+								className="currentText"
+								ref={autocompleteCurrentTextRef}
+							/>
+							<div className="completion">
+								{previewAutocompleteText}
+							</div>
 							<div className="pressTab">Tab</div>
 						</div>
 					</div>
@@ -151,7 +173,11 @@ export function InputRow({
 								? 'bg-black text-white hover:bg-black hover:text-white'
 								: 'text-gray-300'
 						}`}
-						disabled={disabled || stopGeneration == null || !generatingResult}
+						disabled={
+							disabled ||
+							stopGeneration == null ||
+							!generatingResult
+						}
 						onClick={stopGeneration}
 						style={{
 							visibility: generatingResult ? 'visible' : 'hidden'
@@ -164,11 +190,15 @@ export function InputRow({
 						variant="outline"
 						size="icon"
 						className={`transition duration-200 ${
-							inputText.trim() === '' || disabled || generatingResult
+							inputText.trim() === '' ||
+							disabled ||
+							generatingResult
 								? 'text-gray-300'
 								: 'bg-black text-white hover:bg-black hover:text-white'
 						}`}
-						disabled={disabled || inputText === '' || generatingResult}
+						disabled={
+							disabled || inputText === '' || generatingResult
+						}
 						onClick={submitPrompt}
 					>
 						<ArrowUp size={24} />

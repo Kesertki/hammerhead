@@ -31,9 +31,10 @@ export function MessageMarkdown({
 				lastLine.endsWith(' _') ||
 				lastLine.endsWith(' ~'))
 		)
-			return [...lines.slice(0, -1), lastLine.slice(0, -' _'.length)].join(
-				'\n'
-			);
+			return [
+				...lines.slice(0, -1),
+				lastLine.slice(0, -' _'.length)
+			].join('\n');
 
 		return children;
 	}, [children, activeDot]);

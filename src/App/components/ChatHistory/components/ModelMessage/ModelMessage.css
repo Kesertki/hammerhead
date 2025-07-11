@@ -8,8 +8,9 @@
 	min-height: fit-content;
 	interpolate-size: allow-keywords;
 
-	transition: min-height 0.5s var(--transition-easing), max-height 0.5s
-		var(--transition-easing);
+	transition:
+		min-height 0.5s var(--transition-easing),
+		max-height 0.5s var(--transition-easing);
 
 	&:hover + .buttons {
 		opacity: 1;

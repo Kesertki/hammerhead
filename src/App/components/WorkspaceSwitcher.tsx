@@ -53,7 +53,9 @@ export function WorkspaceSwitcher() {
 								<span className="truncate font-semibold">
 									{activeTeam.name}
 								</span>
-								<span className="truncate text-xs">{activeTeam.plan}</span>
+								<span className="truncate text-xs">
+									{activeTeam.plan}
+								</span>
 							</div>
 							<ChevronsUpDown className="ml-auto" />
 						</SidebarMenuButton>
@@ -78,7 +80,9 @@ export function WorkspaceSwitcher() {
 									<Command className="size-4 shrink-0" />
 								</div>
 								{ws.name}
-								<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+								<DropdownMenuShortcut>
+									⌘{index + 1}
+								</DropdownMenuShortcut>
 							</DropdownMenuItem>
 						))}
 						<DropdownMenuSeparator />

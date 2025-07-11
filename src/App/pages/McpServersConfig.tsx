@@ -1,3 +1,7 @@
+import Editor, { loader } from '@monaco-editor/react';
+import type * as Monaco from 'monaco-editor';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -6,10 +10,6 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/components/ui/card';
-import Editor, { loader } from '@monaco-editor/react';
-import type * as Monaco from 'monaco-editor';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
 
 // Set up Monaco environment for Electron before loader config
@@ -52,7 +52,8 @@ interface McpConfig {
 export default function McpServersConfig() {
 	const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
 	const monacoRef = useRef<typeof Monaco | null>(null);
-	const [currentConfig, setCurrentConfig] = useState<string>(defaultMcpConfig);
+	const [currentConfig, setCurrentConfig] =
+		useState<string>(defaultMcpConfig);
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [validationErrors, setValidationErrors] = useState<
 		Monaco.editor.IMarker[]
@@ -98,9 +99,10 @@ export default function McpServersConfig() {
 		try {
 			// Validate JSON syntax first
 			let parsedConfig: McpConfig;
+
 			try {
 				parsedConfig = JSON.parse(currentConfig);
-			} catch (parseError) {
+			} catch {
 				toast.error(
 					'Invalid JSON syntax. Please fix the syntax errors before saving.'
 				);
@@ -152,7 +154,7 @@ export default function McpServersConfig() {
 				}
 				setTimeout(() => setIsProgrammaticChange(false), 100);
 			}
-		} catch (error) {
+		} catch {
 			toast.error('Cannot format invalid JSON');
 		}
 	};
@@ -224,7 +226,10 @@ export default function McpServersConfig() {
 					<div className="flex gap-2 flex-wrap">
 						<Button
 							onClick={saveConfig}
-							disabled={!hasUnsavedChanges || validationErrors.length > 0}
+							disabled={
+								!hasUnsavedChanges ||
+								validationErrors.length > 0
+							}
 						>
 							Save Configuration
 						</Button>

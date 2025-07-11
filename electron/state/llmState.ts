@@ -1,20 +1,20 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SystemPrompt } from '@/types.ts';
 import { State, withLock } from 'lifecycle-utils';
 import {
 	ChatHistoryItem,
 	type ChatModelSegmentType,
+	getLlama,
+	isChatModelResponseSegment,
 	Llama,
 	LlamaChatSession,
 	LlamaChatSessionPromptCompletionEngine,
 	LlamaContext,
 	LlamaContextSequence,
-	LlamaModel,
-	getLlama,
-	isChatModelResponseSegment
+	LlamaModel
 } from 'node-llama-cpp';
+import { SystemPrompt } from '@/types.ts';
 import packageJson from '../../package.json';
 import {
 	generateQueryEmbeddings,
@@ -386,13 +386,19 @@ export const llmFunctions = {
 				try {
 					const content = await fs.readFile(inputPath, 'utf8');
 					const data = JSON.parse(content);
-					if (data && data.version === '1.0' && Array.isArray(data.messages)) {
-						llmFunctions.chatSession.resetChatHistory(true, data.messages);
+					if (
+						data &&
+						data.version === '1.0' &&
+						Array.isArray(data.messages)
+					) {
+						llmFunctions.chatSession.resetChatHistory(
+							true,
+							data.messages
+						);
 						return true;
-					} else {
-						console.error('Invalid chat session format');
-						return false;
 					}
+					console.error('Invalid chat session format');
+					return false;
 				} catch (err) {
 					console.error('Failed to import chat session', err);
 					return false;
@@ -431,7 +437,7 @@ export const llmFunctions = {
 						await chatSession?.preloadPrompt('', {
 							signal: promptAbortController?.signal
 						});
-					} catch (err) {
+					} catch {
 						// do nothing
 					}
 					chatSessionCompletionEngine?.complete(
@@ -461,7 +467,8 @@ export const llmFunctions = {
 		},
 		async prompt(message: string) {
 			await withLock(llmFunctions, 'chatSession', async () => {
-				if (chatSession == null) throw new Error('Chat session not loaded');
+				if (chatSession == null)
+					throw new Error('Chat session not loaded');
 				// Store original message before augmentation
 				const originalMessage = message.trim();
 
@@ -493,9 +500,12 @@ export const llmFunctions = {
 					try {
 						// const isChromaConnected = await checkChromaConnection();
 						if (isChromaConnected) {
-							const queryEmbeddings = await generateQueryEmbeddings(message);
+							const queryEmbeddings =
+								await generateQueryEmbeddings(message);
 							const relevantInformation =
-								await retrieveRelevantInformation(queryEmbeddings);
+								await retrieveRelevantInformation(
+									queryEmbeddings
+								);
 
 							// Only augment if we actually have relevant information
 							if (
@@ -503,23 +513,33 @@ export const llmFunctions = {
 								relevantInformation.length > 0
 							) {
 								const formattedContext = relevantInformation
-									.map((doc, i) => `Document ${i + 1}: ${doc}`)
+									.map(
+										(doc, i) => `Document ${i + 1}: ${doc}`
+									)
 									.join('\n\n');
 
 								finalQuery = `Context Information:\n${formattedContext}\n\nUser Query: ${message}\n\nPlease answer based on the context provided above.`;
 								console.log('Augmented Prompt:', finalQuery);
 
 								// Store mapping between augmented and original message
-								originalUserMessages.set(finalQuery, originalMessage);
+								originalUserMessages.set(
+									finalQuery,
+									originalMessage
+								);
 							} else {
 								// No augmentation needed - use original message
 								finalQuery = originalMessage;
 							}
 						} else {
-							console.warn('Chroma not connected, using original message');
+							console.warn(
+								'Chroma not connected, using original message'
+							);
 						}
 					} catch (err) {
-						console.error('Failed to generate query embeddings', err);
+						console.error(
+							'Failed to generate query embeddings',
+							err
+						);
 						finalQuery = originalMessage; // Fallback to original message
 					}
 
@@ -528,27 +548,34 @@ export const llmFunctions = {
 						stopOnAbortSignal: true,
 						functions: mcpFunctions,
 						onResponseChunk(chunk) {
-							inProgressResponse = squashMessageIntoModelChatMessages(
-								inProgressResponse,
-								chunk.type == null || chunk.segmentType == null
-									? {
-											type: 'text',
-											text: chunk.text
-										}
-									: {
-											type: 'segment',
-											segmentType: chunk.segmentType,
-											text: chunk.text,
-											startTime: chunk.segmentStartTime?.toISOString(),
-											endTime: chunk.segmentEndTime?.toISOString()
-										}
-							);
+							inProgressResponse =
+								squashMessageIntoModelChatMessages(
+									inProgressResponse,
+									chunk.type == null ||
+										chunk.segmentType == null
+										? {
+												type: 'text',
+												text: chunk.text
+											}
+										: {
+												type: 'segment',
+												segmentType: chunk.segmentType,
+												text: chunk.text,
+												startTime:
+													chunk.segmentStartTime?.toISOString(),
+												endTime:
+													chunk.segmentEndTime?.toISOString()
+											}
+								);
 
 							llmState.state = {
 								...llmState.state,
 								chatSession: {
 									...llmState.state.chatSession,
-									simplifiedChat: getSimplifiedChatHistory(true, message)
+									simplifiedChat: getSimplifiedChatHistory(
+										true,
+										message
+									)
 								}
 							};
 						}
@@ -569,7 +596,8 @@ export const llmFunctions = {
 							...llmState.state.chatSession.draftPrompt,
 							completion:
 								chatSessionCompletionEngine?.complete(
-									llmState.state.chatSession.draftPrompt.prompt
+									llmState.state.chatSession.draftPrompt
+										.prompt
 								) ?? ''
 						}
 					}
@@ -601,27 +629,33 @@ export const llmFunctions = {
 				]
 			);
 
-			chatSessionCompletionEngine = chatSession.createPromptCompletionEngine({
-				onGeneration(prompt, completion) {
-					if (llmState.state.chatSession.draftPrompt.prompt === prompt) {
-						llmState.state = {
-							...llmState.state,
-							chatSession: {
-								...llmState.state.chatSession,
-								draftPrompt: {
-									prompt,
-									completion
+			chatSessionCompletionEngine =
+				chatSession.createPromptCompletionEngine({
+					onGeneration(prompt, completion) {
+						if (
+							llmState.state.chatSession.draftPrompt.prompt ===
+							prompt
+						) {
+							llmState.state = {
+								...llmState.state,
+								chatSession: {
+									...llmState.state.chatSession,
+									draftPrompt: {
+										prompt,
+										completion
+									}
 								}
-							}
-						};
+							};
+						}
 					}
-				}
-			});
+				});
 
 			llmState.state = {
 				...llmState.state,
 				chatSession: {
-					loaded: markAsLoaded ? true : llmState.state.chatSession.loaded,
+					loaded: markAsLoaded
+						? true
+						: llmState.state.chatSession.loaded,
 					generatingResult: false,
 					simplifiedChat: getSimplifiedChatHistory(false),
 					draftPrompt: {
@@ -657,7 +691,8 @@ export const llmFunctions = {
 					...llmState.state.chatSession,
 					draftPrompt: {
 						prompt: prompt,
-						completion: chatSessionCompletionEngine.complete(prompt) ?? ''
+						completion:
+							chatSessionCompletionEngine.complete(prompt) ?? ''
 					}
 				}
 			};
@@ -675,29 +710,35 @@ function getSimplifiedChatHistory(
 		.getChatHistory()
 		.flatMap((item): SimplifiedChatItem[] => {
 			if (item.type === 'system') return [];
-			else if (item.type === 'user') {
+			if (item.type === 'user') {
 				// return [{ type: 'user', message: item.text }];
 				// Use original message if available, otherwise use the augmented one
 				const originalMessage =
 					originalUserMessages.get(item.text) || item.text;
 				return [{ type: 'user', message: originalMessage }];
-			} else if (item.type === 'model')
+			}
+			if (item.type === 'model')
 				return [
 					{
 						type: 'model',
 						message: item.response
 							.filter(
 								(item) =>
-									typeof item === 'string' || isChatModelResponseSegment(item)
+									typeof item === 'string' ||
+									isChatModelResponseSegment(item)
 							)
 							.map(
-								(item): SimplifiedModelChatItem['message'][number] | null => {
+								(
+									item
+								):
+									| SimplifiedModelChatItem['message'][number]
+									| null => {
 									if (typeof item === 'string')
 										return {
 											type: 'text',
 											text: item
 										};
-									else if (isChatModelResponseSegment(item))
+									if (isChatModelResponseSegment(item))
 										return {
 											type: 'segment',
 											segmentType: item.segmentType,
@@ -715,7 +756,10 @@ function getSimplifiedChatHistory(
 							// squash adjacent response items of the same type
 							.reduce(
 								(res, item) => {
-									return squashMessageIntoModelChatMessages(res, item);
+									return squashMessageIntoModelChatMessages(
+										res,
+										item
+									);
 								},
 								[] as SimplifiedModelChatItem['message']
 							)
@@ -764,7 +808,8 @@ function squashMessageIntoModelChatMessages(
 	if (lastExistingModelMessage.type === 'text' && message.type === 'text') {
 		lastExistingModelMessage.text += message.text;
 		return newModelChatMessages;
-	} else if (
+	}
+	if (
 		lastExistingModelMessage.type === 'segment' &&
 		message.type === 'segment' &&
 		lastExistingModelMessage.segmentType === message.segmentType &&

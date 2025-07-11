@@ -1,14 +1,8 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BrowserWindow, app, ipcMain, shell } from 'electron';
-import { MCPConnection } from './mcp/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
-import {
-	getMcpConfig,
-	getMcpServers,
-	setMcpConfig,
-	setMcpServers
-} from './settings';
+import { getMcpConfig, setMcpConfig } from './settings';
 import {
 	SystemPromptConfig,
 	getSystemPrompts,
@@ -94,17 +88,6 @@ app.on('activate', () => {
 		createWindow();
 	}
 });
-
-ipcMain.handle('get-mcp-servers', async () => {
-	return await getMcpServers();
-});
-
-ipcMain.handle(
-	'set-mcp-servers',
-	async (_event, connections: MCPConnection[]) => {
-		await setMcpServers(connections);
-	}
-);
 
 ipcMain.handle('get-system-prompts', async () => {
 	return await getSystemPrompts();

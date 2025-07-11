@@ -25,8 +25,6 @@ declare namespace NodeJS {
 interface Window {
 	ipcRenderer: import('electron').IpcRenderer;
 	electronAPI: {
-		getMCPServers: () => Promise<any>;
-		setMCPServers: (servers: any[]) => Promise<void>;
 		getMCPConfig: () => Promise<any>;
 		setMCPConfig: (config: any) => Promise<void>;
 		getSystemPrompts: () => Promise<any>;

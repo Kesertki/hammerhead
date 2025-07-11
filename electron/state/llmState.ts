@@ -162,7 +162,7 @@ eventBus.on('selected-prompt-changed', (prompt: SystemPrompt) => {
 	}
 });
 
-eventBus.on('mcp-servers-changed', async () => {
+eventBus.on('mcp-config-changed', async () => {
 	try {
 		console.log('MCP servers changed, reloading tools');
 		mcpFunctions = await loadMcpTools();

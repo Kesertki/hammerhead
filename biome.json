@@ -5,7 +5,11 @@
 		"ignoreUnknown": false,
 		"includes": ["**", "!**/src/components/ui"]
 	},
-	"formatter": { "enabled": true, "indentStyle": "tab" },
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"useEditorconfig": true
+	},
 	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
@@ -46,19 +50,6 @@
 	"overrides": [
 		{
 			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
-			"linter": { "rules": {} }
-		},
-		{
-			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
-			"linter": { "rules": {} }
-		},
-		{
-			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
-			"javascript": { "globals": [] },
-			"linter": { "rules": {} }
-		},
-		{
-			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
 			"javascript": { "globals": ["Atomics", "SharedArrayBuffer"] },
 			"linter": {
 				"rules": {
@@ -68,18 +59,21 @@
 					},
 					"security": { "noGlobalEval": "error" },
 					"style": { "noYodaExpression": "error" },
-					"suspicious": { "noEmptyBlockStatements": "error", "noVar": "error" }
+					"suspicious": {
+						"noEmptyBlockStatements": "error",
+						"noVar": "error"
+					}
 				}
 			}
 		},
-		{ "includes": ["**/*.{ts,tsx}"], "linter": { "rules": {} } },
-		{ "includes": ["**/*.{ts,tsx}"], "javascript": { "globals": [] } },
 		{
 			"includes": ["**/*.{ts,tsx}"],
 			"linter": {
 				"rules": {
 					"complexity": {
-						"noArguments": "error"
+						"noArguments": "error",
+						"noUselessThisAlias": "error",
+						"noUselessTypeConstraint": "error"
 					},
 					"correctness": {
 						"noConstAssign": "off",
@@ -89,10 +83,19 @@
 						"noSetterReturn": "off",
 						"noUndeclaredVariables": "off",
 						"noUnreachable": "off",
-						"noUnreachableSuper": "off"
+						"noUnreachableSuper": "off",
+						"noUnusedVariables": "error",
+						"noConstantCondition": "warn",
+						"useExhaustiveDependencies": "off",
+						"useHookAtTopLevel": "error"
 					},
 					"style": {
-						"useConst": "error"
+						"useConst": "error",
+						"noNamespace": "error",
+						"useAsConstAssertion": "error",
+						"useArrayLiterals": "off",
+						"noInferrableTypes": "off",
+						"noParameterProperties": "warn"
 					},
 					"suspicious": {
 						"noClassAssign": "off",
@@ -105,52 +108,13 @@
 						"noUnsafeNegation": "off",
 						"useGetterReturn": "off",
 						"noWith": "off",
-						"noVar": "error"
-					}
-				}
-			}
-		},
-		{
-			"includes": ["**/*.{ts,tsx}"],
-			"linter": {
-				"rules": {
-					"complexity": {
-						"noUselessThisAlias": "error",
-						"noUselessTypeConstraint": "error"
-					},
-					"correctness": {
-						"noUnusedVariables": "error"
-					},
-					"style": {
-						"noNamespace": "error",
-						"useAsConstAssertion": "error",
-						"useArrayLiterals": "off"
-					},
-					"suspicious": {
+						"noVar": "error",
 						"noExplicitAny": "error",
 						"noExtraNonNullAssertion": "error",
 						"noMisleadingInstantiator": "error",
 						"noUnsafeDeclarationMerging": "error",
 						"useNamespaceKeyword": "error"
 					}
-				}
-			}
-		},
-		{
-			"includes": ["**/*.{ts,tsx}"],
-			"linter": {
-				"rules": {
-					"correctness": {
-						"noConstantCondition": "warn",
-						"noUnusedVariables": "warn",
-						"useExhaustiveDependencies": "off",
-						"useHookAtTopLevel": "error"
-					},
-					"style": {
-						"noInferrableTypes": "off",
-						"noParameterProperties": "warn"
-					},
-					"suspicious": { "noExplicitAny": "off" }
 				}
 			}
 		}

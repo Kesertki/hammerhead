@@ -24,7 +24,7 @@ export function MessageMarkdown({
 			['-', '+', '*', '1.', '1', '--'].includes(lastLine.trim())
 		)
 			return lines.slice(0, -1).join('\n');
-		else if (
+		if (
 			lastLine != null &&
 			lastLine.trim().length === 1 &&
 			(lastLine.endsWith(' *') ||

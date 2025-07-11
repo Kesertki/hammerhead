@@ -26,9 +26,7 @@ loader.config({
 });
 
 const defaultMcpConfig = `{
-  "servers": {
-    
-  }
+  "servers": {}
 }`;
 
 interface McpConfig {
@@ -61,6 +59,7 @@ export default function McpServersConfig() {
 	>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [isUserEditing, setIsUserEditing] = useState(false);
+	const [isProgrammaticChange, setIsProgrammaticChange] = useState(false);
 
 	useEffect(() => {
 		loadConfig();
@@ -76,7 +75,8 @@ export default function McpServersConfig() {
 	const loadConfig = async () => {
 		try {
 			setIsLoading(true);
-			setIsUserEditing(false); // Allow setValue when loading
+			setIsUserEditing(false);
+			setIsProgrammaticChange(true); // Flag that we're making programmatic changes
 			// Load the existing MCP config from Electron store
 			const config = await window.electronAPI.getMCPConfig();
 			if (config) {
@@ -89,6 +89,8 @@ export default function McpServersConfig() {
 			toast.error('Failed to load MCP configuration');
 		} finally {
 			setIsLoading(false);
+			// Reset the flag after a brief delay to allow editor to update
+			setTimeout(() => setIsProgrammaticChange(false), 100);
 		}
 	};
 
@@ -125,22 +127,30 @@ export default function McpServersConfig() {
 	};
 
 	const resetConfig = () => {
-		setIsUserEditing(false); // Allow setValue when resetting
+		setIsUserEditing(false);
+		setIsProgrammaticChange(true);
 		setCurrentConfig(defaultMcpConfig);
 		setHasUnsavedChanges(true);
 		if (editorRef.current) {
 			editorRef.current.setValue(defaultMcpConfig);
 		}
+		setTimeout(() => setIsProgrammaticChange(false), 100);
 	};
 
 	const formatConfig = () => {
 		try {
 			const parsed = JSON.parse(currentConfig);
 			const formatted = JSON.stringify(parsed, null, 2);
-			setIsUserEditing(false); // Allow setValue when formatting
-			setCurrentConfig(formatted);
-			if (editorRef.current) {
-				editorRef.current.setValue(formatted);
+
+			// Only update if the content actually changed
+			if (formatted !== currentConfig) {
+				setIsUserEditing(false);
+				setIsProgrammaticChange(true);
+				setCurrentConfig(formatted);
+				if (editorRef.current) {
+					editorRef.current.setValue(formatted);
+				}
+				setTimeout(() => setIsProgrammaticChange(false), 100);
 			}
 		} catch (error) {
 			toast.error('Cannot format invalid JSON');
@@ -151,11 +161,14 @@ export default function McpServersConfig() {
 		value: string | undefined,
 		event: Monaco.editor.IModelContentChangedEvent
 	) {
-		if (value !== undefined) {
-			setIsUserEditing(true); // Prevent setValue during user editing
-			setCurrentConfig(value);
-			setHasUnsavedChanges(true);
+		// Ignore changes that are programmatic (loading, formatting, etc.)
+		if (isProgrammaticChange || value === undefined) {
+			return;
 		}
+
+		setIsUserEditing(true);
+		setCurrentConfig(value);
+		setHasUnsavedChanges(true);
 	}
 
 	function handleEditorDidMount(

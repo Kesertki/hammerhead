@@ -45,7 +45,6 @@ function createWindow() {
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.mjs'),
 			contextIsolation: true,
-			enableRemoteModule: false,
 			nodeIntegration: false
 		},
 		width: 1000,

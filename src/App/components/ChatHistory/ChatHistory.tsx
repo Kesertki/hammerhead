@@ -1,9 +1,9 @@
+import classNames from 'classnames';
+import { forwardRef, useMemo } from 'react';
 import {
 	LlmState,
 	SimplifiedModelChatItem
 } from '@/electron/state/llmState.ts';
-import classNames from 'classnames';
-import { forwardRef, useMemo } from 'react';
 import { ModelMessage } from './components/ModelMessage/ModelMessage.js';
 import { UserMessage } from './components/UserMessage/UserMessage.js';
 

@@ -215,7 +215,7 @@ export function Chat() {
 										</a>
 									</div>
 
-									<div className="separator"></div>
+									<div className="separator" />
 									<div className="title">Other models</div>
 									<div className="links">
 										<a
@@ -235,7 +235,7 @@ export function Chat() {
 										</a>
 									</div>
 
-									<div className="separator"></div>
+									<div className="separator" />
 									<a
 										className="browseLink"
 										target="_blank"

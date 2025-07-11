@@ -1,7 +1,7 @@
-import { Button } from '@/components/ui/button.tsx';
 import classNames from 'classnames';
 import { ArrowUp, CircleStop } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button.tsx';
 
 import './InputRow.css';
 

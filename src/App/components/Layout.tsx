@@ -1,3 +1,5 @@
+import { HardDriveUpload, Trash } from 'lucide-react';
+import React, { useCallback } from 'react';
 import { AppSidebar } from '@/App/components/app-sidebar';
 import { NavActions } from '@/App/components/nav-actions.tsx';
 import { Button } from '@/components/ui/button.tsx';
@@ -14,8 +16,6 @@ import {
 import { useExternalState } from '@/hooks/useExternalState.ts';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { llmState } from '@/state/llmState.ts';
-import { HardDriveUpload, Trash } from 'lucide-react';
-import React, { useCallback } from 'react';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const state = useExternalState(llmState);

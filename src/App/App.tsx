@@ -1,8 +1,7 @@
-import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
-import MCPConnectionsPage from './pages/McpServers.tsx';
 import { Settings } from './pages/Settings.tsx';
 import SystemPrompt from './pages/SystemPrompt.tsx';
 

@@ -1,13 +1,34 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
 	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-	"files": { "ignoreUnknown": false, "ignore": ["src/components/ui"] },
+	"files": {
+		"ignoreUnknown": false,
+		"includes": ["**", "!**/src/components/ui"]
+	},
 	"formatter": { "enabled": true, "indentStyle": "tab" },
-	"organizeImports": { "enabled": true },
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
-		"rules": { "recommended": false },
-		"ignore": ["dist/", "dist-electron/", "release/", "models/"]
+		"rules": {
+			"recommended": false,
+			"style": {
+				"noParameterAssign": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"noUnusedTemplateLiteral": "error",
+				"useNumberNamespace": "error",
+				"noUselessElse": "error"
+			}
+		},
+		"includes": [
+			"**",
+			"!**/dist/",
+			"!**/dist-electron/",
+			"!**/release/",
+			"!**/models/"
+		]
 	},
 	"javascript": {
 		"formatter": {
@@ -24,20 +45,20 @@
 	},
 	"overrides": [
 		{
-			"include": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
+			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
 			"linter": { "rules": {} }
 		},
 		{
-			"include": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
+			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
 			"linter": { "rules": {} }
 		},
 		{
-			"include": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
+			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
 			"javascript": { "globals": [] },
 			"linter": { "rules": {} }
 		},
 		{
-			"include": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
+			"includes": ["**/*.{js,jsx,cjs,mjs,ts,tsx,cts,mts}"],
 			"javascript": { "globals": ["Atomics", "SharedArrayBuffer"] },
 			"linter": {
 				"rules": {
@@ -46,32 +67,31 @@
 						"noUnusedVariables": "warn"
 					},
 					"security": { "noGlobalEval": "error" },
-					"style": { "noVar": "error", "noYodaExpression": "error" },
-					"suspicious": { "noEmptyBlockStatements": "error" }
+					"style": { "noYodaExpression": "error" },
+					"suspicious": { "noEmptyBlockStatements": "error", "noVar": "error" }
 				}
 			}
 		},
-		{ "include": ["**/*.{ts,tsx}"], "linter": { "rules": {} } },
-		{ "include": ["**/*.{ts,tsx}"], "javascript": { "globals": [] } },
+		{ "includes": ["**/*.{ts,tsx}"], "linter": { "rules": {} } },
+		{ "includes": ["**/*.{ts,tsx}"], "javascript": { "globals": [] } },
 		{
-			"include": ["**/*.{ts,tsx}"],
+			"includes": ["**/*.{ts,tsx}"],
 			"linter": {
 				"rules": {
-					"complexity": { "noWith": "off" },
+					"complexity": {
+						"noArguments": "error"
+					},
 					"correctness": {
 						"noConstAssign": "off",
 						"noGlobalObjectCalls": "off",
 						"noInvalidBuiltinInstantiation": "off",
 						"noInvalidConstructorSuper": "off",
-						"noNewSymbol": "off",
 						"noSetterReturn": "off",
 						"noUndeclaredVariables": "off",
 						"noUnreachable": "off",
 						"noUnreachableSuper": "off"
 					},
 					"style": {
-						"noArguments": "error",
-						"noVar": "error",
 						"useConst": "error"
 					},
 					"suspicious": {
@@ -83,13 +103,15 @@
 						"noImportAssign": "off",
 						"noRedeclare": "off",
 						"noUnsafeNegation": "off",
-						"useGetterReturn": "off"
+						"useGetterReturn": "off",
+						"noWith": "off",
+						"noVar": "error"
 					}
 				}
 			}
 		},
 		{
-			"include": ["**/*.{ts,tsx}"],
+			"includes": ["**/*.{ts,tsx}"],
 			"linter": {
 				"rules": {
 					"complexity": {
@@ -97,10 +119,13 @@
 						"noUselessTypeConstraint": "error"
 					},
 					"correctness": {
-						"noUnusedVariables": "error",
+						"noUnusedVariables": "error"
+					},
+					"style": {
+						"noNamespace": "error",
+						"useAsConstAssertion": "error",
 						"useArrayLiterals": "off"
 					},
-					"style": { "noNamespace": "error", "useAsConstAssertion": "error" },
 					"suspicious": {
 						"noExplicitAny": "error",
 						"noExtraNonNullAssertion": "error",
@@ -112,7 +137,7 @@
 			}
 		},
 		{
-			"include": ["**/*.{ts,tsx}"],
+			"includes": ["**/*.{ts,tsx}"],
 			"linter": {
 				"rules": {
 					"correctness": {

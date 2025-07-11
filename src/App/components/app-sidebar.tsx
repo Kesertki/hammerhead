@@ -1,5 +1,12 @@
-import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
+import {
+	BotMessageSquare,
+	Database,
+	Server,
+	Settings,
+	SquareTerminal
+} from 'lucide-react';
 import { SearchForm } from '@/App/components/search-form.tsx';
+import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
 	Sidebar,
 	SidebarContent,
@@ -12,17 +19,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem
 } from '@/components/ui/sidebar';
-import {
-	BotMessageSquare,
-	Calendar,
-	Database,
-	Home,
-	Inbox,
-	Search,
-	Server,
-	Settings,
-	SquareTerminal
-} from 'lucide-react';
 import { NavUser } from './nav-user';
 
 const data = {

@@ -1,3 +1,5 @@
+import { ChevronsUpDown, Command, Plus } from 'lucide-react';
+import { useState } from 'react';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -13,8 +15,6 @@ import {
 	SidebarMenuItem,
 	useSidebar
 } from '@/components/ui/sidebar';
-import { ChevronsUpDown, Command, Plus } from 'lucide-react';
-import { useState } from 'react';
 
 export function WorkspaceSwitcher() {
 	const workspaces = [

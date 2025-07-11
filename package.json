@@ -10,7 +10,7 @@
 		"email": "denys.vuika@gmail.com"
 	},
 	"scripts": {
-		"postinstall": "npm run models:pull && npm run setup:monaco",
+		"postinstall": "npm run setup:monaco",
 		"setup:monaco": "node scripts/copy-monaco-workers.js",
 		"models:pull": "node-llama-cpp pull --dir ./models \"hf:CompendiumLabs/bge-small-en-v1.5-gguf:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K\"",
 		"start": "vite dev",

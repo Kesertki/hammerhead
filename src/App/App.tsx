@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import {
 	Route,
-	BrowserRouter as Router,
+	HashRouter as Router,
 	Routes,
 	useNavigate
 } from 'react-router-dom';

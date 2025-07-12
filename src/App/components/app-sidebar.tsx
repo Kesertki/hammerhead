@@ -70,6 +70,11 @@ const items = [
 		title: 'Settings',
 		url: '/settings',
 		icon: Settings
+	},
+	{
+		title: 'Logs',
+		url: '/logs',
+		icon: SquareTerminal
 	}
 ];
 

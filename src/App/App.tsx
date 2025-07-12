@@ -6,6 +6,7 @@ import { Settings } from './pages/Settings.tsx';
 import SystemPrompt from './pages/SystemPrompt.tsx';
 
 import './App.css';
+import { Logs } from './pages/Logs.tsx';
 
 const Inbox = () => {
 	return (
@@ -55,6 +56,7 @@ export function App() {
 					<Route path="/mcp-servers" element={<McpServersConfig />} />
 					<Route path="/knowledge-base" element={<KnowledgeBase />} />
 					<Route path="/system-prompt" element={<SystemPrompt />} />
+					<Route path="/logs" element={<Logs />} />
 				</Routes>
 			</Layout>
 		</Router>

@@ -1,7 +1,17 @@
-import { Plus } from 'lucide-react';
+import { Plus, Edit3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
 	Select,
 	SelectContent,
@@ -16,6 +26,11 @@ const SystemPrompt = () => {
 	const [systemPrompts, setSystemPrompts] = useState<SystemPromptConfig>();
 	const [activePromptId, setActivePromptId] = useState('');
 	const [promptText, setPromptText] = useState('');
+	const [showNameDialog, setShowNameDialog] = useState(false);
+	const [nameDialogValue, setNameDialogValue] = useState('');
+	const [nameDialogMode, setNameDialogMode] = useState<'rename' | 'create'>(
+		'rename'
+	);
 
 	useEffect(() => {
 		// Fetch system prompts from the store or API
@@ -25,7 +40,7 @@ const SystemPrompt = () => {
 
 			// Set the prompt text for the selected prompt
 			const selectedPrompt = config.prompts.find(
-				(p: any) => p.id === config.selectedPromptId
+				(p) => p.id === config.selectedPromptId
 			);
 			if (selectedPrompt) {
 				setPromptText(selectedPrompt.prompt);
@@ -107,37 +122,92 @@ const SystemPrompt = () => {
 	const handleAddNewPrompt = () => {
 		if (!systemPrompts) return;
 
-		// Generate a new unique ID
-		const newId = `prompt_${Date.now()}`;
-		const newPromptName = `New Prompt ${systemPrompts.prompts.length + 1}`;
+		// Set up dialog for creating new prompt
+		setNameDialogMode('create');
+		setNameDialogValue(`New Prompt ${systemPrompts.prompts.length + 1}`);
+		setShowNameDialog(true);
+	};
 
-		// Create new prompt object
-		const newPrompt = {
-			id: newId,
-			name: newPromptName,
-			description: 'A new system prompt',
-			prompt: ''
-		};
+	const handleRenamePrompt = () => {
+		if (!systemPrompts || !activePromptId) return;
 
-		// Add the new prompt to the collection
-		const updatedPrompts = {
-			...systemPrompts,
-			selectedPromptId: newId,
-			prompts: [...systemPrompts.prompts, newPrompt]
-		};
+		// Find the current prompt
+		const currentPrompt = systemPrompts.prompts.find(
+			(p) => p.id === activePromptId
+		);
+		if (!currentPrompt) return;
 
-		// Save to electron API
-		window.electronAPI
-			.setSystemPrompts(updatedPrompts)
-			.then(() => {
-				setSystemPrompts(updatedPrompts);
-				setActivePromptId(newId);
-				setPromptText('');
-				toast.success('New prompt created successfully');
-			})
-			.catch((err) => {
-				toast.error('Failed to create new prompt');
-			});
+		// Set up dialog for renaming
+		setNameDialogMode('rename');
+		setNameDialogValue(currentPrompt.name);
+		setShowNameDialog(true);
+	};
+
+	const handleConfirmNameDialog = () => {
+		if (!systemPrompts || !nameDialogValue.trim()) {
+			setShowNameDialog(false);
+			return;
+		}
+
+		if (nameDialogMode === 'create') {
+			// Create new prompt
+			const newId = `prompt_${Date.now()}`;
+			const newPrompt = {
+				id: newId,
+				name: nameDialogValue.trim(),
+				description: 'A new system prompt',
+				prompt: ''
+			};
+
+			const updatedPrompts = {
+				...systemPrompts,
+				selectedPromptId: newId,
+				prompts: [...systemPrompts.prompts, newPrompt]
+			};
+
+			window.electronAPI
+				.setSystemPrompts(updatedPrompts)
+				.then(() => {
+					setSystemPrompts(updatedPrompts);
+					setActivePromptId(newId);
+					setPromptText('');
+					setShowNameDialog(false);
+					setNameDialogValue('');
+					toast.success('New prompt created successfully');
+				})
+				.catch((err) => {
+					setShowNameDialog(false);
+					toast.error('Failed to create new prompt');
+				});
+		} else if (nameDialogMode === 'rename' && activePromptId) {
+			// Rename existing prompt
+			const updatedPrompts = {
+				...systemPrompts,
+				prompts: systemPrompts.prompts.map((p) =>
+					p.id === activePromptId
+						? { ...p, name: nameDialogValue.trim() }
+						: p
+				)
+			};
+
+			window.electronAPI
+				.setSystemPrompts(updatedPrompts)
+				.then(() => {
+					setSystemPrompts(updatedPrompts);
+					setShowNameDialog(false);
+					setNameDialogValue('');
+					toast.success('Prompt renamed successfully');
+				})
+				.catch((err) => {
+					toast.error('Failed to rename prompt');
+					setShowNameDialog(false);
+				});
+		}
+	};
+
+	const handleCancelNameDialog = () => {
+		setShowNameDialog(false);
+		setNameDialogValue('');
 	};
 
 	return (
@@ -168,6 +238,16 @@ const SystemPrompt = () => {
 						<Plus className="w-4 h-4" />
 						Add New
 					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={handleRenamePrompt}
+						disabled={!activePromptId}
+						className="flex items-center gap-1"
+					>
+						<Edit3 className="w-4 h-4" />
+						Rename
+					</Button>
 				</div>
 				<div className="space-x-2">
 					<Button onClick={handleSave}>Save</Button>
@@ -188,6 +268,60 @@ const SystemPrompt = () => {
 				value={promptText}
 				onChange={(e) => setPromptText(e.target.value)}
 			/>
+
+			{/* Name Dialog (for both create and rename) */}
+			<Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
+				<DialogContent className="sm:max-w-[425px]">
+					<DialogHeader>
+						<DialogTitle>
+							{nameDialogMode === 'create'
+								? 'Create New Prompt'
+								: 'Rename Prompt'}
+						</DialogTitle>
+						<DialogDescription>
+							{nameDialogMode === 'create'
+								? 'Enter a name for the new prompt.'
+								: 'Enter a new name for this prompt.'}
+						</DialogDescription>
+					</DialogHeader>
+					<div className="grid gap-4 py-4">
+						<div className="grid grid-cols-4 items-center gap-4">
+							<Label htmlFor="name" className="text-right">
+								Name
+							</Label>
+							<Input
+								id="name"
+								value={nameDialogValue}
+								onChange={(e) =>
+									setNameDialogValue(e.target.value)
+								}
+								className="col-span-3"
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') {
+										handleConfirmNameDialog();
+									} else if (e.key === 'Escape') {
+										handleCancelNameDialog();
+									}
+								}}
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={handleCancelNameDialog}
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleConfirmNameDialog}
+							disabled={!nameDialogValue.trim()}
+						>
+							{nameDialogMode === 'create' ? 'Create' : 'Rename'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</div>
 	);
 };

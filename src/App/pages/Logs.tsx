@@ -18,7 +18,6 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useLogs } from '@/hooks/useLogs';
 import { LogEntry } from '@/types';
-import { LogsTestPanel } from '../components/LogsTestPanel';
 
 const LOG_LEVEL_COLORS = {
 	log: 'bg-gray-100 text-gray-800',
@@ -89,94 +88,91 @@ export function Logs() {
 		const showStackTrace = showStack[log.timestamp] || false;
 
 		return (
-			<Card key={`${log.timestamp}-${index}`} className="mb-2">
-				<CardContent className="p-4">
-					<div className="flex items-start gap-3">
-						<Icon className="w-4 h-4 mt-1 flex-shrink-0" />
-						<div className="flex-1 min-w-0">
-							<div className="flex items-center gap-2 mb-1">
-								<Badge
-									variant="secondary"
-									className={LOG_LEVEL_COLORS[log.level]}
-								>
-									{log.level.toUpperCase()}
-								</Badge>
-								<span className="text-sm text-gray-500">
-									{formatTimestamp(log.timestamp)}
-								</span>
-							</div>
-							<div className="text-sm font-mono bg-gray-50 p-2 rounded border break-words">
-								{log.message}
-							</div>
-							{hasStack && (
-								<div className="mt-2">
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() =>
-											toggleStackTrace(log.timestamp)
-										}
-										className="text-xs p-1 h-auto"
-									>
-										{showStackTrace ? 'Hide' : 'Show'} Stack
-										Trace
-									</Button>
-									{showStackTrace && (
-										<pre className="text-xs bg-red-50 p-2 rounded border mt-1 overflow-x-auto">
-											{log.stack}
-										</pre>
-									)}
-								</div>
-							)}
+			<div
+				key={`${log.timestamp}-${index}`}
+				className="border-b border-gray-100 py-2 px-3 hover:bg-gray-50 transition-colors"
+			>
+				<div className="flex items-start gap-3">
+					<Icon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+					<div className="flex-1 min-w-0">
+						<div className="flex items-center gap-2 mb-1">
+							<Badge
+								variant="secondary"
+								className={`${LOG_LEVEL_COLORS[log.level]} text-xs px-2 py-0.5`}
+							>
+								{log.level.toUpperCase()}
+							</Badge>
+							<span className="text-xs text-gray-500">
+								{formatTimestamp(log.timestamp)}
+							</span>
 						</div>
+						<div className="text-sm font-mono bg-gray-50 p-2 rounded text-gray-800 break-words">
+							{log.message}
+						</div>
+						{hasStack && (
+							<div className="mt-1">
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() =>
+										toggleStackTrace(log.timestamp)
+									}
+									className="text-xs p-1 h-auto text-gray-600 hover:text-gray-900"
+								>
+									{showStackTrace ? 'Hide' : 'Show'} Stack
+									Trace
+								</Button>
+								{showStackTrace && (
+									<pre className="text-xs bg-red-50 p-2 rounded border mt-1 overflow-x-auto text-red-800">
+										{log.stack}
+									</pre>
+								)}
+							</div>
+						)}
 					</div>
-				</CardContent>
-			</Card>
+				</div>
+			</div>
 		);
 	};
 
 	return (
-		<div className="h-full flex flex-col p-4 max-w-6xl mx-auto">
-			<div className="mb-6 flex-shrink-0">
-				<h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-2">
+		<div className="h-screen flex flex-col p-4 overflow-hidden">
+			<div className="mb-4 flex-shrink-0">
+				<h1 className="text-center text-3xl font-bold tracking-tight mb-1">
 					Application Logs
 				</h1>
-				<p className="text-center text-gray-600">
+				<p className="text-center text-gray-600 text-sm">
 					View and manage application logs and console output
 				</p>
 			</div>
 
-			{/* Test Panel for Development */}
-			<div className="flex-shrink-0">
-				<LogsTestPanel />
-			</div>
-
 			{/* Controls */}
-			<Card className="mb-6 flex-shrink-0">
-				<CardHeader>
-					<CardTitle className="text-lg">Log Controls</CardTitle>
-				</CardHeader>
-				<CardContent>
+			<Card className="mb-4 flex-shrink-0">
+				<CardContent className="p-4">
 					<div className="flex flex-wrap gap-4 items-end">
 						<div className="flex-1 min-w-64">
-							<Label htmlFor="search">Search logs</Label>
+							<Label htmlFor="search" className="text-sm">
+								Search logs
+							</Label>
 							<Input
 								id="search"
 								placeholder="Search messages or timestamps..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="mt-1"
+								className="mt-1 h-9"
 							/>
 						</div>
 						<div>
-							<Label htmlFor="level">Filter by level</Label>
+							<Label htmlFor="level" className="text-sm">
+								Filter by level
+							</Label>
 							<select
 								id="level"
 								value={selectedLevel}
 								onChange={(e) =>
 									setSelectedLevel(e.target.value)
 								}
-								className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+								className="mt-1 block w-full px-3 py-2 h-9 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
 							>
 								<option value="all">All levels</option>
 								<option value="log">Log</option>
@@ -218,7 +214,7 @@ export function Logs() {
 			</Card>
 
 			{/* Log Display */}
-			<Card className="flex-1 flex flex-col min-h-0">
+			<Card className="flex-1 flex flex-col overflow-hidden">
 				<CardHeader className="flex-shrink-0">
 					<div className="flex justify-between items-center">
 						<CardTitle className="text-lg">
@@ -229,9 +225,9 @@ export function Logs() {
 						)}
 					</div>
 				</CardHeader>
-				<CardContent className="flex-1 flex flex-col min-h-0 p-4">
+				<CardContent className="flex-1 overflow-hidden pb-4">
 					{error && (
-						<div className="bg-red-50 border border-red-200 rounded p-4 mb-4 flex-shrink-0">
+						<div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
 							<div className="flex items-center gap-2 text-red-800">
 								<AlertCircle className="w-4 h-4" />
 								<span className="font-medium">
@@ -243,32 +239,32 @@ export function Logs() {
 					)}
 
 					{!loading && !error && filteredLogs.length === 0 && (
-						<div className="text-center py-8 text-gray-500 flex-shrink-0">
+						<div className="h-64 flex items-center justify-center text-center text-gray-500">
 							{logs.length === 0 ? (
-								<>
+								<div>
 									<FileText className="w-12 h-12 mx-auto mb-2 opacity-50" />
 									<p>No logs available</p>
 									<p className="text-sm">
 										Logs will appear here as the application
 										runs
 									</p>
-								</>
+								</div>
 							) : (
-								<>
+								<div>
 									<Search className="w-12 h-12 mx-auto mb-2 opacity-50" />
 									<p>No logs match your search criteria</p>
 									<p className="text-sm">
 										Try adjusting your search term or level
 										filter
 									</p>
-								</>
+								</div>
 							)}
 						</div>
 					)}
 
 					{!loading && !error && filteredLogs.length > 0 && (
-						<div className="flex-1 overflow-y-auto min-h-0">
-							<div className="space-y-2">
+						<div className="h-full overflow-y-auto border rounded">
+							<div className="divide-y divide-gray-100">
 								{filteredLogs.map((log, index) =>
 									renderLogEntry(log, index)
 								)}

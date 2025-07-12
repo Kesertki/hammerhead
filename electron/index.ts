@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
+import type { McpConfig } from '../src/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { getMcpConfig, setMcpConfig } from './settings';
 import {
@@ -32,6 +33,129 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
 
 let win: BrowserWindow | null;
 
+function createMenu() {
+	const isMac = process.platform === 'darwin';
+
+	const template: Electron.MenuItemConstructorOptions[] = [
+		// App menu (macOS only)
+		...(isMac
+			? [
+					{
+						label: app.getName(),
+						submenu: [
+							{ role: 'about' as const },
+							{ type: 'separator' as const },
+							{ role: 'services' as const },
+							{ type: 'separator' as const },
+							{ role: 'hide' as const },
+							{ role: 'hideOthers' as const },
+							{ role: 'unhide' as const },
+							{ type: 'separator' as const },
+							{ role: 'quit' as const }
+						]
+					}
+				]
+			: []),
+		// File menu
+		{
+			label: 'File',
+			submenu: [
+				isMac ? { role: 'close' as const } : { role: 'quit' as const }
+			]
+		},
+		// Edit menu
+		{
+			label: 'Edit',
+			submenu: [
+				{ role: 'undo' as const },
+				{ role: 'redo' as const },
+				{ type: 'separator' as const },
+				{ role: 'cut' as const },
+				{ role: 'copy' as const },
+				{ role: 'paste' as const },
+				...(isMac
+					? [
+							{ role: 'pasteAndMatchStyle' as const },
+							{ role: 'delete' as const },
+							{ role: 'selectAll' as const },
+							{ type: 'separator' as const },
+							{
+								label: 'Speech',
+								submenu: [
+									{ role: 'startSpeaking' as const },
+									{ role: 'stopSpeaking' as const }
+								]
+							}
+						]
+					: [
+							{ role: 'delete' as const },
+							{ type: 'separator' as const },
+							{ role: 'selectAll' as const }
+						])
+			]
+		},
+		// View menu
+		{
+			label: 'View',
+			submenu: [
+				{ role: 'reload' as const },
+				{ role: 'forceReload' as const },
+				{ role: 'toggleDevTools' as const },
+				{ type: 'separator' as const },
+				{ role: 'resetZoom' as const },
+				{ role: 'zoomIn' as const },
+				{ role: 'zoomOut' as const },
+				{ type: 'separator' as const },
+				{ role: 'togglefullscreen' as const },
+				{ type: 'separator' as const },
+				{
+					label: 'Settings',
+					click: () => {
+						win?.webContents.send('navigate-to-route', '/settings');
+					}
+				},
+				{
+					label: 'Logs',
+					click: () => {
+						win?.webContents.send('navigate-to-route', '/logs');
+					}
+				}
+			]
+		},
+		// Window menu
+		{
+			label: 'Window',
+			submenu: [
+				{ role: 'minimize' as const },
+				{ role: 'close' as const },
+				...(isMac
+					? [
+							{ type: 'separator' as const },
+							{ role: 'front' as const },
+							{ type: 'separator' as const },
+							{ role: 'window' as const }
+						]
+					: [])
+			]
+		},
+		// Help menu
+		{
+			role: 'help' as const,
+			submenu: [
+				{
+					label: 'Learn More',
+					click: async () => {
+						await shell.openExternal('https://electronjs.org');
+					}
+				}
+			]
+		}
+	];
+
+	const menu = Menu.buildFromTemplate(template);
+	Menu.setApplicationMenu(menu);
+}
+
 function createWindow() {
 	win = new BrowserWindow({
 		icon: path.join(
@@ -50,6 +174,9 @@ function createWindow() {
 		width: 1000,
 		height: 700
 	});
+
+	// Create and set the menu
+	createMenu();
 
 	registerLlmRpc(win);
 
@@ -110,7 +237,7 @@ ipcMain.handle('get-mcp-config', async () => {
 	return await getMcpConfig();
 });
 
-ipcMain.handle('set-mcp-config', async (_event, config: any) => {
+ipcMain.handle('set-mcp-config', async (_event, config: McpConfig) => {
 	await setMcpConfig(config);
 });
 

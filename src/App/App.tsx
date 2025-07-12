@@ -1,4 +1,10 @@
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import {
+	Route,
+	BrowserRouter as Router,
+	Routes,
+	useNavigate
+} from 'react-router-dom';
 import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
@@ -43,9 +49,25 @@ const KnowledgeBase = () => {
 	);
 };
 
+function NavigationHandler() {
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		// Set up the electron navigation listener
+		if (window.electronAPI?.onNavigateToRoute) {
+			window.electronAPI.onNavigateToRoute((route: string) => {
+				navigate(route);
+			});
+		}
+	}, [navigate]);
+
+	return null;
+}
+
 export function App() {
 	return (
 		<Router>
+			<NavigationHandler />
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Chat />} />

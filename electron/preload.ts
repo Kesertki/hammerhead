@@ -31,5 +31,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	getSystemPrompts: () => ipcRenderer.invoke('get-system-prompts'),
 	setSystemPrompts: (prompts: any) =>
 		ipcRenderer.invoke('set-system-prompts', prompts),
-	openExternal: (url: string) => ipcRenderer.invoke('open-external', url)
+	openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
+
+	// Navigation handler for menu items
+	onNavigateToRoute: (callback: (route: string) => void) => {
+		ipcRenderer.on('navigate-to-route', (_event, route) => callback(route));
+	}
 });

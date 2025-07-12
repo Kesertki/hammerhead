@@ -30,5 +30,6 @@ interface Window {
 		getSystemPrompts: () => Promise<any>;
 		setSystemPrompts: (prompts: any) => Promise<void>;
 		openExternal: (url: string) => Promise<void>;
+		onNavigateToRoute: (callback: (route: string) => void) => void;
 	};
 }

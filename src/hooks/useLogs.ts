@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { LogEntry } from '@/types';
 
 export function useLogs() {
@@ -14,12 +14,14 @@ export function useLogs() {
 
 		setLoading(true);
 		setError(null);
-		
+
 		try {
 			const logEntries = await window.electronAPI.getLogs(limit);
 			setLogs(logEntries);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to fetch logs');
+			setError(
+				err instanceof Error ? err.message : 'Failed to fetch logs'
+			);
 			console.error('Failed to fetch logs:', err);
 		} finally {
 			setLoading(false);
@@ -36,7 +38,9 @@ export function useLogs() {
 			await window.electronAPI.clearLogs();
 			setLogs([]);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to clear logs');
+			setError(
+				err instanceof Error ? err.message : 'Failed to clear logs'
+			);
 			console.error('Failed to clear logs:', err);
 		}
 	}, []);
@@ -50,7 +54,11 @@ export function useLogs() {
 		try {
 			return await window.electronAPI.getLogFilePath();
 		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Failed to get log file path');
+			setError(
+				err instanceof Error
+					? err.message
+					: 'Failed to get log file path'
+			);
 			console.error('Failed to get log file path:', err);
 			return null;
 		}

@@ -26,9 +26,15 @@ interface Window {
 	ipcRenderer: import('electron').IpcRenderer;
 	electronAPI: {
 		getMCPConfig: () => Promise<import('../src/types').McpConfig>;
-		setMCPConfig: (config: import('../src/types').McpConfig) => Promise<void>;
-		getSystemPrompts: () => Promise<import('../src/types').SystemPromptConfig>;
-		setSystemPrompts: (prompts: import('../src/types').SystemPromptConfig) => Promise<void>;
+		setMCPConfig: (
+			config: import('../src/types').McpConfig
+		) => Promise<void>;
+		getSystemPrompts: () => Promise<
+			import('../src/types').SystemPromptConfig
+		>;
+		setSystemPrompts: (
+			prompts: import('../src/types').SystemPromptConfig
+		) => Promise<void>;
 		openExternal: (url: string) => Promise<void>;
 		getLogs: (limit?: number) => Promise<import('../src/types').LogEntry[]>;
 		clearLogs: () => Promise<void>;

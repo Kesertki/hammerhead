@@ -1,5 +1,10 @@
 import { useEffect } from 'react';
-import { Route, BrowserRouter as Router, Routes, useNavigate } from 'react-router-dom';
+import {
+	Route,
+	BrowserRouter as Router,
+	Routes,
+	useNavigate
+} from 'react-router-dom';
 import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { app, BrowserWindow, ipcMain, shell, Menu } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { getMcpConfig, setMcpConfig } from './settings';

@@ -41,6 +41,7 @@ export function Logs() {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [selectedLevel, setSelectedLevel] = useState<string>('all');
 	const [showStack, setShowStack] = useState<{ [key: string]: boolean }>({});
+	const [showControls, setShowControls] = useState(false);
 
 	const filteredLogs = logs.filter((log) => {
 		const matchesSearch =
@@ -136,7 +137,7 @@ export function Logs() {
 	};
 
 	return (
-		<div className="h-screen flex flex-col p-4 overflow-hidden">
+		<div className="h-full flex flex-col max-w-6xl mx-auto p-4">
 			<div className="mb-4 flex-shrink-0">
 				<h1 className="text-center text-3xl font-bold tracking-tight mb-1">
 					Application Logs
@@ -146,76 +147,102 @@ export function Logs() {
 				</p>
 			</div>
 
+			{/* Toggle Button */}
+			<div className="mb-4 flex-shrink-0 flex justify-between items-center">
+				<div className="flex items-center gap-2">
+					<Search className="w-4 h-4 text-gray-500" />
+					<span className="text-sm font-medium">Search & Filter</span>
+					{!showControls &&
+						(searchTerm || selectedLevel !== 'all') && (
+							<Badge variant="secondary" className="text-xs">
+								Active
+							</Badge>
+						)}
+				</div>
+				<Button
+					onClick={() => setShowControls(!showControls)}
+					variant="ghost"
+					size="sm"
+					className="text-xs"
+				>
+					{showControls ? 'Hide' : 'Show'}
+				</Button>
+			</div>
+
 			{/* Controls */}
-			<Card className="mb-4 flex-shrink-0">
-				<CardContent className="p-4">
-					<div className="flex flex-wrap gap-4 items-end">
-						<div className="flex-1 min-w-64">
-							<Label htmlFor="search" className="text-sm">
-								Search logs
-							</Label>
-							<Input
-								id="search"
-								placeholder="Search messages or timestamps..."
-								value={searchTerm}
-								onChange={(e) => setSearchTerm(e.target.value)}
-								className="mt-1 h-9"
-							/>
+			{showControls && (
+				<Card className="mb-4 flex-shrink-0">
+					<CardContent className="p-4">
+						<div className="flex flex-wrap gap-4 items-end">
+							<div className="flex-1 min-w-64">
+								<Label htmlFor="search" className="text-sm">
+									Search logs
+								</Label>
+								<Input
+									id="search"
+									placeholder="Search messages or timestamps..."
+									value={searchTerm}
+									onChange={(e) =>
+										setSearchTerm(e.target.value)
+									}
+									className="mt-1 h-9"
+								/>
+							</div>
+							<div>
+								<Label htmlFor="level" className="text-sm">
+									Filter by level
+								</Label>
+								<select
+									id="level"
+									value={selectedLevel}
+									onChange={(e) =>
+										setSelectedLevel(e.target.value)
+									}
+									className="mt-1 block w-full px-3 py-2 h-9 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+								>
+									<option value="all">All levels</option>
+									<option value="log">Log</option>
+									<option value="info">Info</option>
+									<option value="warn">Warning</option>
+									<option value="error">Error</option>
+									<option value="debug">Debug</option>
+								</select>
+							</div>
+							<div className="flex gap-2">
+								<Button
+									onClick={refresh}
+									disabled={loading}
+									size="sm"
+									variant="outline"
+								>
+									<RefreshCw className="w-4 h-4 mr-2" />
+									Refresh
+								</Button>
+								<Button
+									onClick={handleDownloadLogs}
+									size="sm"
+									variant="outline"
+								>
+									<Download className="w-4 h-4 mr-2" />
+									Log File
+								</Button>
+								<Button
+									onClick={handleClearLogs}
+									size="sm"
+									variant="destructive"
+								>
+									<Trash2 className="w-4 h-4 mr-2" />
+									Clear
+								</Button>
+							</div>
 						</div>
-						<div>
-							<Label htmlFor="level" className="text-sm">
-								Filter by level
-							</Label>
-							<select
-								id="level"
-								value={selectedLevel}
-								onChange={(e) =>
-									setSelectedLevel(e.target.value)
-								}
-								className="mt-1 block w-full px-3 py-2 h-9 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-							>
-								<option value="all">All levels</option>
-								<option value="log">Log</option>
-								<option value="info">Info</option>
-								<option value="warn">Warning</option>
-								<option value="error">Error</option>
-								<option value="debug">Debug</option>
-							</select>
-						</div>
-						<div className="flex gap-2">
-							<Button
-								onClick={refresh}
-								disabled={loading}
-								size="sm"
-								variant="outline"
-							>
-								<RefreshCw className="w-4 h-4 mr-2" />
-								Refresh
-							</Button>
-							<Button
-								onClick={handleDownloadLogs}
-								size="sm"
-								variant="outline"
-							>
-								<Download className="w-4 h-4 mr-2" />
-								Log File
-							</Button>
-							<Button
-								onClick={handleClearLogs}
-								size="sm"
-								variant="destructive"
-							>
-								<Trash2 className="w-4 h-4 mr-2" />
-								Clear
-							</Button>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* Log Display */}
-			<Card className="flex-1 flex flex-col overflow-hidden">
-				<CardHeader className="flex-shrink-0">
+			<Card className="flex-1 flex flex-col min-h-0">
+				<CardHeader className="flex-shrink-0 pb-4">
 					<div className="flex justify-between items-center">
 						<CardTitle className="text-lg">
 							Log Entries ({filteredLogs.length})
@@ -225,7 +252,7 @@ export function Logs() {
 						)}
 					</div>
 				</CardHeader>
-				<CardContent className="flex-1 overflow-hidden pb-4">
+				<CardContent className="flex-1 min-h-0 pt-0">
 					{error && (
 						<div className="bg-red-50 border border-red-200 rounded p-4 mb-4">
 							<div className="flex items-center gap-2 text-red-800">

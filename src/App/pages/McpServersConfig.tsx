@@ -1,7 +1,9 @@
 import Editor, { loader } from '@monaco-editor/react';
+import { Settings } from 'lucide-react';
 import type * as Monaco from 'monaco-editor';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
 	Card,
@@ -61,6 +63,7 @@ export default function McpServersConfig() {
 	const [isLoading, setIsLoading] = useState(true);
 	const [isUserEditing, setIsUserEditing] = useState(false);
 	const [isProgrammaticChange, setIsProgrammaticChange] = useState(false);
+	const [showControls, setShowControls] = useState(false);
 
 	useEffect(() => {
 		loadConfig();
@@ -214,50 +217,81 @@ export default function McpServersConfig() {
 
 	return (
 		<div className="h-full flex flex-col">
+			{/* Toggle Button */}
+			<div className="m-4 mb-2 flex justify-between items-center">
+				<div className="flex items-center gap-2">
+					<Settings className="w-4 h-4 text-gray-500" />
+					<span className="text-sm font-medium">
+						MCP Configuration
+					</span>
+					{!showControls && hasUnsavedChanges && (
+						<Badge variant="secondary" className="text-xs">
+							Unsaved
+						</Badge>
+					)}
+					{!showControls && validationErrors.length > 0 && (
+						<Badge variant="destructive" className="text-xs">
+							{validationErrors.length} Error(s)
+						</Badge>
+					)}
+				</div>
+				<Button
+					onClick={() => setShowControls(!showControls)}
+					variant="ghost"
+					size="sm"
+					className="text-xs"
+				>
+					{showControls ? 'Hide' : 'Show'}
+				</Button>
+			</div>
+
 			{/* Header with action buttons */}
-			<Card className="m-4">
-				<CardHeader>
-					<CardTitle>MCP Server Configuration</CardTitle>
-					<CardDescription>
-						Edit your MCP server configuration using JSON format
-					</CardDescription>
-				</CardHeader>
-				<CardContent>
-					<div className="flex gap-2 flex-wrap">
-						<Button
-							onClick={saveConfig}
-							disabled={
-								!hasUnsavedChanges ||
-								validationErrors.length > 0
-							}
-						>
-							Save Configuration
-						</Button>
-						<Button variant="outline" onClick={loadConfig}>
-							Reload
-						</Button>
-						<Button variant="outline" onClick={formatConfig}>
-							Format JSON
-						</Button>
-						<Button variant="outline" onClick={resetConfig}>
-							Reset to Default
-						</Button>
-						{hasUnsavedChanges && (
-							<span className="text-sm text-orange-600 self-center ml-2">
-								• Unsaved changes
-							</span>
-						)}
-						{validationErrors.length > 0 && (
-							<span className="text-sm text-red-600 self-center ml-2">
-								• {validationErrors.length} validation error(s)
-							</span>
-						)}
-					</div>
-				</CardContent>
-			</Card>
+			{showControls && (
+				<Card className="mx-4 mb-4">
+					<CardHeader>
+						<CardTitle>MCP Server Configuration</CardTitle>
+						<CardDescription>
+							Edit your MCP server configuration using JSON format
+						</CardDescription>
+					</CardHeader>
+					<CardContent>
+						<div className="flex gap-2 flex-wrap">
+							<Button
+								onClick={saveConfig}
+								disabled={
+									!hasUnsavedChanges ||
+									validationErrors.length > 0
+								}
+							>
+								Save Configuration
+							</Button>
+							<Button variant="outline" onClick={loadConfig}>
+								Reload
+							</Button>
+							<Button variant="outline" onClick={formatConfig}>
+								Format JSON
+							</Button>
+							<Button variant="outline" onClick={resetConfig}>
+								Reset to Default
+							</Button>
+							{hasUnsavedChanges && (
+								<span className="text-sm text-orange-600 self-center ml-2">
+									• Unsaved changes
+								</span>
+							)}
+							{validationErrors.length > 0 && (
+								<span className="text-sm text-red-600 self-center ml-2">
+									• {validationErrors.length} validation
+									error(s)
+								</span>
+							)}
+						</div>
+					</CardContent>
+				</Card>
+			)}
 
 			{/* Monaco Editor */}
-			<div className="flex-1">
+			<div className="flex-1 mx-4 mb-4">
 				<Editor
 					height="100%"
 					width="100%"

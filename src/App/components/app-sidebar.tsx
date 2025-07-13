@@ -5,6 +5,7 @@ import {
 	Settings,
 	SquareTerminal
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { SearchForm } from '@/App/components/search-form.tsx';
 import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
@@ -93,10 +94,10 @@ export function AppSidebar() {
 							{items.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
-										<a href={item.url}>
+										<Link to={item.url}>
 											<item.icon />
 											<span>{item.title}</span>
-										</a>
+										</Link>
 									</SidebarMenuButton>
 								</SidebarMenuItem>
 							))}

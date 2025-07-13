@@ -33,6 +33,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
 		ipcRenderer.invoke('set-system-prompts', prompts),
 	openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 
+	// Log-related functions
+	getLogs: (limit?: number) => ipcRenderer.invoke('get-logs', limit),
+	clearLogs: () => ipcRenderer.invoke('clear-logs'),
+	getLogFilePath: () => ipcRenderer.invoke('get-log-file-path'),
+
 	// Navigation handler for menu items
 	onNavigateToRoute: (callback: (route: string) => void) => {
 		ipcRenderer.on('navigate-to-route', (_event, route) => callback(route));

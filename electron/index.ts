@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
-import { getMcpConfig, setMcpConfig } from './settings';
+import { getMcpConfig, initializeLogger, setMcpConfig } from './settings';
 import {
 	getSystemPrompts,
 	SystemPromptConfig,
@@ -241,4 +241,26 @@ ipcMain.handle('set-mcp-config', async (_event, config: McpConfig) => {
 	await setMcpConfig(config);
 });
 
-app.whenReady().then(createWindow);
+// Log-related IPC handlers
+ipcMain.handle('get-logs', async (_event, limit?: number) => {
+	const { getLogs } = await import('./settings/logger.ts');
+	return await getLogs(limit);
+});
+
+ipcMain.handle('clear-logs', async () => {
+	const { clearLogs } = await import('./settings/logger.ts');
+	await clearLogs();
+});
+
+ipcMain.handle('get-log-file-path', async () => {
+	const { getLogFilePath } = await import('./settings/logger.ts');
+	return getLogFilePath();
+});
+
+app.whenReady().then(async () => {
+	// Initialize logger before anything else
+	await initializeLogger();
+	console.log('Hammerhead application starting...');
+
+	createWindow();
+});

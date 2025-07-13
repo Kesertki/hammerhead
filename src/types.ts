@@ -38,14 +38,25 @@ export interface SystemPrompt {
 	prompt: string;
 }
 
+export interface LogEntry {
+	timestamp: string;
+	level: 'log' | 'info' | 'warn' | 'error' | 'debug';
+	message: string;
+	stack?: string;
+}
+
 declare global {
 	interface Window {
 		electronAPI: {
-			getMCPConfig: () => Promise<any>;
-			setMCPConfig: (config: any) => Promise<void>;
-			getSystemPrompts: () => Promise<any>;
-			setSystemPrompts: (prompts: any) => Promise<void>;
+			getMCPConfig: () => Promise<McpConfig>;
+			setMCPConfig: (config: McpConfig) => Promise<void>;
+			getSystemPrompts: () => Promise<SystemPromptConfig>;
+			setSystemPrompts: (prompts: SystemPromptConfig) => Promise<void>;
 			openExternal: (url: string) => Promise<void>;
+			getLogs: (limit?: number) => Promise<LogEntry[]>;
+			clearLogs: () => Promise<void>;
+			getLogFilePath: () => Promise<string>;
+			onNavigateToRoute: (callback: (route: string) => void) => void;
 		};
 	}
 }

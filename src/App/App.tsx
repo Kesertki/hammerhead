@@ -13,6 +13,7 @@ import SystemPrompt from './pages/SystemPrompt.tsx';
 
 import './App.css';
 import { Logs } from './pages/Logs.tsx';
+import { VoicePage } from './pages/VoicePage.tsx';
 
 const Inbox = () => {
 	return (
@@ -74,6 +75,7 @@ export function App() {
 					<Route path="/inbox" element={<Inbox />} />
 					<Route path="/calendar" element={<Calendar />} />
 					<Route path="/search" element={<Search />} />
+					<Route path="/voice" element={<VoicePage />} />
 					<Route path="/settings" element={<Settings />} />
 					<Route path="/mcp-servers" element={<McpServersConfig />} />
 					<Route path="/knowledge-base" element={<KnowledgeBase />} />

@@ -1,6 +1,7 @@
 import {
 	BotMessageSquare,
 	Database,
+	Mic,
 	Server,
 	Settings,
 	SquareTerminal
@@ -66,6 +67,11 @@ const items = [
 		title: 'System Prompt',
 		url: '/system-prompt',
 		icon: SquareTerminal
+	},
+	{
+		title: 'Voice',
+		url: '/voice',
+		icon: Mic
 	},
 	{
 		title: 'Settings',

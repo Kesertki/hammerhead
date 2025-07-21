@@ -1,0 +1,18 @@
+{
+	"text": " Two years later.",
+	"segments": [
+		{
+			"id": 0,
+			"seek": 0,
+			"start": 0.0,
+			"end": 2.0,
+			"text": " Two years later.",
+			"tokens": [50364, 4453, 924, 1780, 13, 50464],
+			"temperature": 0.0,
+			"avg_logprob": -0.8369435582842145,
+			"compression_ratio": 0.6666666666666666,
+			"no_speech_prob": 0.0634918212890625
+		}
+	],
+	"language": "en"
+}

@@ -24,6 +24,7 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.2.5",
+		"@hookform/resolvers": "^5.1.1",
 		"@monaco-editor/react": "^4.7.0-rc.0",
 		"@radix-ui/react-avatar": "^1.1.10",
 		"@radix-ui/react-dialog": "^1.1.14",
@@ -41,6 +42,7 @@
 		"class-variance-authority": "^0.7.1",
 		"classnames": "^2.5.1",
 		"clsx": "^2.1.1",
+		"cmdk": "^1.1.1",
 		"electron-store": "^10.0.1",
 		"glob": "^11.0.2",
 		"highlight.js": "^11.11.1",
@@ -53,10 +55,12 @@
 		"pretty-ms": "^9.2.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
+		"react-hook-form": "^7.60.0",
 		"react-router-dom": "^7.6.2",
 		"sonner": "^2.0.5",
 		"tailwind-merge": "^3.3.0",
-		"tailwindcss": "^4.1.8"
+		"tailwindcss": "^4.1.8",
+		"zod": "^3.25.76"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.0.6",

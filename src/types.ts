@@ -45,6 +45,29 @@ export interface LogEntry {
 	stack?: string;
 }
 
+export interface AudioMetadata {
+	id: string;
+	filename: string;
+	fullPath: string;
+	size: number;
+	duration: number;
+	mimeType: string;
+	createdAt: string;
+}
+
+export interface TranscriptionResult {
+	text: string;
+	confidence?: number;
+	language?: string;
+	duration?: number;
+	segments?: Array<{
+		start: number;
+		end: number;
+		text: string;
+		confidence?: number;
+	}>;
+}
+
 declare global {
 	interface Window {
 		electronAPI: {

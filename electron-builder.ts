@@ -60,7 +60,12 @@ export default {
 				arch: ['arm64', 'x64']
 			}
 		],
-
+		extendInfo: {
+			NSMicrophoneUsageDescription:
+				'This application requires microphone access to record audio for voice input.',
+			NSCameraUsageDescription:
+				'This application may require camera access for video input.'
+		},
 		artifactName: '${name}.macOS.${version}.${arch}.${ext}'
 	},
 	win: {

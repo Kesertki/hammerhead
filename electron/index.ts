@@ -2,8 +2,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
+import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { getMcpConfig, initializeLogger, setMcpConfig } from './settings';
+import { initializeAudioStorage } from './settings/audioStorage.ts';
 import {
 	getSystemPrompts,
 	SystemPromptConfig,
@@ -175,10 +177,24 @@ function createWindow() {
 		height: 700
 	});
 
+	// Handle media permissions
+	win.webContents.session.setPermissionRequestHandler(
+		(webContents, permission, callback) => {
+			if (permission === 'media') {
+				// Grant permission for microphone access
+				callback(true);
+			} else {
+				// Deny other permissions by default
+				callback(false);
+			}
+		}
+	);
+
 	// Create and set the menu
 	createMenu();
 
 	registerLlmRpc(win);
+	registerAudioRpc(win);
 
 	// open external links in the default browser
 	win.webContents.setWindowOpenHandler(({ url }) => {
@@ -260,6 +276,10 @@ ipcMain.handle('get-log-file-path', async () => {
 app.whenReady().then(async () => {
 	// Initialize logger before anything else
 	await initializeLogger();
+
+	// Initialize audio storage
+	await initializeAudioStorage();
+
 	console.log('Hammerhead application starting...');
 
 	createWindow();

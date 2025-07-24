@@ -114,11 +114,18 @@ export class ElectronLlmRpc {
 		this.sendCurrentLlmState = this.sendCurrentLlmState.bind(this);
 
 		llmState.createChangeListener(this.sendCurrentLlmState);
-		this.sendCurrentLlmState();
+		// Don't wait for initial state update to avoid blocking constructor
+		this.sendCurrentLlmState().catch(error => 
+			console.warn('Failed to send initial LLM state:', error)
+		);
 	}
 
-	public sendCurrentLlmState() {
-		this.rendererLlmRpc.updateState(llmState.state);
+	public async sendCurrentLlmState() {
+		try {
+			await this.rendererLlmRpc.updateState(llmState.state);
+		} catch (error) {
+			console.warn('Failed to update LLM state in renderer:', error);
+		}
 	}
 }
 

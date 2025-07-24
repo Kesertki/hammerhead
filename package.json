@@ -37,7 +37,7 @@
 		"@radix-ui/react-tabs": "^1.1.12",
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"@tailwindcss/vite": "^4.1.11",
-		"birpc": "^2.4.0",
+		"birpc": "^2.5.0",
 		"chromadb": "^2.4.6",
 		"chromadb-default-embed": "^2.14.0",
 		"class-variance-authority": "^0.7.1",

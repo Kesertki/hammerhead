@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	getSystemPrompts: () => ipcRenderer.invoke('get-system-prompts'),
 	setSystemPrompts: (prompts: any) =>
 		ipcRenderer.invoke('set-system-prompts', prompts),
+	getVoiceSettings: () => ipcRenderer.invoke('get-voice-settings'),
+	setVoiceSettings: (settings: import('../src/types').VoiceSettings) =>
+		ipcRenderer.invoke('set-voice-settings', settings),
 	openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 
 	// Log-related functions

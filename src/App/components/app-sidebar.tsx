@@ -7,7 +7,6 @@ import {
 	SquareTerminal
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SearchForm } from '@/App/components/search-form.tsx';
 import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
 	Sidebar,
@@ -72,17 +71,17 @@ const items = [
 		title: 'Voice',
 		url: '/voice',
 		icon: Mic
-	},
-	{
-		title: 'Settings',
-		url: '/settings',
-		icon: Settings
-	},
-	{
-		title: 'Logs',
-		url: '/logs',
-		icon: SquareTerminal
 	}
+	// {
+	// 	title: 'Settings',
+	// 	url: '/settings',
+	// 	icon: Settings
+	// },
+	// {
+	// 	title: 'Logs',
+	// 	url: '/logs',
+	// 	icon: SquareTerminal
+	// }
 ];
 
 export function AppSidebar() {
@@ -90,7 +89,7 @@ export function AppSidebar() {
 		<Sidebar variant="inset">
 			<SidebarHeader>
 				<WorkspaceSwitcher />
-				<SearchForm />
+				{/* <SearchForm /> */}
 			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>

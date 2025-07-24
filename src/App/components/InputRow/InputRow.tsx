@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import { ArrowUp, CircleStop } from 'lucide-react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
+import type { TranscriptionResult, VoiceSettings } from '@/types';
+import { VoiceInput } from '../VoiceInput';
 
 import './InputRow.css';
 
@@ -12,9 +14,12 @@ export function InputRow({
 	onPromptInput,
 	autocompleteInputDraft,
 	autocompleteCompletion,
-	generatingResult
+	generatingResult,
+	autoSubmitVoice = true,
+	voiceSettings = { model: 'tiny', language: '' }
 }: InputRowProps) {
 	const [inputText, setInputText] = useState<string>('');
+	const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
 	const autocompleteRef = useRef<HTMLDivElement>(null);
 	const autocompleteCurrentTextRef = useRef<HTMLDivElement>(null);
@@ -49,7 +54,8 @@ export function InputRow({
 	}, []);
 
 	const submitPrompt = useCallback(() => {
-		if (generatingResult || inputRef.current == null) return;
+		if (generatingResult || inputRef.current == null || isVoiceActive)
+			return;
 
 		const message = inputRef.current.value;
 		if (message.length === 0) return;
@@ -63,8 +69,61 @@ export function InputRow({
 		generatingResult,
 		resizeInput,
 		sendPrompt,
-		onPromptInput
+		onPromptInput,
+		isVoiceActive
 	]);
+
+	const handleVoiceTranscriptionComplete = useCallback(
+		(result: TranscriptionResult) => {
+			if (result.text && inputRef.current) {
+				// Add transcription text to the current input
+				const currentValue = inputRef.current.value;
+				const newValue = currentValue
+					? `${currentValue} ${result.text}`
+					: result.text;
+				setInputValue(newValue);
+				resizeInput();
+				onPromptInput?.(newValue);
+
+				// Focus the input after transcription
+				inputRef.current.focus();
+
+				// Auto-submit if enabled and not disabled/generating
+				// Also check that we have meaningful text to submit
+				if (
+					autoSubmitVoice &&
+					!disabled &&
+					!generatingResult &&
+					result.text &&
+					result.text.trim().length > 0
+				) {
+					// Use a small delay to ensure the input is updated
+					setTimeout(() => {
+						submitPrompt();
+					}, 100);
+				}
+			}
+			setIsVoiceActive(false);
+		},
+		[
+			setInputValue,
+			resizeInput,
+			onPromptInput,
+			autoSubmitVoice,
+			disabled,
+			generatingResult,
+			submitPrompt
+		]
+	);
+
+	const handleVoiceTranscriptionError = useCallback((error: Error) => {
+		console.error('Voice transcription error:', error);
+		setIsVoiceActive(false);
+	}, []);
+
+	const handleVoiceStateChange = useCallback((isActive: boolean) => {
+		setIsVoiceActive(isActive);
+	}, []);
 
 	const onInput = useCallback(() => {
 		setInputText(inputRef.current?.value ?? '');
@@ -186,18 +245,34 @@ export function InputRow({
 						<CircleStop />
 					</Button>
 
+					{/* Voice Input Component */}
+					<VoiceInput
+						onTranscriptionComplete={
+							handleVoiceTranscriptionComplete
+						}
+						onTranscriptionError={handleVoiceTranscriptionError}
+						onStateChange={handleVoiceStateChange}
+						disabled={disabled || generatingResult}
+						language={voiceSettings.language}
+						model={voiceSettings.model}
+					/>
+
 					<Button
 						variant="outline"
 						size="icon"
 						className={`transition duration-200 ${
 							inputText.trim() === '' ||
 							disabled ||
-							generatingResult
+							generatingResult ||
+							isVoiceActive
 								? 'text-gray-300'
 								: 'bg-black text-white hover:bg-black hover:text-white'
 						}`}
 						disabled={
-							disabled || inputText === '' || generatingResult
+							disabled ||
+							inputText === '' ||
+							generatingResult ||
+							isVoiceActive
 						}
 						onClick={submitPrompt}
 					>
@@ -217,4 +292,6 @@ type InputRowProps = {
 	autocompleteInputDraft?: string;
 	autocompleteCompletion?: string;
 	generatingResult: boolean;
+	autoSubmitVoice?: boolean;
+	voiceSettings?: VoiceSettings;
 };

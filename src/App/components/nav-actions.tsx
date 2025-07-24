@@ -1,6 +1,3 @@
-// import { updatePin } from '@/lib/client';
-// import { useChatListStore } from '@/stores/chatListStore';
-// import { useChatStore } from '@/stores/chatStore';
 import {
 	ArrowDown,
 	ArrowUp,
@@ -13,8 +10,6 @@ import {
 	LineChart,
 	Link,
 	MoreHorizontal,
-	Pin,
-	PinOff,
 	Settings2,
 	Trash,
 	Trash2
@@ -51,27 +46,6 @@ interface ActionGroup {
 export function NavActions() {
 	const state = useExternalState(llmState);
 	const hasModel = state.model != null && state.model.name != null;
-
-	// const { sessionId } = useChatStore();
-	// const { setPin } = useChatListStore();
-	// const chat = useChatListStore((state) =>
-	// 	state.chats.find((chat) => chat.id === sessionId)
-	// );
-
-	// const togglePin = async (chatId: string, value: boolean) => {
-	// 	// const result = await updatePin(chatId, value);
-	// 	// if (result) {
-	// 	// 	setPin(chatId, value);
-	// 	// }
-	// };
-
-	// const runAction = async (action?: string) => {
-	// 	if (action === 'import') {
-	// 		await importChat();
-	// 	} else if (action === 'export') {
-	// 		await exportChat();
-	// 	}
-	// };
 
 	const exportChat = useCallback(async () => {
 		const result = await electronLlmRpc.exportChatSession();
@@ -166,19 +140,6 @@ export function NavActions() {
 			{/* <div className="hidden font-medium text-muted-foreground md:inline-block">
         Edit Oct 08
       </div> */}
-			<Button
-				variant="ghost"
-				size="icon"
-				className="h-7 w-7"
-				onClick={() => {
-					// if (chat) {
-					// 	togglePin(chat.id, !chat.is_pinned);
-					// }
-				}}
-			>
-				{/*{chat?.is_pinned ? <PinOff /> : <Pin />}*/}
-				<Pin />
-			</Button>
 			<Popover>
 				<PopoverTrigger asChild>
 					<Button

@@ -1,102 +1,61 @@
-import { Check, Copy, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Copy } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { TranscriptionResult } from '@/types';
-import { AudioStorageService } from '@/utils/audioStorageService';
-import { VoiceRecorder } from '../components/VoiceRecorder';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { TranscriptionResult, VoiceSettings } from '@/types';
+import { VoiceInput } from '../components/VoiceInput';
+import { VoiceSettings as VoiceSettingsComponent } from './VoiceSettings';
 
 export function VoicePage() {
 	const [transcription, setTranscription] =
 		useState<TranscriptionResult | null>(null);
-	const [isTranscribing, setIsTranscribing] = useState(false);
-	const [transcriptionAvailable, setTranscriptionAvailable] = useState<
-		boolean | null
-	>(null);
-	const [currentAudioPath, setCurrentAudioPath] = useState<string | null>(
-		null
-	);
 	const [copied, setCopied] = useState(false);
-
-	// Check transcription availability on component mount
-	useState(() => {
-		AudioStorageService.checkTranscriptionAvailability().then(
-			setTranscriptionAvailable
-		);
+	const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
+		model: 'tiny',
+		language: ''
 	});
+	const [isLoadingSettings, setIsLoadingSettings] = useState(true);
 
-	const handleRecordingComplete = async (
-		blob: Blob,
-		duration: number
-	): Promise<string | undefined> => {
+	// Load voice settings on component mount
+	useEffect(() => {
+		loadVoiceSettings();
+	}, []);
+
+	const loadVoiceSettings = async () => {
 		try {
-			console.log('Recording completed:', {
-				size: blob.size,
-				type: blob.type,
-				duration: duration
-			});
-
-			// Save the audio file using the audio storage service
-			const audioMetadata = await AudioStorageService.saveAudio(
-				blob,
-				duration
-			);
-
-			if (audioMetadata) {
-				console.log('Audio file saved:', audioMetadata);
-				setCurrentAudioPath(audioMetadata.fullPath);
-
-				toast.success(
-					`Recording saved! Duration: ${duration}s, Size: ${Math.round(blob.size / 1024)}KB`
-				);
-
-				// Auto-transcribe if available
-				if (transcriptionAvailable) {
-					await handleTranscribe(audioMetadata.fullPath);
-				}
-
-				// Return the file path for future use
-				return audioMetadata.fullPath;
+			setIsLoadingSettings(true);
+			const settings = await window.electronAPI.getVoiceSettings();
+			if (settings) {
+				setVoiceSettings(settings);
 			}
-
-			toast.error('Failed to save recording');
-			return undefined;
 		} catch (error) {
-			console.error('Failed to save audio recording:', error);
-			toast.error('Failed to save recording');
-			return undefined;
+			console.error('Error loading voice settings:', error);
+			// Use default settings if loading fails
+		} finally {
+			setIsLoadingSettings(false);
 		}
 	};
 
-	const handleTranscribe = async (audioPath?: string) => {
-		const pathToTranscribe = audioPath || currentAudioPath;
-
-		if (!pathToTranscribe) {
-			toast.error('No audio file to transcribe');
-			return;
-		}
-
-		setIsTranscribing(true);
-		setTranscription(null);
-
+	const handleSettingsChange = async (newSettings: VoiceSettings) => {
 		try {
-			console.log('Starting transcription...');
-			const result =
-				await AudioStorageService.transcribeAudio(pathToTranscribe);
-
-			if (result) {
-				setTranscription(result);
-				toast.success('Transcription completed!');
-			} else {
-				toast.error('Transcription failed');
-			}
+			await window.electronAPI.setVoiceSettings(newSettings);
+			setVoiceSettings(newSettings);
+			toast.success('Voice settings saved successfully');
 		} catch (error) {
-			console.error('Transcription error:', error);
-			toast.error('Transcription failed');
-		} finally {
-			setIsTranscribing(false);
+			console.error('Error saving voice settings:', error);
+			toast.error('Failed to save voice settings');
 		}
+	};
+
+	const handleTranscriptionComplete = (result: TranscriptionResult) => {
+		setTranscription(result);
+	};
+
+	const handleTranscriptionError = (error: Error) => {
+		console.error('Transcription error:', error);
+		// Error handling is already done in VoiceInput component
 	};
 
 	const copyToClipboard = async () => {
@@ -114,132 +73,114 @@ export function VoicePage() {
 	};
 
 	return (
-		<div className="p-4">
-			<h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-				Voice
-			</h1>
-			<p>Test your voice settings here.</p>
-
-			<div className="mt-4 space-y-4">
-				{/* Voice Recorder */}
-				<Card className="w-full">
-					<CardContent>
-						<VoiceRecorder
-							showPlayer={false}
-							showLabels={false}
-							onRecordingComplete={handleRecordingComplete}
+		<div className="h-full flex flex-col max-w-4xl mx-auto p-4">
+			<Tabs defaultValue="parameters">
+				<TabsList>
+					<TabsTrigger value="parameters">Parameters</TabsTrigger>
+					<TabsTrigger value="test">Test</TabsTrigger>
+				</TabsList>
+				<TabsContent value="parameters">
+					<div className="flex-1 overflow-y-auto space-y-6">
+						<VoiceSettingsComponent
+							onSettingsChange={handleSettingsChange}
+							settings={voiceSettings}
+							isLoading={isLoadingSettings}
 						/>
-					</CardContent>
-				</Card>
-
-				{/* Transcription Controls */}
-				{currentAudioPath && transcriptionAvailable && (
-					<Card className="w-full">
-						<CardHeader>
-							<CardTitle className="text-lg">
-								Transcription
-							</CardTitle>
-						</CardHeader>
-						<CardContent className="space-y-3">
-							<Button
-								onClick={() => handleTranscribe()}
-								disabled={isTranscribing}
-								className="w-full"
-							>
-								{isTranscribing ? (
-									<>
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-										Transcribing...
-									</>
-								) : (
-									'Transcribe Audio'
-								)}
-							</Button>
-						</CardContent>
-					</Card>
-				)}
-
-				{/* Transcription Results */}
-				{transcription && (
-					<Card className="w-full">
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-lg">
-								Transcription Result
-							</CardTitle>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={copyToClipboard}
-								disabled={!transcription.text}
-							>
-								{copied ? (
-									<>
-										<Check className="mr-2 h-4 w-4" />
-										Copied
-									</>
-								) : (
-									<>
-										<Copy className="mr-2 h-4 w-4" />
-										Copy
-									</>
-								)}
-							</Button>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-3">
-								<div className="p-3 bg-muted rounded-md">
-									<p className="text-sm whitespace-pre-wrap">
-										{transcription.text ||
-											'No text detected'}
-									</p>
+					</div>
+				</TabsContent>
+				<TabsContent value="test">
+					<div>
+						<p className="mb-4">Test your voice settings here.</p>
+						<div className="space-y-4">
+							{/* Voice Input */}
+							{!isLoadingSettings ? (
+								<VoiceInput
+									onTranscriptionComplete={
+										handleTranscriptionComplete
+									}
+									onTranscriptionError={
+										handleTranscriptionError
+									}
+									model={voiceSettings.model}
+									language={voiceSettings.language}
+								/>
+							) : (
+								<div className="text-center text-muted-foreground">
+									Loading voice settings...
 								</div>
+							)}
 
-								{/* Transcription metadata */}
-								<div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-									{transcription.language && (
-										<span>
-											Language: {transcription.language}
-										</span>
-									)}
-									{transcription.confidence && (
-										<span>
-											Confidence:{' '}
-											{Math.round(
-												transcription.confidence * 100
+							{/* Transcription Results */}
+							{transcription && (
+								<Card className="w-full">
+									<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+										<CardTitle className="text-lg">
+											Transcription Result
+										</CardTitle>
+										<Button
+											variant="outline"
+											size="sm"
+											onClick={copyToClipboard}
+											disabled={!transcription.text}
+										>
+											{copied ? (
+												<>
+													<Check className="mr-2 h-4 w-4" />
+													Copied
+												</>
+											) : (
+												<>
+													<Copy className="mr-2 h-4 w-4" />
+													Copy
+												</>
 											)}
-											%
-										</span>
-									)}
-									{transcription.duration && (
-										<span>
-											Duration:{' '}
-											{transcription.duration.toFixed(1)}s
-										</span>
-									)}
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				)}
+										</Button>
+									</CardHeader>
+									<CardContent>
+										<div className="space-y-3">
+											<div className="p-3 bg-muted rounded-md">
+												<p className="text-sm whitespace-pre-wrap">
+													{transcription.text ||
+														'No text detected'}
+												</p>
+											</div>
 
-				{/* Transcription not available message */}
-				{transcriptionAvailable === false && (
-					<Card className="w-full max-w-xl mx-auto">
-						<CardContent className="text-center py-6">
-							<p className="text-muted-foreground">
-								Speech-to-text transcription is not available.
-							</p>
-							<p className="text-xs text-muted-foreground mt-2">
-								Install OpenAI Whisper to enable transcription:
-								<br />
-								<code className="bg-muted px-2 py-1 rounded text-xs">
-									pip install openai-whisper
-								</code>
-							</p>
-						</CardContent>
-					</Card>
-				)}
-			</div>
+											{/* Transcription metadata */}
+											<div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+												{transcription.language && (
+													<span>
+														Language:{' '}
+														{transcription.language}
+													</span>
+												)}
+												{transcription.confidence && (
+													<span>
+														Confidence:{' '}
+														{Math.round(
+															transcription.confidence *
+																100
+														)}
+														%
+													</span>
+												)}
+												{transcription.duration && (
+													<span>
+														Duration:{' '}
+														{transcription.duration.toFixed(
+															1
+														)}
+														s
+													</span>
+												)}
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							)}
+						</div>
+					</div>
+				</TabsContent>
+			</Tabs>
 		</div>
 	);
 }

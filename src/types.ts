@@ -68,6 +68,11 @@ export interface TranscriptionResult {
 	}>;
 }
 
+export interface VoiceSettings {
+	model: string;
+	language: string;
+}
+
 declare global {
 	interface Window {
 		electronAPI: {
@@ -75,6 +80,8 @@ declare global {
 			setMCPConfig: (config: McpConfig) => Promise<void>;
 			getSystemPrompts: () => Promise<SystemPromptConfig>;
 			setSystemPrompts: (prompts: SystemPromptConfig) => Promise<void>;
+			getVoiceSettings: () => Promise<VoiceSettings>;
+			setVoiceSettings: (settings: VoiceSettings) => Promise<void>;
 			openExternal: (url: string) => Promise<void>;
 			getLogs: (limit?: number) => Promise<LogEntry[]>;
 			clearLogs: () => Promise<void>;

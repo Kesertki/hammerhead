@@ -12,7 +12,7 @@
 	"scripts": {
 		"postinstall": "npm run setup:monaco",
 		"setup:monaco": "node scripts/copy-monaco-workers.js",
-		"models:pull": "node-llama-cpp pull --dir ./models \"hf:CompendiumLabs/bge-small-en-v1.5-gguf:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K\"",
+		"models:pull": "node-llama-cpp pull --dir ./models \"hf:CompendiumLabs/bge-small-en-v1.5-gguf:Q8_0\" \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K\" \"hf:Qwen/Qwen3-4B-GGUF:Q4_K_M\"",
 		"start": "vite dev",
 		"start:build": "electron ./dist-electron",
 		"prebuild": "rimraf ./dist ./dist-electron ./release",
@@ -34,6 +34,7 @@
 		"@radix-ui/react-select": "^2.2.5",
 		"@radix-ui/react-separator": "^1.1.7",
 		"@radix-ui/react-slot": "^1.2.3",
+		"@radix-ui/react-tabs": "^1.1.12",
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"@tailwindcss/vite": "^4.1.11",
 		"birpc": "^2.4.0",

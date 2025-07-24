@@ -1,27 +1,26 @@
-import { Mic, MicOff } from 'lucide-react';
+import { CircleStop, Mic } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 type Props = {
-	durationLimit?: number; // in seconds
-	showLabels?: boolean; // Whether to show labels on buttons
-	showPlayer?: boolean; // Whether to show the audio player after recording
+	durationLimit?: number; // in seconds, 0 means no limit
 	onRecordingComplete?: (
 		blob: Blob,
 		duration: number
 	) => void | Promise<void | string>; // Callback when recording is complete
+	onRecordingStateChange?: (isRecording: boolean) => void; // New prop to report recording state
+	disabled?: boolean; // New prop to disable the component
 };
 
 export function VoiceRecorder({
-	durationLimit = 10,
-	showLabels = false,
-	showPlayer = true,
-	onRecordingComplete
+	durationLimit = 0,
+	onRecordingComplete,
+	onRecordingStateChange,
+	disabled = false
 }: Props) {
 	const [isRecording, setIsRecording] = useState(false);
-	const [audioUrl, setAudioUrl] = useState<string | null>(null);
 	const [fallbackAvailable, setFallbackAvailable] = useState(false);
 	const [elapsedTime, setElapsedTime] = useState(0);
 
@@ -38,6 +37,11 @@ export function VoiceRecorder({
 				typeof MediaRecorder === 'undefined'
 		);
 	}, []);
+
+	// Report recording state changes
+	useEffect(() => {
+		onRecordingStateChange?.(isRecording);
+	}, [isRecording, onRecordingStateChange]);
 
 	// Cleanup function to properly stop all recording resources
 	const cleanupRecording = useCallback(() => {
@@ -68,12 +72,8 @@ export function VoiceRecorder({
 	useEffect(() => {
 		return () => {
 			cleanupRecording();
-			// Also cleanup blob URL to prevent memory leaks
-			if (audioUrl) {
-				URL.revokeObjectURL(audioUrl);
-			}
 		};
-	}, [cleanupRecording, audioUrl]);
+	}, [cleanupRecording]);
 
 	const getMimeType = () => {
 		// Test MIME types in order of preference
@@ -126,6 +126,9 @@ export function VoiceRecorder({
 	};
 
 	const startRecording = async () => {
+		// Don't start recording if disabled
+		if (disabled) return;
+
 		try {
 			// Check microphone permissions first
 			const hasPermission = await checkMicrophonePermission();
@@ -139,11 +142,7 @@ export function VoiceRecorder({
 			// Clean up any existing recording first
 			cleanupRecording();
 
-			// Reset audio URL and blob for new recording
-			if (audioUrl) {
-				URL.revokeObjectURL(audioUrl);
-			}
-			setAudioUrl(null);
+			// Reset for new recording
 			setElapsedTime(0);
 			elapsedTimeRef.current = 0;
 
@@ -192,11 +191,6 @@ export function VoiceRecorder({
 				);
 
 				if (chunks.current.length > 0) {
-					// First revoke any existing URL
-					if (audioUrl) {
-						URL.revokeObjectURL(audioUrl);
-					}
-
 					const audioBlob = new Blob(chunks.current, {
 						type: mimeType || 'audio/webm'
 					});
@@ -207,12 +201,6 @@ export function VoiceRecorder({
 						chunks: chunks.current.length,
 						recordingDuration: currentElapsed
 					});
-
-					// Create URL after blob is fully ready
-					const newAudioUrl = URL.createObjectURL(audioBlob);
-
-					// Update state
-					setAudioUrl(newAudioUrl);
 
 					// Call the callback with the blob and duration (handle async callbacks)
 					try {
@@ -259,8 +247,8 @@ export function VoiceRecorder({
 					const nextValue = prev + 1;
 					// Update the ref as well
 					elapsedTimeRef.current = nextValue;
-					// Auto-stop when duration limit is reached
-					if (nextValue >= durationLimit) {
+					// Auto-stop when duration limit is reached (only if limit is set)
+					if (durationLimit > 0 && nextValue >= durationLimit) {
 						stopRecording();
 						return durationLimit; // Cap at duration limit
 					}
@@ -346,59 +334,34 @@ export function VoiceRecorder({
 			}
 			streamRef.current = null;
 		}
-	}, []); // Remove dependencies to prevent stale closures
+	}, []);
 
 	return (
 		<>
 			{!fallbackAvailable ? (
-				<div className="flex items-center gap-4">
-					{/* Audio player - only show if showPlayer is true and we have audio */}
-					{showPlayer && audioUrl && (
-						<div className="flex-1">
-							<audio
-								controls
-								src={audioUrl}
-								className="w-full"
-								key={`audio-${Date.now()}`} // Use timestamp to force complete re-creation
-								preload="auto"
-								onLoadStart={() =>
-									console.log('Audio loading started')
-								}
-								onCanPlay={() =>
-									console.log('Audio can play now')
-								}
-							/>
-						</div>
+				<Button
+					onClick={isRecording ? stopRecording : startRecording}
+					variant={isRecording ? 'destructive' : 'default'}
+					className={cn(
+						'cursor-pointer',
+						disabled && 'opacity-50 cursor-not-allowed'
 					)}
-
-					{/* Recording button */}
-					<div className="flex-shrink-0">
-						<Button
-							onClick={
-								isRecording ? stopRecording : startRecording
-							}
-							variant={isRecording ? 'destructive' : 'default'}
-							className={cn(
-								'cursor-pointer flex items-center gap-2'
-							)}
-						>
-							{isRecording ? (
-								<>
-									<div className="w-2 h-2 bg-red-300 rounded-full animate-pulse" />
-									<MicOff />
-									{showLabels ? 'Stop Recording' : null}(
-									{durationLimit - elapsedTime}s)
-								</>
-							) : (
-								<>
-									<Mic />
-									{showLabels ? 'Start Recording' : null}(
-									{durationLimit}s)
-								</>
-							)}
-						</Button>
-					</div>
-				</div>
+					size="icon"
+					disabled={disabled}
+				>
+					{isRecording ? (
+						<>
+							<CircleStop className="h-4 w-4 animate-pulse" />
+							{durationLimit > 0 &&
+								` (${durationLimit - elapsedTime}s)`}
+						</>
+					) : (
+						<>
+							<Mic />
+							{durationLimit > 0 && ` (${durationLimit}s)`}
+						</>
+					)}
+				</Button>
 			) : (
 				<div className="text-sm text-center">
 					<p className="mb-2">Microphone not available.</p>

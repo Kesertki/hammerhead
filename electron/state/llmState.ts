@@ -236,6 +236,7 @@ export const llmFunctions = {
 				};
 
 				model = await llama.loadModel({
+					// defaultContextFlashAttention: true,
 					modelPath,
 					onLoadProgress(loadProgress: number) {
 						// console.log('loadProgress', loadProgress);

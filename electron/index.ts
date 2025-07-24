@@ -4,7 +4,13 @@ import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
 import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
-import { getMcpConfig, initializeLogger, setMcpConfig } from './settings';
+import {
+	getMcpConfig,
+	getVoiceSettings,
+	initializeLogger,
+	setMcpConfig,
+	setVoiceSettings
+} from './settings';
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import {
 	getSystemPrompts,
@@ -255,6 +261,14 @@ ipcMain.handle('get-mcp-config', async () => {
 
 ipcMain.handle('set-mcp-config', async (_event, config: McpConfig) => {
 	await setMcpConfig(config);
+});
+
+ipcMain.handle('get-voice-settings', async () => {
+	return await getVoiceSettings();
+});
+
+ipcMain.handle('set-voice-settings', async (_event, settings) => {
+	await setVoiceSettings(settings);
 });
 
 // Log-related IPC handlers

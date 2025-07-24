@@ -35,6 +35,10 @@ interface Window {
 		setSystemPrompts: (
 			prompts: import('../src/types').SystemPromptConfig
 		) => Promise<void>;
+		getVoiceSettings: () => Promise<import('../src/types').VoiceSettings>;
+		setVoiceSettings: (
+			settings: import('../src/types').VoiceSettings
+		) => Promise<void>;
 		openExternal: (url: string) => Promise<void>;
 		getLogs: (limit?: number) => Promise<import('../src/types').LogEntry[]>;
 		clearLogs: () => Promise<void>;

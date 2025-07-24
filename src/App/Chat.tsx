@@ -1,8 +1,9 @@
-import { Download, Search } from 'lucide-react';
+import { Download, HardDriveUpload, Search } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useExternalState } from '../hooks/useExternalState.ts';
 import { electronLlmRpc } from '../rpc/llmRpc.ts';
 import { llmState } from '../state/llmState.ts';
+import type { VoiceSettings } from '../types';
 import { ChatHistory } from './components/ChatHistory/ChatHistory.tsx';
 import { InputRow } from './components/InputRow/InputRow.tsx';
 
@@ -18,6 +19,30 @@ export function Chat() {
 	const userScrollTimeoutRef = useRef<number | undefined>(undefined);
 	const lastScrollHeightRef = useRef<number>(0);
 	const wasAtBottomRef = useRef<boolean>(true);
+
+	// Voice settings state
+	const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
+		model: 'tiny',
+		language: ''
+	});
+
+	// Load voice settings on component mount
+	useEffect(() => {
+		loadVoiceSettings();
+	}, []);
+
+	const loadVoiceSettings = async () => {
+		try {
+			console.log('Loading voice settings...');
+			const settings = await window.electronAPI.getVoiceSettings();
+			if (settings) {
+				setVoiceSettings(settings);
+			}
+		} catch (error) {
+			console.error('Error loading voice settings:', error);
+			// Use default settings if loading fails
+		}
+	};
 	const scrollLockTimeoutRef = useRef<number | undefined>(undefined);
 
 	// Simple function to scroll to bottom
@@ -190,7 +215,9 @@ export function Chat() {
 							state.llama.error != null) && (
 							<div className="loadModel">
 								<div className="hint">
-									Click the button above to load a model
+									Click the{' '}
+									<HardDriveUpload className="inline-block" />{' '}
+									button above to load a model
 								</div>
 								<div className="actions">
 									<div className="title">
@@ -294,6 +321,7 @@ export function Chat() {
 					autocompleteCompletion={
 						state.chatSession.draftPrompt.completion
 					}
+					voiceSettings={voiceSettings}
 				/>
 			</div>
 		</div>

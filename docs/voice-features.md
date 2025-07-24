@@ -103,11 +103,26 @@ AudioStorageService.getAllAudioFiles(): Promise<AudioMetadata[]>
 AudioStorageService.deleteAudio(id: string): Promise<boolean>
 ```
 
+### VoiceInput Component
+
+```typescript
+<VoiceInput
+  durationLimit={0}                    // Recording duration limit (seconds, 0 = no limit)
+  showLabels={false}                   // Show button labels
+  showPlayer={true}                    // Show audio player after recording
+  showNotifications={true}             // Show toast notifications
+  disabled={false}                     // Disable the component
+  onTranscriptionComplete={handler}    // Callback when transcription completes
+  onTranscriptionError={errorHandler}  // Callback when transcription fails
+  onStateChange={stateHandler}         // Callback when recording/transcription state changes
+/>
+```
+
 ### VoiceRecorder Component
 
 ```typescript
 <VoiceRecorder
-  durationLimit={10}           // Recording duration limit (seconds)
+  durationLimit={0}            // Recording duration limit (seconds, 0 = no limit)
   showLabels={false}           // Show button labels
   showPlayer={true}            // Show audio player after recording
   onRecordingComplete={handler} // Callback when recording completes

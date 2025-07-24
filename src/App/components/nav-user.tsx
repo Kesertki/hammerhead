@@ -4,8 +4,11 @@ import {
 	ChevronsUpDown,
 	CreditCard,
 	LogOut,
-	Sparkles
+	Settings2,
+	Sparkles,
+	SquareTerminal
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
 	DropdownMenu,
@@ -110,6 +113,18 @@ export function NavUser({
 							<DropdownMenuItem>
 								<Bell />
 								Notifications
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<Link to="/logs">
+									<SquareTerminal />
+									Logs
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<Link to="/settings">
+									<Settings2 />
+									Settings
+								</Link>
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />

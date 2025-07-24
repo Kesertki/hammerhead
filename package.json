@@ -47,7 +47,7 @@
 		"electron-store": "^10.0.1",
 		"glob": "^11.0.2",
 		"highlight.js": "^11.11.1",
-		"lifecycle-utils": "^2.0.0",
+		"lifecycle-utils": "^3.0.1",
 		"lucide-react": "^0.525.0",
 		"markdown-it": "^14.1.0",
 		"monaco-editor": "^0.52.2",

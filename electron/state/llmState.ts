@@ -173,7 +173,7 @@ eventBus.on('mcp-config-changed', async () => {
 
 export const llmFunctions = {
 	async loadLlama() {
-		await withLock(llmFunctions, 'llama', async () => {
+		await withLock([llmFunctions, 'llama'], async () => {
 			if (llama != null) {
 				try {
 					await llama.dispose();
@@ -214,7 +214,7 @@ export const llmFunctions = {
 		});
 	},
 	async loadModel(modelPath: string) {
-		await withLock(llmFunctions, 'model', async () => {
+		await withLock([llmFunctions, 'model'], async () => {
 			if (llama == null) throw new Error('Llama not loaded');
 
 			if (model != null) {
@@ -277,7 +277,7 @@ export const llmFunctions = {
 		});
 	},
 	async createContext() {
-		await withLock(llmFunctions, 'context', async () => {
+		await withLock([llmFunctions, 'context'], async () => {
 			if (model == null) throw new Error('Model not loaded');
 
 			if (context != null) {
@@ -320,7 +320,7 @@ export const llmFunctions = {
 		});
 	},
 	async createContextSequence() {
-		await withLock(llmFunctions, 'contextSequence', async () => {
+		await withLock([llmFunctions, 'contextSequence'], async () => {
 			if (context == null) throw new Error('Context not loaded');
 
 			try {
@@ -355,7 +355,7 @@ export const llmFunctions = {
 	},
 	chatSession: {
 		async exportChatSession(outputPath: string): Promise<boolean> {
-			return await withLock(llmFunctions, 'chatSession', async () => {
+			return await withLock([llmFunctions, 'chatSession'], async () => {
 				const messages = chatSession?.getChatHistory();
 				if (messages && messages.length > 0) {
 					const outputContent = JSON.stringify(
@@ -383,7 +383,7 @@ export const llmFunctions = {
 			});
 		},
 		async importChatSession(inputPath: string): Promise<boolean> {
-			return await withLock(llmFunctions, 'chatSession', async () => {
+			return await withLock([llmFunctions, 'chatSession'], async () => {
 				try {
 					const content = await fs.readFile(inputPath, 'utf8');
 					const data = JSON.parse(content);
@@ -407,7 +407,7 @@ export const llmFunctions = {
 			});
 		},
 		async createChatSession() {
-			await withLock(llmFunctions, 'chatSession', async () => {
+			await withLock([llmFunctions, 'chatSession'], async () => {
 				if (contextSequence == null)
 					throw new Error('Context sequence not loaded');
 
@@ -467,7 +467,7 @@ export const llmFunctions = {
 			});
 		},
 		async prompt(message: string) {
-			await withLock(llmFunctions, 'chatSession', async () => {
+			await withLock([llmFunctions, 'chatSession'], async () => {
 				if (chatSession == null)
 					throw new Error('Chat session not loaded');
 				// Store original message before augmentation

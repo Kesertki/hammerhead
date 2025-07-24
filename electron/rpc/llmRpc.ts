@@ -115,7 +115,7 @@ export class ElectronLlmRpc {
 
 		llmState.createChangeListener(this.sendCurrentLlmState);
 		// Don't wait for initial state update to avoid blocking constructor
-		this.sendCurrentLlmState().catch(error => 
+		this.sendCurrentLlmState().catch((error) =>
 			console.warn('Failed to send initial LLM state:', error)
 		);
 	}

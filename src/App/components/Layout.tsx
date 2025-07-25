@@ -60,7 +60,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 					</div>
 
 					<div className="text-sm font-semibold">
-						{loading ? 'Loading...' : modelName}
+						{loading ? (
+							'Loading...'
+						) : (
+							<Button
+								variant="link"
+								size="sm"
+								className="cursor-pointer"
+								onClick={() => {
+									openSelectModelFileDialog();
+								}}
+							>
+								{modelName}
+							</Button>
+						)}
 					</div>
 
 					{!loading && (

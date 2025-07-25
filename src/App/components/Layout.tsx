@@ -1,4 +1,4 @@
-import { HardDriveUpload, Trash } from 'lucide-react';
+import { HardDriveUpload, Loader2Icon, Trash } from 'lucide-react';
 import React, { useCallback } from 'react';
 import { AppSidebar } from '@/App/components/app-sidebar';
 import { NavActions } from '@/App/components/nav-actions.tsx';
@@ -20,6 +20,15 @@ import { llmState } from '@/state/llmState.ts';
 export default function Layout({ children }: { children: React.ReactNode }) {
 	const state = useExternalState(llmState);
 	const modelName = state.model?.name || 'No model loaded';
+
+	const loading =
+		state.selectedModelFilePath != null &&
+		// error == null &&
+		(!state.model.loaded ||
+			!state.llama.loaded ||
+			!state.context.loaded ||
+			!state.contextSequence.loaded ||
+			!state.chatSession.loaded);
 
 	const isEmptyChat =
 		state.selectedModelFilePath == null ||
@@ -50,17 +59,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						</Tooltip>
 					</div>
 
-					<div>{modelName}</div>
+					<div className="text-sm font-semibold">
+						{loading ? 'Loading...' : modelName}
+					</div>
 
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-7 w-7"
-						onClick={openSelectModelFileDialog}
-					>
-						<HardDriveUpload />
-					</Button>
+					{!loading && (
+						<Button
+							variant="ghost"
+							size="icon"
+							className="h-7 w-7"
+							onClick={openSelectModelFileDialog}
+						>
+							<HardDriveUpload />
+						</Button>
+					)}
+					{loading && (
+						<div className="ml-auto">
+							<Loader2Icon className="animate-spin" />
+						</div>
+					)}
 
+					{/* Clear chat history button */}
 					{!isEmptyChat && (
 						<Button
 							variant="ghost"
@@ -72,8 +91,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 						</Button>
 					)}
 
-					{/*<div>{state.model.loadProgress * 100}</div>*/}
-					{/*<div>{state.appVersion}</div>*/}
+					{/* <div>
+						{state.model?.loadProgress !== undefined
+							? state.model.loadProgress * 100
+							: ''}
+					</div> */}
 					{/*<div className="ml-auto px-3">*/}
 					<NavActions />
 					{/*</div>*/}

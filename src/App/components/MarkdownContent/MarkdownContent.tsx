@@ -4,6 +4,7 @@ import markdownit from 'markdown-it';
 import React, { useLayoutEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Button } from '@/components/ui/button';
+import { copyToClipboard } from '@/utils/clipboard';
 
 import 'highlight.js/styles/github-dark.css';
 import './MarkdownContent.css';
@@ -27,9 +28,15 @@ const CopyButton = ({ code }: { code: string }) => {
 	const [copied, setCopied] = React.useState(false);
 
 	const handleCopy = async () => {
-		await navigator.clipboard.writeText(code);
-		setCopied(true);
-		setTimeout(() => setCopied(false), 2000);
+		try {
+			const success = await copyToClipboard(code);
+			if (success) {
+				setCopied(true);
+				setTimeout(() => setCopied(false), 2000);
+			}
+		} catch (error) {
+			console.error('Failed to copy code:', error);
+		}
 	};
 
 	return (

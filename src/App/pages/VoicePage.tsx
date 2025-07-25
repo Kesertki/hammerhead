@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
+import { copyToClipboard } from '@/utils/clipboard';
 import { VoiceInput } from '../components/VoiceInput';
 import { VoiceSettings as VoiceSettingsComponent } from './VoiceSettings';
 
@@ -58,13 +59,17 @@ export function VoicePage() {
 		// Error handling is already done in VoiceInput component
 	};
 
-	const copyToClipboard = async () => {
+	const copyToClipboardText = async () => {
 		if (transcription?.text) {
 			try {
-				await navigator.clipboard.writeText(transcription.text);
-				setCopied(true);
-				toast.success('Text copied to clipboard');
-				setTimeout(() => setCopied(false), 2000);
+				const success = await copyToClipboard(transcription.text);
+				if (success) {
+					setCopied(true);
+					toast.success('Text copied to clipboard');
+					setTimeout(() => setCopied(false), 2000);
+				} else {
+					toast.error('Failed to copy text');
+				}
 			} catch (error) {
 				console.error('Failed to copy text:', error);
 				toast.error('Failed to copy text');
@@ -120,7 +125,7 @@ export function VoicePage() {
 										<Button
 											variant="outline"
 											size="sm"
-											onClick={copyToClipboard}
+											onClick={copyToClipboardText}
 											disabled={!transcription.text}
 										>
 											{copied ? (

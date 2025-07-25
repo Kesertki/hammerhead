@@ -76,12 +76,7 @@ export class ElectronLlmRpc {
 					chatSession: {
 						loaded: false,
 						generatingResult: false,
-						simplifiedChat: [],
-						draftPrompt: {
-							prompt: llmState.state.chatSession.draftPrompt
-								.prompt,
-							completion: ''
-						}
+						simplifiedChat: []
 					}
 				};
 
@@ -99,7 +94,6 @@ export class ElectronLlmRpc {
 		getState() {
 			return llmState.state;
 		},
-		setDraftPrompt: llmFunctions.chatSession.setDraftPrompt,
 		prompt: llmFunctions.chatSession.prompt,
 		stopActivePrompt: llmFunctions.chatSession.stopActivePrompt,
 		resetChatHistory: llmFunctions.chatSession.resetChatHistory

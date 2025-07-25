@@ -57,11 +57,7 @@ export const llmState = new State<LlmState>({
 	chatSession: {
 		loaded: false,
 		generatingResult: false,
-		simplifiedChat: [],
-		draftPrompt: {
-			prompt: '',
-			completion: ''
-		}
+		simplifiedChat: []
 	}
 });
 
@@ -90,10 +86,6 @@ export type LlmState = {
 		loaded: boolean;
 		generatingResult: boolean;
 		simplifiedChat: SimplifiedChatItem[];
-		draftPrompt: {
-			prompt: string;
-			completion: string;
-		};
 	};
 };
 
@@ -127,8 +119,6 @@ let context: LlamaContext | null = null;
 let contextSequence: LlamaContextSequence | null = null;
 
 let chatSession: LlamaChatSession | null = null;
-let chatSessionCompletionEngine: LlamaChatSessionPromptCompletionEngine | null =
-	null;
 let promptAbortController: AbortController | null = null;
 let inProgressResponse: SimplifiedModelChatItem['message'] = [];
 
@@ -235,11 +225,14 @@ export const llmFunctions = {
 					}
 				};
 
+				console.log('Loading model from path:', modelPath);
+				console.log('Flash attention enabled:', true);
+
 				model = await llama.loadModel({
-					// defaultContextFlashAttention: true,
+					defaultContextFlashAttention: true,
 					modelPath,
 					onLoadProgress(loadProgress: number) {
-						// console.log('loadProgress', loadProgress);
+						console.log('loadProgress', loadProgress);
 						llmState.state = {
 							...llmState.state,
 							model: {
@@ -415,7 +408,7 @@ export const llmFunctions = {
 					try {
 						chatSession.dispose();
 						chatSession = null;
-						chatSessionCompletionEngine = null;
+						// chatSessionCompletionEngine = null;
 					} catch (err) {
 						console.error('Failed to dispose chat session', err);
 					}
@@ -427,8 +420,8 @@ export const llmFunctions = {
 						chatSession: {
 							loaded: false,
 							generatingResult: false,
-							simplifiedChat: [],
-							draftPrompt: llmState.state.chatSession.draftPrompt
+							simplifiedChat: []
+							// draftPrompt: llmState.state.chatSession.draftPrompt
 						}
 					};
 
@@ -441,9 +434,6 @@ export const llmFunctions = {
 					} catch {
 						// do nothing
 					}
-					chatSessionCompletionEngine?.complete(
-						llmState.state.chatSession.draftPrompt.prompt
-					);
 
 					llmState.state = {
 						...llmState.state,
@@ -459,8 +449,7 @@ export const llmFunctions = {
 						chatSession: {
 							loaded: false,
 							generatingResult: false,
-							simplifiedChat: [],
-							draftPrompt: llmState.state.chatSession.draftPrompt
+							simplifiedChat: []
 						}
 					};
 				}
@@ -477,11 +466,7 @@ export const llmFunctions = {
 					...llmState.state,
 					chatSession: {
 						...llmState.state.chatSession,
-						generatingResult: true,
-						draftPrompt: {
-							prompt: '',
-							completion: ''
-						}
+						generatingResult: true
 					}
 				};
 				promptAbortController = new AbortController();
@@ -592,15 +577,7 @@ export const llmFunctions = {
 					chatSession: {
 						...llmState.state.chatSession,
 						generatingResult: false,
-						simplifiedChat: getSimplifiedChatHistory(false),
-						draftPrompt: {
-							...llmState.state.chatSession.draftPrompt,
-							completion:
-								chatSessionCompletionEngine?.complete(
-									llmState.state.chatSession.draftPrompt
-										.prompt
-								) ?? ''
-						}
+						simplifiedChat: getSimplifiedChatHistory(false)
 					}
 				};
 				inProgressResponse = [];
@@ -630,27 +607,6 @@ export const llmFunctions = {
 				]
 			);
 
-			chatSessionCompletionEngine =
-				chatSession.createPromptCompletionEngine({
-					onGeneration(prompt, completion) {
-						if (
-							llmState.state.chatSession.draftPrompt.prompt ===
-							prompt
-						) {
-							llmState.state = {
-								...llmState.state,
-								chatSession: {
-									...llmState.state.chatSession,
-									draftPrompt: {
-										prompt,
-										completion
-									}
-								}
-							};
-						}
-					}
-				});
-
 			llmState.state = {
 				...llmState.state,
 				chatSession: {
@@ -658,45 +614,21 @@ export const llmFunctions = {
 						? true
 						: llmState.state.chatSession.loaded,
 					generatingResult: false,
-					simplifiedChat: getSimplifiedChatHistory(false),
-					draftPrompt: {
-						prompt: llmState.state.chatSession.draftPrompt.prompt,
-						completion:
-							chatSessionCompletionEngine.complete(
-								llmState.state.chatSession.draftPrompt.prompt
-							) ?? ''
-					}
+					simplifiedChat: getSimplifiedChatHistory(false)
 				}
 			};
 
 			chatSession.onDispose.createListener(() => {
-				chatSessionCompletionEngine = null;
 				promptAbortController = null;
 				llmState.state = {
 					...llmState.state,
 					chatSession: {
 						loaded: false,
 						generatingResult: false,
-						simplifiedChat: [],
-						draftPrompt: llmState.state.chatSession.draftPrompt
+						simplifiedChat: []
 					}
 				};
 			});
-		},
-		setDraftPrompt(prompt: string) {
-			if (chatSessionCompletionEngine == null) return;
-
-			llmState.state = {
-				...llmState.state,
-				chatSession: {
-					...llmState.state.chatSession,
-					draftPrompt: {
-						prompt: prompt,
-						completion:
-							chatSessionCompletionEngine.complete(prompt) ?? ''
-					}
-				}
-			};
 		}
 	}
 } as const;

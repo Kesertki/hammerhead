@@ -180,10 +180,6 @@ export function Chat() {
 		[generatingResult, scrollToBottom]
 	);
 
-	const onPromptInput = useCallback((currentText: string) => {
-		void electronLlmRpc.setDraftPrompt(currentText);
-	}, []);
-
 	const error =
 		state.llama.error ??
 		state.model.error ??
@@ -312,15 +308,8 @@ export function Chat() {
 					stopGeneration={
 						generatingResult ? stopActivePrompt : undefined
 					}
-					onPromptInput={onPromptInput}
 					sendPrompt={sendPrompt}
 					generatingResult={generatingResult}
-					autocompleteInputDraft={
-						state.chatSession.draftPrompt.prompt
-					}
-					autocompleteCompletion={
-						state.chatSession.draftPrompt.completion
-					}
 					voiceSettings={voiceSettings}
 				/>
 			</div>

@@ -11,9 +11,6 @@ export function InputRow({
 	disabled = false,
 	stopGeneration,
 	sendPrompt,
-	onPromptInput,
-	autocompleteInputDraft,
-	autocompleteCompletion,
 	generatingResult,
 	autoSubmitVoice = true,
 	voiceSettings = { model: 'tiny', language: '' }
@@ -21,23 +18,9 @@ export function InputRow({
 	const [inputText, setInputText] = useState<string>('');
 	const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
 	const inputRef = useRef<HTMLTextAreaElement>(null);
-	const autocompleteRef = useRef<HTMLDivElement>(null);
-	const autocompleteCurrentTextRef = useRef<HTMLDivElement>(null);
-
-	const autocompleteText = useMemo(() => {
-		const fullText =
-			(autocompleteInputDraft ?? '') + (autocompleteCompletion ?? '');
-		if (fullText.startsWith(inputText))
-			return fullText.slice(inputText.length);
-
-		return '';
-	}, [inputText, autocompleteInputDraft, autocompleteCompletion]);
 
 	const setInputValue = useCallback((value: string) => {
 		if (inputRef.current != null) inputRef.current.value = value;
-
-		if (autocompleteCurrentTextRef.current != null)
-			autocompleteCurrentTextRef.current.innerText = value;
 
 		setInputText(value);
 	}, []);
@@ -47,10 +30,6 @@ export function InputRow({
 
 		inputRef.current.style.height = '';
 		inputRef.current.style.height = inputRef.current.scrollHeight + 'px';
-
-		if (autocompleteRef.current != null) {
-			autocompleteRef.current.scrollTop = inputRef.current.scrollTop;
-		}
 	}, []);
 
 	const submitPrompt = useCallback(() => {
@@ -62,14 +41,12 @@ export function InputRow({
 
 		setInputValue('');
 		resizeInput();
-		onPromptInput?.('');
 		sendPrompt(message);
 	}, [
 		setInputValue,
 		generatingResult,
 		resizeInput,
 		sendPrompt,
-		onPromptInput,
 		isVoiceActive
 	]);
 
@@ -83,7 +60,6 @@ export function InputRow({
 					: result.text;
 				setInputValue(newValue);
 				resizeInput();
-				onPromptInput?.(newValue);
 
 				// Focus the input after transcription
 				inputRef.current.focus();
@@ -108,7 +84,6 @@ export function InputRow({
 		[
 			setInputValue,
 			resizeInput,
-			onPromptInput,
 			autoSubmitVoice,
 			disabled,
 			generatingResult,
@@ -128,17 +103,7 @@ export function InputRow({
 	const onInput = useCallback(() => {
 		setInputText(inputRef.current?.value ?? '');
 		resizeInput();
-
-		if (
-			autocompleteCurrentTextRef.current != null &&
-			inputRef.current != null
-		)
-			autocompleteCurrentTextRef.current.innerText =
-				inputRef.current?.value;
-
-		if (inputRef.current != null && onPromptInput != null)
-			onPromptInput(inputRef.current?.value);
-	}, [resizeInput, onPromptInput]);
+	}, [resizeInput]);
 
 	const onInputKeyDown = useCallback(
 		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -153,36 +118,11 @@ export function InputRow({
 				!event.altKey
 			) {
 				event.preventDefault();
-				if (inputRef.current != null && autocompleteText !== '') {
-					const newlineIndex = autocompleteText.indexOf('\n');
-					const textToAccept =
-						newlineIndex <= 0
-							? autocompleteText
-							: autocompleteText.slice(0, newlineIndex);
-
-					setInputValue(inputRef.current.value + textToAccept);
-					inputRef.current.scrollTop = inputRef.current.scrollHeight;
-					onPromptInput?.(inputRef.current.value);
-				}
-
 				resizeInput();
 			}
 		},
-		[
-			submitPrompt,
-			setInputValue,
-			onPromptInput,
-			resizeInput,
-			autocompleteText
-		]
+		[submitPrompt, setInputValue, resizeInput]
 	);
-
-	const previewAutocompleteText = useMemo(() => {
-		const lines = autocompleteText.split('\n');
-		if (lines.length <= 1 || lines[1]!.trim() === '') return lines[0]!;
-
-		return autocompleteText;
-	}, [autocompleteText]);
 
 	return (
 		<div className="w-full p-3 md:p-4 bg-white">
@@ -202,25 +142,9 @@ export function InputRow({
 						spellCheck
 						disabled={disabled}
 						onScroll={resizeInput}
-						placeholder={autocompleteText === '' ? 'Message' : ''}
+						placeholder="Message"
+						// placeholder={autocompleteText === '' ? 'Message' : ''}
 					/>
-					<div className="autocomplete" ref={autocompleteRef}>
-						<div
-							className={classNames(
-								'content',
-								autocompleteText === '' && 'hide'
-							)}
-						>
-							<div
-								className="currentText"
-								ref={autocompleteCurrentTextRef}
-							/>
-							<div className="completion">
-								{previewAutocompleteText}
-							</div>
-							<div className="pressTab">Tab</div>
-						</div>
-					</div>
 				</div>
 
 				<div className="flex items-center space-x-2">
@@ -288,9 +212,6 @@ type InputRowProps = {
 	disabled?: boolean;
 	stopGeneration?(): void;
 	sendPrompt(prompt: string): void;
-	onPromptInput?(currentText: string): void;
-	autocompleteInputDraft?: string;
-	autocompleteCompletion?: string;
 	generatingResult: boolean;
 	autoSubmitVoice?: boolean;
 	voiceSettings?: VoiceSettings;

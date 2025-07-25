@@ -76,7 +76,7 @@ export function App() {
 					<Route path="/calendar" element={<Calendar />} />
 					<Route path="/search" element={<Search />} />
 					<Route path="/voice" element={<VoicePage />} />
-					<Route path="/settings" element={<Settings />} />
+					<Route path="/settings/*" element={<Settings />} />
 					<Route path="/mcp-servers" element={<McpServersConfig />} />
 					<Route path="/knowledge-base" element={<KnowledgeBase />} />
 					<Route path="/system-prompt" element={<SystemPrompt />} />

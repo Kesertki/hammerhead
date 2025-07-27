@@ -1,9 +1,10 @@
 import {
+	Bot,
 	BotMessageSquare,
+	Computer,
 	Database,
 	Mic,
 	Server,
-	Settings,
 	SquareTerminal
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -38,27 +39,12 @@ const items = [
 		icon: BotMessageSquare
 	},
 	// {
-	// 	title: 'Inbox',
-	// 	url: '/inbox',
-	// 	icon: Inbox
-	// },
-	// {
-	// 	title: 'Calendar',
-	// 	url: '/calendar',
-	// 	icon: Calendar
-	// },
-	// {
-	// 	title: 'Search',
-	// 	url: '/search',
-	// 	icon: Search
+	// 	title: 'MCP Servers',
+	// 	url: '/mcp-servers',
+	// 	icon: Server
 	// },
 	{
-		title: 'MCP Servers',
-		url: '/mcp-servers',
-		icon: Server
-	},
-	{
-		title: 'Knowledge Base (RAG)',
+		title: 'Knowledge Base',
 		url: '/knowledge-base',
 		icon: Database
 	},
@@ -67,21 +53,21 @@ const items = [
 		url: '/system-prompt',
 		icon: SquareTerminal
 	},
-	{
-		title: 'Voice',
-		url: '/voice',
-		icon: Mic
-	}
 	// {
-	// 	title: 'Settings',
-	// 	url: '/settings',
-	// 	icon: Settings
+	// 	title: 'Voice',
+	// 	url: '/voice',
+	// 	icon: Mic
 	// },
-	// {
-	// 	title: 'Logs',
-	// 	url: '/logs',
-	// 	icon: SquareTerminal
-	// }
+	{
+		title: 'Assistants',
+		url: '/assistants',
+		icon: Bot
+	},
+	{
+		title: 'Models',
+		url: '/models',
+		icon: Computer
+	}
 ];
 
 export function AppSidebar() {

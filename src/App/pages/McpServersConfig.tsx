@@ -5,13 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle
-} from '@/components/ui/card';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
 
 // Set up Monaco environment for Electron before loader config
@@ -221,9 +214,7 @@ export default function McpServersConfig() {
 			<div className="m-4 mb-2 flex justify-between items-center">
 				<div className="flex items-center gap-2">
 					<Settings className="w-4 h-4 text-gray-500" />
-					<span className="text-sm font-medium">
-						MCP Configuration
-					</span>
+
 					{!showControls && hasUnsavedChanges && (
 						<Badge variant="secondary" className="text-xs">
 							Unsaved
@@ -247,51 +238,40 @@ export default function McpServersConfig() {
 
 			{/* Header with action buttons */}
 			{showControls && (
-				<Card className="mx-4 mb-4">
-					<CardHeader>
-						<CardTitle>MCP Server Configuration</CardTitle>
-						<CardDescription>
-							Edit your MCP server configuration using JSON format
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="flex gap-2 flex-wrap">
-							<Button
-								onClick={saveConfig}
-								disabled={
-									!hasUnsavedChanges ||
-									validationErrors.length > 0
-								}
-							>
-								Save Configuration
-							</Button>
-							<Button variant="outline" onClick={loadConfig}>
-								Reload
-							</Button>
-							<Button variant="outline" onClick={formatConfig}>
-								Format JSON
-							</Button>
-							<Button variant="outline" onClick={resetConfig}>
-								Reset to Default
-							</Button>
-							{hasUnsavedChanges && (
-								<span className="text-sm text-orange-600 self-center ml-2">
-									• Unsaved changes
-								</span>
-							)}
-							{validationErrors.length > 0 && (
-								<span className="text-sm text-red-600 self-center ml-2">
-									• {validationErrors.length} validation
-									error(s)
-								</span>
-							)}
-						</div>
-					</CardContent>
-				</Card>
+				<div className="mx-4 mb-4 flex gap-2 flex-wrap">
+					<Button
+						size="sm"
+						onClick={saveConfig}
+						disabled={
+							!hasUnsavedChanges || validationErrors.length > 0
+						}
+					>
+						Save
+					</Button>
+					<Button variant="outline" size="sm" onClick={loadConfig}>
+						Reload
+					</Button>
+					<Button variant="outline" size="sm" onClick={formatConfig}>
+						Format
+					</Button>
+					<Button variant="outline" size="sm" onClick={resetConfig}>
+						Reset
+					</Button>
+					{hasUnsavedChanges && (
+						<span className="text-sm text-orange-600 self-center ml-2">
+							• Unsaved changes
+						</span>
+					)}
+					{validationErrors.length > 0 && (
+						<span className="text-sm text-red-600 self-center ml-2">
+							• {validationErrors.length} validation error(s)
+						</span>
+					)}
+				</div>
 			)}
 
 			{/* Monaco Editor */}
-			<div className="flex-1 mx-4 mb-4">
+			<div className="flex-1 mx-4 mb-4 min-h-0">
 				<Editor
 					height="100%"
 					width="100%"

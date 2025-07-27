@@ -12,32 +12,8 @@ import { Settings } from './pages/Settings.tsx';
 import SystemPrompt from './pages/SystemPrompt.tsx';
 
 import './App.css';
+import { ModelSelector } from './components/ModelSelector.tsx';
 import { Logs } from './pages/Logs.tsx';
-import { VoicePage } from './pages/VoicePage.tsx';
-
-const Inbox = () => {
-	return (
-		<div className="p-4">
-			<h1>Inbox</h1>
-		</div>
-	);
-};
-
-const Calendar = () => {
-	return (
-		<div className="p-4">
-			<h1>Calendar</h1>
-		</div>
-	);
-};
-
-const Search = () => {
-	return (
-		<div className="p-4">
-			<h1>Search</h1>
-		</div>
-	);
-};
 
 const KnowledgeBase = () => {
 	return (
@@ -46,6 +22,17 @@ const KnowledgeBase = () => {
 				Knowledge Base
 			</h1>
 			<p>Access your knowledge base here.</p>
+		</div>
+	);
+};
+
+const PlaceholderPage = ({ title }: { title: string }) => {
+	return (
+		<div className="p-4">
+			<h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
+				{title}
+			</h1>
+			<p>This is a placeholder page.</p>
 		</div>
 	);
 };
@@ -72,13 +59,24 @@ export function App() {
 			<Layout>
 				<Routes>
 					<Route path="/" element={<Chat />} />
-					<Route path="/inbox" element={<Inbox />} />
-					<Route path="/calendar" element={<Calendar />} />
-					<Route path="/search" element={<Search />} />
-					<Route path="/voice" element={<VoicePage />} />
 					<Route path="/settings/*" element={<Settings />} />
 					<Route path="/mcp-servers" element={<McpServersConfig />} />
 					<Route path="/knowledge-base" element={<KnowledgeBase />} />
+					<Route
+						path="/assistants"
+						element={<PlaceholderPage title="Assistants" />}
+					/>
+					<Route
+						path="/models"
+						element={
+							<div className="p-4">
+								<h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
+									Models
+								</h1>
+								<ModelSelector />
+							</div>
+						}
+					/>
 					<Route path="/system-prompt" element={<SystemPrompt />} />
 					<Route path="/logs" element={<Logs />} />
 				</Routes>

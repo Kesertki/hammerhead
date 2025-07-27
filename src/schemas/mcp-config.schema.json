@@ -41,6 +41,11 @@
 					"type": "object",
 					"description": "MCP Server configuration",
 					"properties": {
+						"disabled": {
+							"type": "boolean",
+							"description": "Whether the server is disabled",
+							"default": false
+						},
 						"type": {
 							"type": "string",
 							"enum": ["stdio", "sse"],

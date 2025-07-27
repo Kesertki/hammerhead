@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+// import { fileURLToPath } from 'node:url';
 import { State, withLock } from 'lifecycle-utils';
 import {
 	ChatHistoryItem,
@@ -9,7 +9,6 @@ import {
 	isChatModelResponseSegment,
 	Llama,
 	LlamaChatSession,
-	LlamaChatSessionPromptCompletionEngine,
 	LlamaContext,
 	LlamaContextSequence,
 	LlamaModel
@@ -25,8 +24,51 @@ import { loadMcpTools } from '../mcp/client.ts';
 import { getSelectedPrompt } from '../settings/prompts.ts';
 import { eventBus } from '../utils/eventBus.ts';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
+
+// Helper function for logging token usage with analytics
+function logTokenUsage(
+	label: string,
+	tokenState: { usedInputTokens: number; usedOutputTokens: number },
+	tokenDiff?: { usedInputTokens: number; usedOutputTokens: number },
+	timeElapsed?: number
+) {
+	console.log(
+		`[Token Usage] ${label} - Input: ${tokenState.usedInputTokens}, Output: ${tokenState.usedOutputTokens}, Total: ${tokenState.usedInputTokens + tokenState.usedOutputTokens}`
+	);
+
+	if (tokenDiff) {
+		const total = tokenDiff.usedInputTokens + tokenDiff.usedOutputTokens;
+		console.log(
+			`[Token Usage] ${label} Diff - Input: ${tokenDiff.usedInputTokens}, Output: ${tokenDiff.usedOutputTokens}, Total: ${total}`
+		);
+
+		if (timeElapsed && timeElapsed > 0) {
+			const tokensPerSecond = ((total / timeElapsed) * 1000).toFixed(2);
+			const outputTokensPerSecond = (
+				(tokenDiff.usedOutputTokens / timeElapsed) *
+				1000
+			).toFixed(2);
+			console.log(
+				`[Token Usage] Performance - ${tokensPerSecond} tokens/sec (${outputTokensPerSecond} output tokens/sec)`
+			);
+		}
+	}
+}
+
+// Helper function to log session token statistics
+function logSessionTokenStats() {
+	if (contextSequence?.tokenMeter) {
+		const tokenState = contextSequence.tokenMeter.getState();
+		console.log(
+			`[Token Usage] Session Total - Input: ${tokenState.usedInputTokens}, Output: ${tokenState.usedOutputTokens}, Total: ${tokenState.usedInputTokens + tokenState.usedOutputTokens}`
+		);
+		console.log(
+			'[Token Usage] Note: Token counts are tracked at context sequence level and persist across chat session resets'
+		);
+	}
+}
 
 // Initialize MCP connections and load tools
 let mcpFunctions = await loadMcpTools();
@@ -87,6 +129,7 @@ export type LlmState = {
 		generatingResult: boolean;
 		simplifiedChat: SimplifiedChatItem[];
 	};
+	preservedChatHistory?: ChatHistoryItem[];
 };
 
 export type SimplifiedChatItem =
@@ -232,7 +275,7 @@ export const llmFunctions = {
 					defaultContextFlashAttention: true,
 					modelPath,
 					onLoadProgress(loadProgress: number) {
-						console.log('loadProgress', loadProgress);
+						// console.log('loadProgress', loadProgress);
 						llmState.state = {
 							...llmState.state,
 							model: {
@@ -266,6 +309,57 @@ export const llmFunctions = {
 						error: String(err)
 					}
 				};
+			}
+		});
+	},
+	async unloadModel(preserveChat: boolean = false) {
+		await withLock([llmFunctions, 'model'], async () => {
+			if (model == null) return;
+
+			try {
+				// Store current simplified chat and raw chat history if preserving
+				const currentSimplifiedChat = preserveChat
+					? llmState.state.chatSession.simplifiedChat
+					: [];
+				const currentChatHistory =
+					preserveChat && chatSession
+						? chatSession.getChatHistory()
+						: undefined;
+
+				// Dispose of dependent resources first
+				if (chatSession != null) {
+					chatSession.dispose();
+					chatSession = null;
+				}
+				if (contextSequence != null) {
+					contextSequence.dispose();
+					contextSequence = null;
+				}
+				if (context != null) {
+					await context.dispose();
+					context = null;
+				}
+
+				// Finally dispose the model
+				await model.dispose();
+				model = null;
+
+				// Reset all related state (but preserve chat UI if requested)
+				llmState.state = {
+					...llmState.state,
+					selectedModelFilePath: undefined,
+					model: { loaded: false },
+					context: { loaded: false },
+					contextSequence: { loaded: false },
+					chatSession: {
+						loaded: false,
+						generatingResult: false,
+						simplifiedChat: currentSimplifiedChat
+					},
+					preservedChatHistory: currentChatHistory
+				};
+			} catch (err) {
+				console.error('Failed to unload model', err);
 			}
 		});
 	},
@@ -459,8 +553,16 @@ export const llmFunctions = {
 			await withLock([llmFunctions, 'chatSession'], async () => {
 				if (chatSession == null)
 					throw new Error('Chat session not loaded');
+				if (contextSequence == null)
+					throw new Error('Context sequence not loaded');
+
 				// Store original message before augmentation
 				const originalMessage = message.trim();
+
+				// Capture initial token meter state and start timing
+				const initialTokenState = contextSequence.tokenMeter.getState();
+				const startTime = Date.now();
+				logTokenUsage('Before prompt', initialTokenState);
 
 				llmState.state = {
 					...llmState.state,
@@ -572,6 +674,20 @@ export const llmFunctions = {
 					// if the prompt was aborted before the generation even started, we ignore the error
 				}
 
+				// Calculate token usage and timing using TokenMeter diff API
+				const endTime = Date.now();
+				const timeElapsed = endTime - startTime;
+				const finalTokenState = contextSequence.tokenMeter.getState();
+				const tokenDiff =
+					contextSequence.tokenMeter.diff(initialTokenState);
+
+				logTokenUsage(
+					'After prompt',
+					finalTokenState,
+					tokenDiff,
+					timeElapsed
+				);
+
 				llmState.state = {
 					...llmState.state,
 					chatSession: {
@@ -586,11 +702,43 @@ export const llmFunctions = {
 		stopActivePrompt() {
 			promptAbortController?.abort();
 		},
+		clearChat() {
+			// Log session token stats before clearing
+			console.log('[Token Usage] Clearing chat session');
+			logSessionTokenStats();
+
+			// Clear chat state regardless of whether a model is loaded
+			llmState.state = {
+				...llmState.state,
+				chatSession: {
+					...llmState.state.chatSession,
+					simplifiedChat: []
+				},
+				preservedChatHistory: undefined
+			};
+
+			// If there's an active chat session, reset it too
+			if (contextSequence != null && chatSession != null) {
+				// Don't log session stats again since we just did above
+				llmFunctions.chatSession.resetChatHistory(
+					true,
+					undefined,
+					false
+				);
+			}
+		},
 		resetChatHistory(
 			markAsLoaded: boolean = true,
-			messages?: ChatHistoryItem[]
+			messages?: ChatHistoryItem[],
+			logStats: boolean = true
 		) {
 			if (contextSequence == null) return;
+
+			// Log session token stats before resetting if this isn't a fresh session
+			if (chatSession != null && logStats) {
+				console.log('[Token Usage] Resetting chat session');
+				logSessionTokenStats();
+			}
 
 			chatSession?.dispose();
 			chatSession = new LlamaChatSession({
@@ -598,14 +746,16 @@ export const llmFunctions = {
 				autoDisposeSequence: false
 			});
 
-			chatSession.setChatHistory(
-				messages ?? [
+			// Use provided messages, or preserved chat history, or default system prompt
+			const chatMessages = messages ||
+				llmState.state.preservedChatHistory || [
 					{
 						type: 'system',
 						text: getCurrentSystemPrompt()
 					}
-				]
-			);
+				];
+
+			chatSession.setChatHistory(chatMessages);
 
 			llmState.state = {
 				...llmState.state,
@@ -615,7 +765,9 @@ export const llmFunctions = {
 						: llmState.state.chatSession.loaded,
 					generatingResult: false,
 					simplifiedChat: getSimplifiedChatHistory(false)
-				}
+				},
+				// Clear preserved chat history after using it
+				preservedChatHistory: undefined
 			};
 
 			chatSession.onDispose.createListener(() => {
@@ -629,6 +781,18 @@ export const llmFunctions = {
 					}
 				};
 			});
+
+			// Log initial state of new session with better context
+			if (logStats && contextSequence?.tokenMeter) {
+				const sessionType = messages ? 'imported' : 'reset';
+				console.log(
+					`[Token Usage] Chat session ${sessionType} - context sequence tokens preserved`
+				);
+				logTokenUsage(
+					`Session ${sessionType}`,
+					contextSequence.tokenMeter.getState()
+				);
+			}
 		}
 	}
 } as const;

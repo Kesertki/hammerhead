@@ -57,7 +57,7 @@ export class ElectronLlmRpc {
 			}
 			return false;
 		},
-		async selectModelFileAndLoad() {
+		async selectModelFileAndLoad(preserveChat: boolean = false) {
 			const res = await dialog.showOpenDialog({
 				message: 'Select a model file',
 				title: 'Select a model file',
@@ -70,14 +70,14 @@ export class ElectronLlmRpc {
 			});
 
 			if (!res.canceled && res.filePaths.length > 0) {
+				// Unload current model if one is loaded (preserving chat if requested)
+				if (llmState.state.model.loaded) {
+					await llmFunctions.unloadModel(preserveChat);
+				}
+
 				llmState.state = {
 					...llmState.state,
-					selectedModelFilePath: path.resolve(res.filePaths[0]!),
-					chatSession: {
-						loaded: false,
-						generatingResult: false,
-						simplifiedChat: []
-					}
+					selectedModelFilePath: path.resolve(res.filePaths[0]!)
 				};
 
 				if (!llmState.state.llama.loaded)
@@ -96,7 +96,9 @@ export class ElectronLlmRpc {
 		},
 		prompt: llmFunctions.chatSession.prompt,
 		stopActivePrompt: llmFunctions.chatSession.stopActivePrompt,
-		resetChatHistory: llmFunctions.chatSession.resetChatHistory
+		resetChatHistory: llmFunctions.chatSession.resetChatHistory,
+		clearChat: llmFunctions.chatSession.clearChat,
+		unloadModel: llmFunctions.unloadModel
 	} as const;
 
 	public constructor(window: BrowserWindow) {

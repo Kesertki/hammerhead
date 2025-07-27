@@ -81,6 +81,13 @@ async function connect() {
 			continue;
 		}
 
+		if (connection.disabled) {
+			console.warn(
+				`Skipping disabled MCP server: ${name} (${connection.type})`
+			);
+			continue;
+		}
+
 		if (connection.type === 'stdio') {
 			const transport = new StdioClientTransport({
 				command: connection.command ?? '',

@@ -1,6 +1,9 @@
 import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useExternalState } from '@/hooks/useExternalState.ts';
 import { llmState } from '@/state/llmState.ts';
+import McpServersConfig from './McpServersConfig';
+import { VoicePage } from './VoicePage';
 
 // Sub-components for different settings sections
 const GeneralSettings = () => {
@@ -57,6 +60,16 @@ export function Settings() {
 			component: <AppearanceSettings />
 		},
 		{
+			path: '/settings/mcp',
+			label: 'MCP Servers',
+			component: <McpServersConfig />
+		},
+		{
+			path: '/settings/voice',
+			label: 'Voice',
+			component: <VoicePage />
+		},
+		{
 			path: '/settings/advanced',
 			label: 'Advanced',
 			component: <AdvancedSettings />
@@ -64,12 +77,12 @@ export function Settings() {
 	];
 
 	return (
-		<div className="p-4">
-			<h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
+		<div className="p-4 h-full flex flex-col">
+			{/* <h2 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
 				Settings
-			</h1>
+			</h2> */}
 
-			<div className="flex gap-6">
+			<div className="flex gap-6 flex-1 min-h-0 overflow-hidden">
 				{/* Settings Navigation */}
 				<div className="w-64 shrink-0">
 					<nav className="space-y-2">
@@ -90,7 +103,7 @@ export function Settings() {
 				</div>
 
 				{/* Settings Content */}
-				<div className="flex-1">
+				<div className="flex-1 min-h-0 overflow-hidden h-full">
 					<Routes>
 						<Route
 							path="/"
@@ -98,14 +111,45 @@ export function Settings() {
 								<Navigate to="/settings/general" replace />
 							}
 						/>
-						<Route path="/general" element={<GeneralSettings />} />
+						<Route
+							path="/general"
+							element={
+								<ScrollArea className="h-full">
+									<GeneralSettings />
+								</ScrollArea>
+							}
+						/>
 						<Route
 							path="/appearance"
-							element={<AppearanceSettings />}
+							element={
+								<ScrollArea className="h-full">
+									<AppearanceSettings />
+								</ScrollArea>
+							}
+						/>
+						<Route
+							path="/voice"
+							element={
+								<ScrollArea className="h-full">
+									<VoicePage />
+								</ScrollArea>
+							}
+						/>
+						<Route
+							path="/mcp"
+							element={
+								<div className="h-full">
+									<McpServersConfig />
+								</div>
+							}
 						/>
 						<Route
 							path="/advanced"
-							element={<AdvancedSettings />}
+							element={
+								<ScrollArea className="h-full">
+									<AdvancedSettings />
+								</ScrollArea>
+							}
 						/>
 					</Routes>
 				</div>

@@ -7,6 +7,7 @@ export interface McpConfig {
 	}>;
 	servers: {
 		[key: string]: {
+			disabled?: boolean;
 			type?: 'stdio' | 'sse';
 			command?: string;
 			args?: string[];

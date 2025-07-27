@@ -179,8 +179,8 @@ function createWindow() {
 			contextIsolation: true,
 			nodeIntegration: false
 		},
-		width: 1000,
-		height: 700
+		width: 1280,
+		height: 800
 	});
 
 	// Handle media permissions

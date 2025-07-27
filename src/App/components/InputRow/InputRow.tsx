@@ -132,7 +132,7 @@ export function InputRow({
 					disabled && 'opacity-50'
 				)}
 			>
-				<div className="inputContainer flex-1">
+				<div className="inputContainer flex-1 text-left">
 					<textarea
 						ref={inputRef}
 						onInput={onInput}
@@ -145,6 +145,7 @@ export function InputRow({
 						placeholder="Message"
 						// placeholder={autocompleteText === '' ? 'Message' : ''}
 					/>
+					{/* <span>Assistant selector</span> */}
 				</div>
 
 				<div className="flex items-center space-x-2">

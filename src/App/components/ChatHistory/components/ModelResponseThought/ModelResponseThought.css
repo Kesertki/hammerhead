@@ -82,6 +82,7 @@
 					content-box 0 0 / 300% 100% no-repeat;
 				animation: thinking-animation 2s infinite ease-in-out;
 				animation-play-state: paused;
+				font-size: small;
 			}
 
 			> .chevron {

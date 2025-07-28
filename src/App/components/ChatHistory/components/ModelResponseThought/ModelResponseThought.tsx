@@ -1,7 +1,7 @@
-import classNames from 'classnames';
 import { ChevronRight } from 'lucide-react';
 import prettyMilliseconds from 'pretty-ms';
 import { useCallback, useMemo, useState } from 'react';
+import { cn } from '@/lib/utils';
 import { MarkdownContent } from '../../../MarkdownContent/MarkdownContent';
 import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
 
@@ -35,7 +35,7 @@ export function ModelResponseThought({
 
 	return (
 		<div
-			className={classNames(
+			className={cn(
 				'responseThought',
 				active && 'active',
 				isOpen && 'open'
@@ -47,7 +47,7 @@ export function ModelResponseThought({
 					<ChevronRight className="chevron" />
 				</span>
 				<MarkdownContent
-					className={classNames('excerpt', isOpen && 'hide')}
+					className={cn('excerpt', isOpen && 'hide')}
 					dir="auto"
 					inline
 				>
@@ -55,7 +55,7 @@ export function ModelResponseThought({
 				</MarkdownContent>
 			</button>
 			<MessageMarkdown
-				className={classNames('content', !isOpen && 'hide')}
+				className={cn('content', !isOpen && 'hide')}
 				activeDot={active}
 			>
 				{text}

@@ -1119,14 +1119,14 @@ function getSimplifiedChatHistory(
 
 	if (generatingResult && currentPrompt != null) {
 		chatHistory.push({
-			id: `temp-user-${Date.now()}`,
+			id: 'temp-user-generating',
 			type: 'user',
 			message: currentPrompt
 		});
 
 		if (inProgressResponse.length > 0)
 			chatHistory.push({
-				id: `temp-model-${Date.now()}`,
+				id: 'temp-model-generating',
 				type: 'model',
 				message: inProgressResponse
 			});

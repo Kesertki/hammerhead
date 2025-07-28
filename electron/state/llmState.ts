@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 // import { fileURLToPath } from 'node:url';
@@ -26,6 +27,20 @@ import { eventBus } from '../utils/eventBus.ts';
 
 // const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
+
+// Track stable IDs for messages based on their position in chat history
+const messageIdCache = new Map<string, string>();
+
+// Track token usage per message
+const messageTokenStats = new Map<string, TokenStats>();
+const messagePerformanceStats = new Map<
+	string,
+	{
+		tokensPerSecond: number;
+		outputTokensPerSecond: number;
+		timeElapsed: number;
+	}
+>();
 
 // Helper function for logging token usage with analytics
 function logTokenUsage(
@@ -70,6 +85,23 @@ function logSessionTokenStats() {
 	}
 }
 
+// Helper function to get session token statistics
+function getSessionTokenStats(): SessionTokenStats | undefined {
+	if (!contextSequence?.tokenMeter) return undefined;
+
+	const tokenState = contextSequence.tokenMeter.getState();
+	const messageCount =
+		chatSession?.getChatHistory().filter((msg) => msg.type !== 'system')
+			.length || 0;
+
+	return {
+		totalInputTokens: tokenState.usedInputTokens,
+		totalOutputTokens: tokenState.usedOutputTokens,
+		totalTokens: tokenState.usedInputTokens + tokenState.usedOutputTokens,
+		messageCount
+	};
+}
+
 // Initialize MCP connections and load tools
 let mcpFunctions = await loadMcpTools();
 
@@ -99,7 +131,8 @@ export const llmState = new State<LlmState>({
 	chatSession: {
 		loaded: false,
 		generatingResult: false,
-		simplifiedChat: []
+		simplifiedChat: [],
+		sessionTokenStats: undefined
 	}
 });
 
@@ -128,18 +161,35 @@ export type LlmState = {
 		loaded: boolean;
 		generatingResult: boolean;
 		simplifiedChat: SimplifiedChatItem[];
+		sessionTokenStats?: SessionTokenStats;
 	};
 	preservedChatHistory?: ChatHistoryItem[];
+};
+
+export type TokenStats = {
+	inputTokens: number;
+	outputTokens: number;
+	totalTokens: number;
+};
+
+export type SessionTokenStats = {
+	totalInputTokens: number;
+	totalOutputTokens: number;
+	totalTokens: number;
+	messageCount: number;
 };
 
 export type SimplifiedChatItem =
 	| SimplifiedUserChatItem
 	| SimplifiedModelChatItem;
 export type SimplifiedUserChatItem = {
+	id: string;
 	type: 'user';
 	message: string;
+	tokenStats?: TokenStats;
 };
 export type SimplifiedModelChatItem = {
+	id: string;
 	type: 'model';
 	message: Array<
 		| {
@@ -154,6 +204,12 @@ export type SimplifiedModelChatItem = {
 				endTime?: string;
 		  }
 	>;
+	tokenStats?: TokenStats;
+	performanceStats?: {
+		tokensPerSecond: number;
+		outputTokensPerSecond: number;
+		timeElapsed: number;
+	};
 };
 
 let llama: Llama | null = null;
@@ -321,6 +377,9 @@ export const llmFunctions = {
 				const currentSimplifiedChat = preserveChat
 					? llmState.state.chatSession.simplifiedChat
 					: [];
+				const currentSessionTokenStats = preserveChat
+					? llmState.state.chatSession.sessionTokenStats
+					: undefined;
 				const currentChatHistory =
 					preserveChat && chatSession
 						? chatSession.getChatHistory()
@@ -354,7 +413,8 @@ export const llmFunctions = {
 					chatSession: {
 						loaded: false,
 						generatingResult: false,
-						simplifiedChat: currentSimplifiedChat
+						simplifiedChat: currentSimplifiedChat,
+						sessionTokenStats: currentSessionTokenStats
 					},
 					preservedChatHistory: currentChatHistory
 				};
@@ -514,7 +574,8 @@ export const llmFunctions = {
 						chatSession: {
 							loaded: false,
 							generatingResult: false,
-							simplifiedChat: []
+							simplifiedChat: [],
+							sessionTokenStats: undefined
 							// draftPrompt: llmState.state.chatSession.draftPrompt
 						}
 					};
@@ -533,7 +594,8 @@ export const llmFunctions = {
 						...llmState.state,
 						chatSession: {
 							...llmState.state.chatSession,
-							loaded: true
+							loaded: true,
+							sessionTokenStats: getSessionTokenStats()
 						}
 					};
 				} catch (err) {
@@ -543,7 +605,8 @@ export const llmFunctions = {
 						chatSession: {
 							loaded: false,
 							generatingResult: false,
-							simplifiedChat: []
+							simplifiedChat: [],
+							sessionTokenStats: undefined
 						}
 					};
 				}
@@ -568,7 +631,8 @@ export const llmFunctions = {
 					...llmState.state,
 					chatSession: {
 						...llmState.state.chatSession,
-						generatingResult: true
+						generatingResult: true,
+						sessionTokenStats: getSessionTokenStats()
 					}
 				};
 				promptAbortController = new AbortController();
@@ -577,7 +641,8 @@ export const llmFunctions = {
 					...llmState.state,
 					chatSession: {
 						...llmState.state.chatSession,
-						simplifiedChat: getSimplifiedChatHistory(true, message)
+						simplifiedChat: getSimplifiedChatHistory(true, message),
+						sessionTokenStats: getSessionTokenStats()
 					}
 				};
 
@@ -663,7 +728,8 @@ export const llmFunctions = {
 									simplifiedChat: getSimplifiedChatHistory(
 										true,
 										message
-									)
+									),
+									sessionTokenStats: getSessionTokenStats()
 								}
 							};
 						}
@@ -688,12 +754,38 @@ export const llmFunctions = {
 					timeElapsed
 				);
 
+				// Store token stats for this message pair using original message as key
+				if (tokenDiff) {
+					const messageKey = `${originalMessage}-${endTime}`;
+					messageTokenStats.set(messageKey, {
+						inputTokens: tokenDiff.usedInputTokens,
+						outputTokens: tokenDiff.usedOutputTokens,
+						totalTokens:
+							tokenDiff.usedInputTokens +
+							tokenDiff.usedOutputTokens
+					});
+
+					if (timeElapsed > 0) {
+						const total =
+							tokenDiff.usedInputTokens +
+							tokenDiff.usedOutputTokens;
+						messagePerformanceStats.set(messageKey, {
+							tokensPerSecond: (total / timeElapsed) * 1000,
+							outputTokensPerSecond:
+								(tokenDiff.usedOutputTokens / timeElapsed) *
+								1000,
+							timeElapsed
+						});
+					}
+				}
+
 				llmState.state = {
 					...llmState.state,
 					chatSession: {
 						...llmState.state.chatSession,
 						generatingResult: false,
-						simplifiedChat: getSimplifiedChatHistory(false)
+						simplifiedChat: getSimplifiedChatHistory(false),
+						sessionTokenStats: getSessionTokenStats()
 					}
 				};
 				inProgressResponse = [];
@@ -707,12 +799,19 @@ export const llmFunctions = {
 			console.log('[Token Usage] Clearing chat session');
 			logSessionTokenStats();
 
+			// Clear token tracking maps and ID cache
+			messageTokenStats.clear();
+			messagePerformanceStats.clear();
+			originalUserMessages.clear();
+			messageIdCache.clear();
+
 			// Clear chat state regardless of whether a model is loaded
 			llmState.state = {
 				...llmState.state,
 				chatSession: {
 					...llmState.state.chatSession,
-					simplifiedChat: []
+					simplifiedChat: [],
+					sessionTokenStats: getSessionTokenStats()
 				},
 				preservedChatHistory: undefined
 			};
@@ -764,7 +863,8 @@ export const llmFunctions = {
 						? true
 						: llmState.state.chatSession.loaded,
 					generatingResult: false,
-					simplifiedChat: getSimplifiedChatHistory(false)
+					simplifiedChat: getSimplifiedChatHistory(false),
+					sessionTokenStats: getSessionTokenStats()
 				},
 				// Clear preserved chat history after using it
 				preservedChatHistory: undefined
@@ -777,7 +877,8 @@ export const llmFunctions = {
 					chatSession: {
 						loaded: false,
 						generatingResult: false,
-						simplifiedChat: []
+						simplifiedChat: [],
+						sessionTokenStats: undefined
 					}
 				};
 			});
@@ -793,6 +894,87 @@ export const llmFunctions = {
 					contextSequence.tokenMeter.getState()
 				);
 			}
+		},
+		deleteMessage(messageToDelete: SimplifiedUserChatItem) {
+			if (chatSession == null) return;
+
+			const currentHistory = chatSession.getChatHistory();
+			const simplifiedHistory = getSimplifiedChatHistory(false);
+
+			console.log(
+				`Deleting message with ID: ${messageToDelete.id}, Text: ${messageToDelete.message}`
+			);
+			console.log(
+				'Current simplified history:',
+				simplifiedHistory.map((msg) => ({
+					id: msg.id,
+					type: msg.type,
+					message: msg.type === 'user' ? msg.message : 'model'
+				}))
+			);
+
+			// Find the index of the user message to delete using the unique ID
+			const messageIndex = simplifiedHistory.findIndex((msg) => {
+				return msg.type === 'user' && msg.id === messageToDelete.id;
+			});
+
+			console.log(`Message index found: ${messageIndex}`);
+			if (messageIndex === -1) {
+				console.log('Message not found in simplified history');
+				return;
+			}
+
+			// Count non-system messages before the target message to find the actual index
+			let actualIndex = 0;
+			let simplifiedIndex = 0;
+
+			for (let i = 0; i < currentHistory.length; i++) {
+				const historyItem = currentHistory[i];
+				if (!historyItem || historyItem.type === 'system') continue;
+
+				if (simplifiedIndex === messageIndex) {
+					actualIndex = i;
+					break;
+				}
+				simplifiedIndex++;
+			}
+
+			console.log(`Actual index in chat history: ${actualIndex}`);
+			console.log(`Original history length: ${currentHistory.length}`);
+
+			// Remove the message and all subsequent messages
+			const newHistory = currentHistory.slice(0, actualIndex);
+			console.log(`New history length: ${newHistory.length}`);
+
+			// Clear ID cache entries for deleted messages
+			// Since we're deleting from actualIndex onwards, clear cache for those positions
+			for (let i = actualIndex; i < currentHistory.length; i++) {
+				const item = currentHistory[i];
+				if (item?.type === 'user') {
+					const originalMessage =
+						originalUserMessages.get(item.text) || item.text;
+					messageIdCache.delete(`user-${i}-${originalMessage}`);
+				} else if (item?.type === 'model') {
+					messageIdCache.delete(`model-${i}`);
+				}
+			}
+
+			chatSession.setChatHistory(newHistory);
+
+			// Update the state
+			llmState.state = {
+				...llmState.state,
+				chatSession: {
+					...llmState.state.chatSession,
+					simplifiedChat: getSimplifiedChatHistory(false),
+					sessionTokenStats: getSessionTokenStats()
+				}
+			};
+
+			console.log(
+				'State updated, new simplified chat length:',
+				getSimplifiedChatHistory(false).length
+			);
 		}
 	}
 } as const;
@@ -805,18 +987,83 @@ function getSimplifiedChatHistory(
 
 	const chatHistory: SimplifiedChatItem[] = chatSession
 		.getChatHistory()
-		.flatMap((item): SimplifiedChatItem[] => {
+		.flatMap((item, index): SimplifiedChatItem[] => {
 			if (item.type === 'system') return [];
 			if (item.type === 'user') {
-				// return [{ type: 'user', message: item.text }];
 				// Use original message if available, otherwise use the augmented one
 				const originalMessage =
 					originalUserMessages.get(item.text) || item.text;
-				return [{ type: 'user', message: originalMessage }];
-			}
-			if (item.type === 'model')
+
+				// Generate stable ID based on message content and position
+				const messageKey = `user-${index}-${originalMessage}`;
+				let messageId = messageIdCache.get(messageKey);
+				if (!messageId) {
+					messageId = randomUUID();
+					messageIdCache.set(messageKey, messageId);
+				}
+
+				// Try to find token stats for this message
+				const messageKeys = Array.from(messageTokenStats.keys());
+				const matchingKey = messageKeys.find((key) =>
+					key.startsWith(originalMessage + '-')
+				);
+				const tokenStats = matchingKey
+					? messageTokenStats.get(matchingKey)
+					: undefined;
+
 				return [
 					{
+						id: messageId,
+						type: 'user',
+						message: originalMessage,
+						tokenStats
+					}
+				];
+			}
+			if (item.type === 'model') {
+				// Find the corresponding user message to get token stats
+				const chatHistoryItems = chatSession?.getChatHistory() || [];
+				const previousUserMessage = chatHistoryItems
+					.slice(0, index)
+					.reverse()
+					.find((msg) => msg.type === 'user');
+
+				let tokenStats: TokenStats | undefined;
+				let performanceStats:
+					| {
+							tokensPerSecond: number;
+							outputTokensPerSecond: number;
+							timeElapsed: number;
+					  }
+					| undefined;
+
+				if (previousUserMessage) {
+					const originalMessage =
+						originalUserMessages.get(previousUserMessage.text) ||
+						previousUserMessage.text;
+					const messageKeys = Array.from(messageTokenStats.keys());
+					const matchingKey = messageKeys.find((key) =>
+						key.startsWith(originalMessage + '-')
+					);
+
+					if (matchingKey) {
+						tokenStats = messageTokenStats.get(matchingKey);
+						performanceStats =
+							messagePerformanceStats.get(matchingKey);
+					}
+				}
+
+				// Generate stable ID for this model message based on position
+				const modelMessageKey = `model-${index}`;
+				let modelMessageId = messageIdCache.get(modelMessageKey);
+				if (!modelMessageId) {
+					modelMessageId = randomUUID();
+					messageIdCache.set(modelMessageKey, modelMessageId);
+				}
+
+				return [
+					{
+						id: modelMessageId,
 						type: 'model',
 						message: item.response
 							.filter(
@@ -859,9 +1106,12 @@ function getSimplifiedChatHistory(
 									);
 								},
 								[] as SimplifiedModelChatItem['message']
-							)
+							),
+						tokenStats,
+						performanceStats
 					}
 				];
+			}
 
 			void (item satisfies never); // ensure all item types are handled
 			return [];
@@ -869,12 +1119,14 @@ function getSimplifiedChatHistory(
 
 	if (generatingResult && currentPrompt != null) {
 		chatHistory.push({
+			id: `temp-user-${Date.now()}`,
 			type: 'user',
 			message: currentPrompt
 		});
 
 		if (inProgressResponse.length > 0)
 			chatHistory.push({
+				id: `temp-model-${Date.now()}`,
 				type: 'model',
 				message: inProgressResponse
 			});

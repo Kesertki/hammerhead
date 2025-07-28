@@ -35,12 +35,12 @@
 		opacity: 0.6;
 		justify-self: flex-start;
 
-		transition: opacity 0.1s ease-in-out;
+		/* transition: opacity 0.1s ease-in-out; */
 
-		&:hover,
+		/* &:hover,
 		&:focus-visible {
 			opacity: 1;
-		}
+		} */
 
 		&[inert] {
 			opacity: 0;

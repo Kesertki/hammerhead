@@ -1,3 +1,4 @@
+import { Timer } from 'lucide-react';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState.ts';
 import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.tsx';
 import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
@@ -45,8 +46,19 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
 			{modelMessage.message.length === 0 && active && (
 				<MessageMarkdown className="text" activeDot />
 			)}
-			<div className="buttons" inert={active}>
+			<div className="buttons items-center" inert={active}>
 				<ModelMessageCopyButton modelMessage={modelMessage.message} />
+
+				<div className="flex items-center">
+					<Timer className="w-4 h-4 ml-2 mr-1" />
+					<span className="text-xs text-muted-foreground">
+						{Math.round(
+							modelMessage.performanceStats
+								?.outputTokensPerSecond || 0
+						)}{' '}
+						tokens/sec
+					</span>
+				</div>
 			</div>
 		</div>
 	);

@@ -249,6 +249,16 @@ export function Chat() {
 					generatingResult={generatingResult}
 					voiceSettings={voiceSettings}
 				/>
+				{state.chatSession.sessionTokenStats && (
+					<span className="text-xs text-muted-foreground mt-2">
+						{state.chatSession.sessionTokenStats?.totalInputTokens}{' '}
+						input tokens,{' '}
+						{state.chatSession.sessionTokenStats?.totalOutputTokens}{' '}
+						output tokens,{' '}
+						{state.chatSession.sessionTokenStats?.totalTokens} total
+						tokens
+					</span>
+				)}
 			</div>
 		</div>
 	);

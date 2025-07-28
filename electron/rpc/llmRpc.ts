@@ -98,6 +98,7 @@ export class ElectronLlmRpc {
 		stopActivePrompt: llmFunctions.chatSession.stopActivePrompt,
 		resetChatHistory: llmFunctions.chatSession.resetChatHistory,
 		clearChat: llmFunctions.chatSession.clearChat,
+		deleteMessage: llmFunctions.chatSession.deleteMessage,
 		unloadModel: llmFunctions.unloadModel
 	} as const;
 

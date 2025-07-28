@@ -1,7 +1,13 @@
-import classNames from 'classnames';
 import { Check, Copy } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger
+} from '@/components/ui/tooltip.tsx';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState';
+import { cn } from '@/lib/utils';
 import { copyToClipboard } from '@/utils/clipboard';
 
 import './ModelMessageCopyButton.css';
@@ -38,13 +44,19 @@ export function ModelMessageCopyButton({
 	}, [modelMessage, copies]);
 
 	return (
-		<button
-			onClick={onClick}
-			className={classNames('copyButton', copies > 0 && 'copied')}
-		>
-			<Copy className="icon copy" />
-			<Check className="icon check" />
-		</button>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Button
+					onClick={onClick}
+					variant="ghost"
+					className={cn('copyButton', copies > 0 && 'copied')}
+				>
+					<Copy className="icon copy" />
+					<Check className="icon check" />
+				</Button>
+			</TooltipTrigger>
+			<TooltipContent>Copy</TooltipContent>
+		</Tooltip>
 	);
 }
 

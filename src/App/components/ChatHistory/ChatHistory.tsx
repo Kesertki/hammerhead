@@ -16,6 +16,7 @@ type ChatHistoryProps = {
 };
 
 const emptyModelMessage: SimplifiedModelChatItem = {
+	id: 'empty-model-message',
 	type: 'model',
 	message: []
 };
@@ -39,7 +40,7 @@ export const ChatHistory = forwardRef<HTMLDivElement, ChatHistoryProps>(
 					if (item.type === 'model')
 						return (
 							<ModelMessage
-								key={index}
+								key={item.id}
 								modelMessage={item}
 								active={
 									index === renderChatItems.length - 1 &&
@@ -48,7 +49,7 @@ export const ChatHistory = forwardRef<HTMLDivElement, ChatHistoryProps>(
 							/>
 						);
 					if (item.type === 'user')
-						return <UserMessage key={index} message={item} />;
+						return <UserMessage key={item.id} message={item} />;
 
 					return null;
 				})}

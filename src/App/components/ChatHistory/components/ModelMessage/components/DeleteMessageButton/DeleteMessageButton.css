@@ -1,26 +1,26 @@
 .appChatHistory > .message.user > .buttons {
-	> .deleteButton {
-		display: grid;
-		grid-template-areas: "icon";
-		padding: 6px;
-		border: none;
+    > .deleteButton {
+        display: grid;
+        grid-template-areas: 'icon';
+        padding: 6px;
+        border: none;
 
-		transition: background-color 0.1s ease-in-out;
+        transition: background-color 0.1s ease-in-out;
 
-		&:not(:hover, :focus-visible) {
-			background-color: transparent;
-		}
+        &:not(:hover, :focus-visible) {
+            background-color: transparent;
+        }
 
-		> .icon {
-			grid-area: icon;
-			width: 18px;
-			height: 18px;
-			color: var(--color-text-secondary);
-			cursor: pointer;
+        > .icon {
+            grid-area: icon;
+            width: 18px;
+            height: 18px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
 
-			&:hover {
-				color: var(--color-text-primary);
-			}
-		}
-	}
+            &:hover {
+                color: var(--color-text-primary);
+            }
+        }
+    }
 }

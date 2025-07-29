@@ -5,18 +5,16 @@ import { DeleteMessageButton } from '../ModelMessage/components/DeleteMessageBut
 import './UserMessage.css';
 
 export function UserMessage({ message }: UserMessageProps) {
-	return (
-		<div className="message user">
-			<MessageMarkdown className="text">
-				{message.message}
-			</MessageMarkdown>
-			<div className="buttons items-center">
-				<DeleteMessageButton message={message} />
-			</div>
-		</div>
-	);
+    return (
+        <div className="message user">
+            <MessageMarkdown className="text">{message.message}</MessageMarkdown>
+            <div className="buttons items-center">
+                <DeleteMessageButton message={message} />
+            </div>
+        </div>
+    );
 }
 
 type UserMessageProps = {
-	message: SimplifiedUserChatItem;
+    message: SimplifiedUserChatItem;
 };

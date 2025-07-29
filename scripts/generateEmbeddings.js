@@ -193,7 +193,7 @@ async function main() {
 	try {
 		await chromaClient.heartbeat();
 		console.log('ChromaDB server is running');
-	} catch (error) {
+	} catch {
 		console.error('ChromaDB server is not running. Please start it first.');
 		console.error('Run: npx chromadb start --path=./chromadb_data');
 		return;

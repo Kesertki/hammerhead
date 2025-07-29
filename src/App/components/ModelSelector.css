@@ -1,59 +1,59 @@
 .loadModel {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 64px;
-	text-align: start;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    text-align: start;
 
-	> .actions {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		background-color: var(--actions-block-background-color);
-		border: solid 1px var(--actions-block-border-color);
-		box-shadow: var(--actions-block-box-shadow);
-		padding: 16px 24px;
-		border-radius: 12px;
-		gap: 16px;
+    > .actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: var(--actions-block-background-color);
+        border: solid 1px var(--actions-block-border-color);
+        box-shadow: var(--actions-block-box-shadow);
+        padding: 16px 24px;
+        border-radius: 12px;
+        gap: 16px;
 
-		> .separator {
-			height: 1px;
-			background-color: var(--actions-block-border-color);
-			margin: 0px -24px;
-			align-self: stretch;
-		}
+        > .separator {
+            height: 1px;
+            background-color: var(--actions-block-border-color);
+            margin: 0px -24px;
+            align-self: stretch;
+        }
 
-		> .title {
-			padding-inline-end: 16px;
-			opacity: 0.8;
-			font-weight: 600;
-		}
+        > .title {
+            padding-inline-end: 16px;
+            opacity: 0.8;
+            font-weight: 600;
+        }
 
-		> .links {
-			display: flex;
-			flex-direction: row;
+        > .links {
+            display: flex;
+            flex-direction: row;
 
-			> a {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				gap: 8px;
-			}
+            > a {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 8px;
+            }
 
-			> .separator {
-				width: 1px;
-				opacity: 0.2;
-				margin: 0px 16px;
-				height: 0.8lh;
-				align-self: center;
-			}
-		}
+            > .separator {
+                width: 1px;
+                opacity: 0.2;
+                margin: 0px 16px;
+                height: 0.8lh;
+                align-self: center;
+            }
+        }
 
-		> .browseLink {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			gap: 8px;
-		}
-	}
+        > .browseLink {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
+    }
 }

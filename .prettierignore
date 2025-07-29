@@ -1,0 +1,9 @@
+dist/
+data/
+dist-electron/
+src/components/ui/
+scripts/
+
+**/*.html
+**/*.json
+**/*.md

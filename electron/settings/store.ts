@@ -4,7 +4,7 @@ import { SystemPromptConfig } from '../settings/prompts.ts';
 import { VoiceSettings } from '../settings/voice.ts';
 
 export const store = new Store<{
-	systemPrompts: SystemPromptConfig;
-	mcpConfig: McpConfig;
-	voiceSettings: VoiceSettings;
+    systemPrompts: SystemPromptConfig;
+    mcpConfig: McpConfig;
+    voiceSettings: VoiceSettings;
 }>();

@@ -57,8 +57,8 @@ The application supports GGUF format models. Suggested models are available in t
 
 Download these models from Hugging Face:
 
-- **hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K** - Balanced performance and quality
-- **hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L** - Enhanced reasoning capabilities
+- **hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K** - Balanced performance and quality ([Hugging Face](https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF))
+- **hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L** - Enhanced reasoning capabilities ([Hugging Face](https://huggingface.co/bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF))
 
 ### Adding Custom Models
 

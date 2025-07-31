@@ -2,7 +2,7 @@ import { House } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { McpActions, type McpState } from '@/App/components/McpActions';
-import { SettingsSidebar } from '@/App/components/settings-sidebar';
+import { SettingsSidebar } from '@/App/components/SettingsSidebar';
 import { SystemPromptActions, type SystemPromptState } from '@/App/components/SystemPromptActions';
 import { Button } from '@/components/ui/button.tsx';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';

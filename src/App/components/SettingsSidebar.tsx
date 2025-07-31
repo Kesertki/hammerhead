@@ -1,6 +1,5 @@
-import { Bot, BotMessageSquare, Computer } from 'lucide-react';
+import { ArrowLeft, Database, Palette, Server, Settings as SettingsIcon, Volume2, Zap, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
     Sidebar,
     SidebarContent,
@@ -13,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { NavUser } from './nav-user';
+import { NavUser } from './NavUser';
 
 const data = {
     user: {
@@ -23,48 +22,65 @@ const data = {
     },
 };
 
-// Menu items.
-const items = [
+// Settings menu items.
+const settingsItems = [
     {
-        title: 'Assistant',
-        url: '/',
-        icon: BotMessageSquare,
-    },
-    // {
-    // 	title: 'MCP Servers',
-    // 	url: '/mcp-servers',
-    // 	icon: Server
-    // },
-    // {
-    // 	title: 'Voice',
-    // 	url: '/voice',
-    // 	icon: Mic
-    // },
-    {
-        title: 'Agents',
-        url: '/agents',
-        icon: Bot,
+        title: 'General',
+        url: '/settings/general',
+        icon: SettingsIcon,
     },
     {
-        title: 'Models',
-        url: '/models',
-        icon: Computer,
+        title: 'Appearance',
+        url: '/settings/appearance',
+        icon: Palette,
+    },
+    {
+        title: 'Knowledge Base',
+        url: '/settings/knowledge-base',
+        icon: Database,
+    },
+    {
+        title: 'MCP Servers',
+        url: '/settings/mcp',
+        icon: Server,
+    },
+    {
+        title: 'System Prompt',
+        url: '/settings/system-prompt',
+        icon: FileText,
+    },
+    {
+        title: 'Voice',
+        url: '/settings/voice',
+        icon: Volume2,
+    },
+    {
+        title: 'Advanced',
+        url: '/settings/advanced',
+        icon: Zap,
     },
 ];
 
-export function AppSidebar() {
+export function SettingsSidebar() {
     return (
         <Sidebar variant="inset">
             <SidebarHeader>
-                <WorkspaceSwitcher />
-                {/* <SearchForm /> */}
+                <div className="flex items-center gap-2 px-4 py-2">
+                    <Link
+                        to="/"
+                        className="flex items-center gap-2 text-sm font-medium hover:text-foreground transition-colors"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Home
+                    </Link>
+                </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Application</SidebarGroupLabel>
+                    <SidebarGroupLabel>Settings</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {items.map((item) => (
+                            {settingsItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
                                         <Link to={item.url}>

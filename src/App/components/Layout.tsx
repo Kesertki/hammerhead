@@ -1,8 +1,8 @@
 import { HardDriveUpload, Loader2Icon, Trash, Unplug } from 'lucide-react';
 import React, { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { AppSidebar } from '@/App/components/app-sidebar';
-import { NavActions } from '@/App/components/nav-actions.tsx';
+import { AppSidebar } from '@/App/components/AppSidebar';
+import { NavActions } from '@/App/components/NavActions';
 import { Button } from '@/components/ui/button.tsx';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';

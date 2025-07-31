@@ -147,7 +147,7 @@ function createWindow() {
     win = new BrowserWindow({
         icon: path.join(
             process.env.VITE_PUBLIC,
-            process.platform === 'darwin' ? 'icon.png' : process.platform === 'win32' ? 'icon.ico' : 'icon.png'
+            process.platform === 'darwin' ? 'icon.jpg' : process.platform === 'win32' ? 'icon.ico' : 'icon.jpg'
         ),
         webPreferences: {
             preload: path.join(__dirname, 'preload.mjs'),

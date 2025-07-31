@@ -18,7 +18,7 @@ export default {
     directories: {
         output: 'release',
     },
-    icon: './public/icon.png',
+    icon: './public/icon.jpg',
 
     // remove this once you set up your own code signing for macOS
     async afterPack(context) {

@@ -2,6 +2,7 @@ import { HardDriveUpload } from 'lucide-react';
 import { useCallback } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
+import headerImage from '/header.webp';
 
 import './Welcome.css';
 
@@ -24,7 +25,7 @@ export function Welcome() {
                     to start chatting
                 </p>
             </div>
-            <img src="/header.webp" alt="Hammerhead Logo" />
+            <img src={headerImage} alt="Hammerhead Logo" />
         </div>
     );
 }

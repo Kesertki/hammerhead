@@ -1,0 +1,48 @@
+.welcome-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+
+    > .welcome {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin: 0;
+        color: var(--text-color, currentColor);
+        text-align: center;
+
+        > .alpha {
+            font-size: 0.4em;
+            font-weight: 400;
+            opacity: 0.7;
+            margin-left: 0.3em;
+        }
+    }
+
+    > .hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: -6px;
+
+        > .hint-text {
+            text-align: center;
+            opacity: 0.8;
+            font-size: 1.1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0;
+        }
+    }
+    > img {
+        max-width: 400px;
+        max-height: 400px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+        margin-top: 8px;
+    }
+}

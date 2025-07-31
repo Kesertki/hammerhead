@@ -1,4 +1,3 @@
-import { HardDriveUpload } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useExternalState } from '../hooks/useExternalState.ts';
 import { electronLlmRpc } from '../rpc/llmRpc.ts';
@@ -6,18 +5,9 @@ import { llmState } from '../state/llmState.ts';
 import type { VoiceSettings } from '../types';
 import { ChatHistory } from './components/ChatHistory/ChatHistory.tsx';
 import { InputRow } from './components/InputRow/InputRow.tsx';
+import { Welcome } from './components/Welcome';
 
 import './Chat.css';
-
-export function ModelPicker() {
-    return (
-        <div className="loadModel">
-            <div className="hint">
-                Click the <HardDriveUpload className="inline-block" /> button above to load a model
-            </div>
-        </div>
-    );
-}
 
 export function Chat() {
     const state = useExternalState(llmState);
@@ -196,7 +186,7 @@ export function Chat() {
                     <div className="message">
                         {error != null && <div className="error">{String(error)}</div>}
                         {loading && <div className="loading">Loading...</div>}
-                        {(state.selectedModelFilePath == null || state.llama.error != null) && <ModelPicker />}
+                        {(state.selectedModelFilePath == null || state.llama.error != null) && <Welcome />}
                         {!loading &&
                             state.selectedModelFilePath != null &&
                             error == null &&
@@ -220,7 +210,7 @@ export function Chat() {
                     generatingResult={generatingResult}
                     voiceSettings={voiceSettings}
                 />
-                {state.chatSession.sessionTokenStats && (
+                {state.model.loaded && state.chatSession.sessionTokenStats && (
                     <span className="text-xs text-muted-foreground mt-2">
                         {state.chatSession.sessionTokenStats?.totalInputTokens} input tokens,{' '}
                         {state.chatSession.sessionTokenStats?.totalOutputTokens} output tokens,{' '}

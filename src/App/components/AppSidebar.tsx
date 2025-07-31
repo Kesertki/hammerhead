@@ -1,27 +1,15 @@
-import { Bot, BotMessageSquare, Computer } from 'lucide-react';
+import { BotMessageSquare, Computer } from 'lucide-react';
 import { Link } from 'react-router-dom';
-// import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
     Sidebar,
     SidebarContent,
-    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
-    // SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { NavUser } from './NavUser';
-
-const data = {
-    user: {
-        name: 'denys',
-        email: 'denys@example.com',
-        avatar: '/avatars/denys.jpeg',
-    },
-};
 
 // Menu items.
 const items = [
@@ -30,11 +18,11 @@ const items = [
         url: '/',
         icon: BotMessageSquare,
     },
-    {
-        title: 'Agents',
-        url: '/agents',
-        icon: Bot,
-    },
+    // {
+    //     title: 'Agents',
+    //     url: '/agents',
+    //     icon: Bot,
+    // },
     {
         title: 'Models',
         url: '/models',
@@ -46,7 +34,6 @@ export function AppSidebar() {
     return (
         <Sidebar variant="inset">
             {/* <SidebarHeader>
-                <WorkspaceSwitcher />
                 <SearchForm />
             </SidebarHeader> */}
             <SidebarContent>
@@ -68,9 +55,6 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={data.user} />
-            </SidebarFooter>
         </Sidebar>
     );
 }

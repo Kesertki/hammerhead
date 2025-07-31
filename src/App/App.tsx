@@ -10,14 +10,14 @@ import './App.css';
 import { ModelSelector } from './components/ModelSelector.tsx';
 import { Logs } from './pages/Logs.tsx';
 
-const PlaceholderPage = ({ title }: { title: string }) => {
-    return (
-        <div className="p-4">
-            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">{title}</h1>
-            <p>This is a placeholder page.</p>
-        </div>
-    );
-};
+// const PlaceholderPage = ({ title }: { title: string }) => {
+//     return (
+//         <div className="p-4">
+//             <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">{title}</h1>
+//             <p>This is a placeholder page.</p>
+//         </div>
+//     );
+// };
 
 function NavigationHandler() {
     const navigate = useNavigate();
@@ -57,7 +57,7 @@ export function App() {
                             <Routes>
                                 <Route path="/" element={<Chat />} />
                                 <Route path="/mcp-servers" element={<McpServersConfig />} />
-                                <Route path="/agents" element={<PlaceholderPage title="Agents" />} />
+                                {/* <Route path="/agents" element={<PlaceholderPage title="Agents" />} /> */}
                                 <Route
                                     path="/models"
                                     element={

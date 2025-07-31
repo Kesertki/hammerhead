@@ -1,5 +1,5 @@
 import { House } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { McpActions, type McpState } from '@/App/components/McpActions';
 import { SettingsSidebar } from '@/App/components/SettingsSidebar';
@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { eventBus } from '@/utils/eventBus.ts';
 
 interface SettingsLayoutProps {
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {

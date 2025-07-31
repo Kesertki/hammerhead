@@ -62,31 +62,6 @@
 
 /* temporary */
 
-/* copy buttons in chat history */
-.app button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    transition:
-        border-color 0.3s var(--transition-easing),
-        opacity 0.3s var(--transition-easing);
-
-    &[disabled] {
-        opacity: 0.52;
-        pointer-events: none;
-    }
-
-    &:hover,
-    &:focus,
-    &:focus-visible {
-        border-color: var(--button-hover-border-color);
-    }
-}
-
 .app code:not(pre code) {
     background-color: color-mix(in srgb, currentColor, transparent 94%);
     padding: 0.1em 0.3em;
@@ -96,15 +71,4 @@
 .app code:not(pre code)::before,
 .app code:not(pre code)::after {
     content: '';
-}
-
-.app code {
-    /*background-color: color-mix(in srgb, currentColor, transparent 94%);*/
-    /*padding: 0.1em 0.3em;*/
-    /*border-radius: 0.4em;*/
-    /*font-size: 1.2em;*/
-}
-
-.app code:not(:where(pre code)) {
-    /* your styles here */
 }

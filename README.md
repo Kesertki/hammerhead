@@ -1,7 +1,7 @@
 <h1 align="center">Hammerhead</h1>
 
 <p align="center">
-  <img src="./public/logo.webp" alt="Hammerhead" width="300" />
+  <img src="./public/header.webp" alt="Hammerhead" width="300" />
 </p>
 
 Hammerhead is a web-based desktop application that allows developers to interact with a large language model (LLM) through a chat interface.
@@ -74,14 +74,20 @@ Recommended servers:
 
 ## RAG (Retrieval-Augmented Generation)
 
+> Note: RAG functionality is currently in development and may not be fully functional.
+
 To enable RAG functionality, you need to set up a vector database and configure the application to use it. Follow these steps:
 
-1. **Run the Chroma vector database**:
-   - You can use the provided `npm run chroma` command to run the database locally.
+1. **Get RAG models**:
+   - Use the `npm run rag:models:pull` command to download the necessary RAG models.
+   - This will pull the models into the `./models` directory.
+
+2. **Run the Chroma vector database**:
+   - You can use the provided `npm run rag:chroma` command to run the database locally.
    - Make sure you have Docker installed and running.
 
-2. **Configure the ingestion of documents**:
-   - Use the `npm run ingest` command to ingest documents into the vector database.
+3. **Configure the ingestion of documents**:
+   - Use the `npm run rag:ingest` command to ingest documents into the vector database.
    - This command will read files from the `./data` directory and store them in the database.
 
 The application will automatically connect to the Chroma vector database and use it for RAG functionality.

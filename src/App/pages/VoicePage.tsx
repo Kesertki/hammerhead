@@ -77,7 +77,7 @@ export function VoicePage() {
     };
 
     return (
-        <div className="h-full flex flex-col max-w-4xl mx-auto p-4">
+        <div className="h-full flex flex-col mx-auto p-4">
             <Tabs defaultValue="parameters">
                 <TabsList>
                     <TabsTrigger value="parameters">Parameters</TabsTrigger>

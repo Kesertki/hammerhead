@@ -1,20 +1,5 @@
-import {
-    ArrowDown,
-    ArrowUp,
-    Bell,
-    Copy,
-    CornerUpLeft,
-    CornerUpRight,
-    FileText,
-    GalleryVerticalEnd,
-    LineChart,
-    Link,
-    MoreHorizontal,
-    Settings2,
-    Trash,
-    Trash2,
-} from 'lucide-react';
-import React, { useCallback } from 'react';
+import { ArrowDown, ArrowUp, MoreHorizontal } from 'lucide-react';
+import { useCallback, ComponentType } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -33,7 +18,7 @@ import { llmState } from '@/state/llmState.ts';
 
 interface ActionGroup {
     label: string;
-    icon: React.ComponentType<any>;
+    icon: ComponentType<any>;
     action?: string; // Optional action for specific items
     onClick?: () => void; // Optional click handler
     disabled?: boolean;
@@ -63,56 +48,56 @@ export function NavActions() {
     }, []);
 
     const data: Array<ActionGroup[]> = [
-        [
-            {
-                label: 'Customize Page',
-                icon: Settings2,
-            },
-            {
-                label: 'Turn into wiki',
-                icon: FileText,
-            },
-        ],
-        [
-            {
-                label: 'Copy Link',
-                icon: Link,
-            },
-            {
-                label: 'Duplicate',
-                icon: Copy,
-            },
-            {
-                label: 'Move to',
-                icon: CornerUpRight,
-            },
-            {
-                label: 'Move to Trash',
-                icon: Trash2,
-            },
-        ],
-        [
-            {
-                label: 'Undo',
-                icon: CornerUpLeft,
-            },
-            {
-                label: 'View analytics',
-                icon: LineChart,
-            },
-            {
-                label: 'Version History',
-                icon: GalleryVerticalEnd,
-            },
-            {
-                label: 'Show delete pages',
-                icon: Trash,
-            },
-            {
-                label: 'Notifications',
-                icon: Bell,
-            },
-        ],
+        // [
+        //     {
+        //         label: 'Customize Page',
+        //         icon: Settings2,
+        //     },
+        //     {
+        //         label: 'Turn into wiki',
+        //         icon: FileText,
+        //     },
+        // ],
+        // [
+        //     {
+        //         label: 'Copy Link',
+        //         icon: Link,
+        //     },
+        //     {
+        //         label: 'Duplicate',
+        //         icon: Copy,
+        //     },
+        //     {
+        //         label: 'Move to',
+        //         icon: CornerUpRight,
+        //     },
+        //     {
+        //         label: 'Move to Trash',
+        //         icon: Trash2,
+        //     },
+        // ],
+        // [
+        //     {
+        //         label: 'Undo',
+        //         icon: CornerUpLeft,
+        //     },
+        //     {
+        //         label: 'View analytics',
+        //         icon: LineChart,
+        //     },
+        //     {
+        //         label: 'Version History',
+        //         icon: GalleryVerticalEnd,
+        //     },
+        //     {
+        //         label: 'Show delete pages',
+        //         icon: Trash,
+        //     },
+        //     {
+        //         label: 'Notifications',
+        //         icon: Bell,
+        //     },
+        // ],
         [
             {
                 label: 'Import',

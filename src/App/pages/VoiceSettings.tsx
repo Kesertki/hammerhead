@@ -1,21 +1,29 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown, Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
+import type { TranscriptionResult, VoiceSettings } from '@/types';
+import { DEFAULT_VOICE_SETTINGS } from '@/types';
+import { copyToClipboard } from '@/utils/clipboard';
+import { Switch } from '@/components/ui/switch';
+import { VoiceInput } from '../components/VoiceInput';
 
 const models = [
     { label: 'Tiny (recommended)', value: 'tiny' },
-    { label: 'Base', value: 'base' },
-    { label: 'Small', value: 'small' },
-    { label: 'Medium', value: 'medium' },
-    { label: 'Large', value: 'large' },
-    { label: 'Turbo', value: 'turbo' },
+    // { label: 'Base', value: 'base' },
+    // { label: 'Small', value: 'small' },
+    // { label: 'Medium', value: 'medium' },
+    // { label: 'Large', value: 'large' },
+    // { label: 'Turbo', value: 'turbo' },
 ];
 
 const languages = [
@@ -123,6 +131,7 @@ const languages = [
 ] as const;
 
 const FormSchema = z.object({
+    enabled: z.boolean(),
     model: z.string({
         required_error: 'Please select a transcription model.',
     }),
@@ -131,181 +140,363 @@ const FormSchema = z.object({
     }),
 });
 
-export function VoiceSettings({
-    onSettingsChange,
-    settings,
-    isLoading = false,
-}: {
-    onSettingsChange?: (settings: { model: string; language: string }) => void;
-    settings?: { model: string; language: string };
-    isLoading?: boolean;
-}) {
+export function VoiceSettings() {
     const [langOpen, setLangOpen] = useState(false);
     const [modelOpen, setModelOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [settings, setSettings] = useState<VoiceSettings>(DEFAULT_VOICE_SETTINGS);
+
+    // Test functionality state
+    const [transcription, setTranscription] = useState<TranscriptionResult | null>(null);
+    const [copied, setCopied] = useState(false);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: {
-            language: '',
-            model: 'tiny',
-        },
+        defaultValues: DEFAULT_VOICE_SETTINGS,
     });
 
-    // Update form when settings prop changes
+    // Watch the enabled field to control other field states
+    const isEnabled = form.watch('enabled');
+
+    // Load settings on component mount
+    useEffect(() => {
+        loadSettings();
+    }, []);
+
+    const loadSettings = async () => {
+        try {
+            setIsLoading(true);
+            const loadedSettings = await window.electronAPI.getVoiceSettings();
+            if (loadedSettings) {
+                setSettings(loadedSettings);
+            }
+        } catch (error) {
+            console.error('Error loading voice settings:', error);
+            // Use default settings if loading fails
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Update form when settings state changes
     useEffect(() => {
         if (settings) {
             form.reset({
+                enabled: settings.enabled,
                 model: settings.model,
                 language: settings.language,
             });
         }
     }, [settings, form]);
 
-    async function onSubmit(data: z.infer<typeof FormSchema>) {
-        const newSettings = {
-            model: data.model,
-            language: data.language,
-        };
-        // Notify parent component of the change
-        onSettingsChange?.(newSettings);
-    }
+    // Watch for changes in any form field and auto-save
+    useEffect(() => {
+        const subscription = form.watch((value, { name }) => {
+            if (name && value[name as keyof typeof value] !== undefined) {
+                const currentFormData = form.getValues();
+                // Only auto-save if all required fields have values
+                if (
+                    currentFormData.model &&
+                    currentFormData.language !== undefined &&
+                    currentFormData.enabled !== undefined
+                ) {
+                    const newSettings: VoiceSettings = {
+                        enabled: currentFormData.enabled,
+                        model: currentFormData.model,
+                        language: currentFormData.language,
+                    };
+                    saveSettings(newSettings);
+                }
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [form]);
+
+    const saveSettings = async (newSettings: VoiceSettings) => {
+        try {
+            await window.electronAPI.setVoiceSettings(newSettings);
+            setSettings(newSettings);
+            // toast.success('Settings updated successfully');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            toast.error('Failed to save settings');
+        }
+    };
+
+    // Test functionality handlers
+    const handleTranscriptionComplete = (result: TranscriptionResult) => {
+        setTranscription(result);
+    };
+
+    const handleTranscriptionError = (error: Error) => {
+        console.error('Transcription error:', error);
+        // Error handling is already done in VoiceInput component
+    };
+
+    const copyToClipboardText = async () => {
+        if (transcription?.text) {
+            try {
+                const success = await copyToClipboard(transcription.text);
+                if (success) {
+                    setCopied(true);
+                    toast.success('Text copied to clipboard');
+                    setTimeout(() => setCopied(false), 2000);
+                } else {
+                    toast.error('Failed to copy text');
+                }
+            } catch (error) {
+                console.error('Failed to copy text:', error);
+                toast.error('Failed to copy text');
+            }
+        }
+    };
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {isLoading ? (
-                    <div className="text-center py-4">Loading settings...</div>
-                ) : (
-                    <>
-                        <FormField
-                            control={form.control}
-                            name="model"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Model</FormLabel>
-                                    <Popover open={modelOpen} onOpenChange={setModelOpen}>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    className={cn(
-                                                        'w-[200px] justify-between',
-                                                        field.value === undefined && 'text-muted-foreground'
+        <div className="h-full flex flex-col mx-auto p-4">
+            <Form {...form}>
+                <div className="space-y-6">
+                    {isLoading ? (
+                        <div className="text-center py-4">Loading settings...</div>
+                    ) : (
+                        <>
+                            <FormField
+                                control={form.control}
+                                name="enabled"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-row">
+                                        <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                        <FormDescription>Enable or disable voice input.</FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="model"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            Model
+                                        </FormLabel>
+                                        <Popover
+                                            open={isEnabled && modelOpen}
+                                            onOpenChange={(open) => isEnabled && setModelOpen(open)}
+                                        >
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        disabled={!isEnabled}
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        className={cn(
+                                                            'w-[200px] justify-between',
+                                                            field.value === undefined && 'text-muted-foreground',
+                                                            !isEnabled && 'opacity-50 cursor-not-allowed'
+                                                        )}
+                                                    >
+                                                        {field.value !== undefined
+                                                            ? models.find((model) => model.value === field.value)?.label
+                                                            : 'Select model'}
+                                                        <ChevronsUpDown className="opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[200px] p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search model..." className="h-9" />
+                                                    <CommandList>
+                                                        <CommandEmpty>No model found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {models.map((model) => (
+                                                                <CommandItem
+                                                                    value={model.label}
+                                                                    key={model.value}
+                                                                    onSelect={() => {
+                                                                        if (isEnabled) {
+                                                                            form.setValue('model', model.value, {
+                                                                                shouldValidate: true,
+                                                                            });
+                                                                            setModelOpen(false);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {model.label}
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'ml-auto',
+                                                                            model.value === field.value
+                                                                                ? 'opacity-100'
+                                                                                : 'opacity-0'
+                                                                        )}
+                                                                    />
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            This is the model that will be used for the voice transcription.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="language"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            Language
+                                        </FormLabel>
+                                        <Popover
+                                            open={isEnabled && langOpen}
+                                            onOpenChange={(open) => isEnabled && setLangOpen(open)}
+                                        >
+                                            <PopoverTrigger asChild>
+                                                <FormControl>
+                                                    <Button
+                                                        disabled={!isEnabled}
+                                                        variant="outline"
+                                                        role="combobox"
+                                                        className={cn(
+                                                            'w-[200px] justify-between',
+                                                            field.value === undefined && 'text-muted-foreground',
+                                                            !isEnabled && 'opacity-50 cursor-not-allowed'
+                                                        )}
+                                                    >
+                                                        {field.value !== undefined
+                                                            ? languages.find(
+                                                                  (language) => language.value === field.value
+                                                              )?.label
+                                                            : 'Select language'}
+                                                        <ChevronsUpDown className="opacity-50" />
+                                                    </Button>
+                                                </FormControl>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[200px] p-0">
+                                                <Command>
+                                                    <CommandInput placeholder="Search language..." className="h-9" />
+                                                    <CommandList>
+                                                        <CommandEmpty>No language found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {languages.map((language) => (
+                                                                <CommandItem
+                                                                    value={language.label}
+                                                                    key={language.value}
+                                                                    onSelect={() => {
+                                                                        if (isEnabled) {
+                                                                            form.setValue('language', language.value, {
+                                                                                shouldValidate: true,
+                                                                            });
+                                                                            setLangOpen(false);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {language.label}
+                                                                    <Check
+                                                                        className={cn(
+                                                                            'ml-auto',
+                                                                            language.value === field.value
+                                                                                ? 'opacity-100'
+                                                                                : 'opacity-0'
+                                                                        )}
+                                                                    />
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>
+                                        <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            This is the language that will be used for the voice transcription.
+                                        </FormDescription>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Test Section */}
+                            <Separator className="my-6" />
+                            <div className="space-y-4">
+                                <div>
+                                    <h3 className="text-lg font-medium">Test Voice Settings</h3>
+                                    <p className="text-sm text-muted-foreground">
+                                        Test your voice settings to ensure they work correctly.
+                                    </p>
+                                </div>
+
+                                {/* Voice Input Test */}
+                                {isEnabled && settings ? (
+                                    <VoiceInput
+                                        onTranscriptionComplete={handleTranscriptionComplete}
+                                        onTranscriptionError={handleTranscriptionError}
+                                        model={settings.model}
+                                        language={settings.language}
+                                    />
+                                ) : (
+                                    <div className="text-center text-muted-foreground py-4">
+                                        Voice input is disabled. Enable it above to test.
+                                    </div>
+                                )}
+
+                                {/* Transcription Results */}
+                                {isEnabled && transcription && (
+                                    <Card className="w-full">
+                                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                            <CardTitle className="text-lg">Transcription Result</CardTitle>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={copyToClipboardText}
+                                                disabled={!transcription.text}
+                                            >
+                                                {copied ? (
+                                                    <>
+                                                        <Check className="mr-2 h-4 w-4" />
+                                                        Copied
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy className="mr-2 h-4 w-4" />
+                                                        Copy
+                                                    </>
+                                                )}
+                                            </Button>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="space-y-3">
+                                                <div className="p-3 bg-muted rounded-md">
+                                                    <p className="text-sm whitespace-pre-wrap">
+                                                        {transcription.text || 'No text detected'}
+                                                    </p>
+                                                </div>
+
+                                                {/* Transcription metadata */}
+                                                <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                                                    {transcription.language && (
+                                                        <span>Language: {transcription.language}</span>
                                                     )}
-                                                >
-                                                    {field.value !== undefined
-                                                        ? models.find((model) => model.value === field.value)?.label
-                                                        : 'Select model'}
-                                                    <ChevronsUpDown className="opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[200px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search model..." className="h-9" />
-                                                <CommandList>
-                                                    <CommandEmpty>No model found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {models.map((model) => (
-                                                            <CommandItem
-                                                                value={model.label}
-                                                                key={model.value}
-                                                                onSelect={() => {
-                                                                    form.setValue('model', model.value);
-                                                                    setModelOpen(false);
-                                                                }}
-                                                            >
-                                                                {model.label}
-                                                                <Check
-                                                                    className={cn(
-                                                                        'ml-auto',
-                                                                        model.value === field.value
-                                                                            ? 'opacity-100'
-                                                                            : 'opacity-0'
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormDescription>
-                                        This is the model that will be used for the voice transcription.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="language"
-                            render={({ field }) => (
-                                <FormItem className="flex flex-col">
-                                    <FormLabel>Language</FormLabel>
-                                    <Popover open={langOpen} onOpenChange={setLangOpen}>
-                                        <PopoverTrigger asChild>
-                                            <FormControl>
-                                                <Button
-                                                    variant="outline"
-                                                    role="combobox"
-                                                    className={cn(
-                                                        'w-[200px] justify-between',
-                                                        field.value === undefined && 'text-muted-foreground'
+                                                    {transcription.confidence && (
+                                                        <span>
+                                                            Confidence: {Math.round(transcription.confidence * 100)}%
+                                                        </span>
                                                     )}
-                                                >
-                                                    {field.value !== undefined
-                                                        ? languages.find((language) => language.value === field.value)
-                                                              ?.label
-                                                        : 'Select language'}
-                                                    <ChevronsUpDown className="opacity-50" />
-                                                </Button>
-                                            </FormControl>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[200px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search language..." className="h-9" />
-                                                <CommandList>
-                                                    <CommandEmpty>No language found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {languages.map((language) => (
-                                                            <CommandItem
-                                                                value={language.label}
-                                                                key={language.value}
-                                                                onSelect={() => {
-                                                                    form.setValue('language', language.value);
-                                                                    setLangOpen(false);
-                                                                }}
-                                                            >
-                                                                {language.label}
-                                                                <Check
-                                                                    className={cn(
-                                                                        'ml-auto',
-                                                                        language.value === field.value
-                                                                            ? 'opacity-100'
-                                                                            : 'opacity-0'
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                    <FormDescription>
-                                        This is the language that will be used for the voice transcription.
-                                    </FormDescription>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit">Save</Button>
-                    </>
-                )}
-            </form>
-        </Form>
+                                                    {transcription.duration && (
+                                                        <span>Duration: {transcription.duration.toFixed(1)}s</span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </div>
+            </Form>
+        </div>
     );
 }

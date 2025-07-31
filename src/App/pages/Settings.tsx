@@ -4,7 +4,7 @@ import { useExternalState } from '@/hooks/useExternalState.ts';
 import { llmState } from '@/state/llmState.ts';
 import McpServersConfig from './McpServersConfig';
 import SystemPrompt from './SystemPrompt';
-import { VoicePage } from './VoicePage';
+import { VoiceSettings } from './VoiceSettings';
 
 // Sub-components for different settings sections
 const KnowledgeBase = () => {
@@ -82,7 +82,7 @@ export function Settings() {
                         path="/voice"
                         element={
                             <ScrollArea className="h-full">
-                                <VoicePage />
+                                <VoiceSettings />
                             </ScrollArea>
                         }
                     />

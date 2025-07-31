@@ -19,6 +19,16 @@ const settingsItems = [
         url: '/settings/general',
         icon: SettingsIcon,
     },
+    {
+        title: 'Voice',
+        url: '/settings/voice',
+        icon: Volume2,
+    },
+    {
+        title: 'System Prompt',
+        url: '/settings/system-prompt',
+        icon: FileText,
+    },
     // {
     //     title: 'Appearance',
     //     url: '/settings/appearance',
@@ -33,16 +43,6 @@ const settingsItems = [
         title: 'MCP Servers',
         url: '/settings/mcp',
         icon: Server,
-    },
-    {
-        title: 'System Prompt',
-        url: '/settings/system-prompt',
-        icon: FileText,
-    },
-    {
-        title: 'Voice',
-        url: '/settings/voice',
-        icon: Volume2,
     },
     // {
     //     title: 'Advanced',

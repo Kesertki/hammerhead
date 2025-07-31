@@ -3,6 +3,7 @@ import { useExternalState } from '../hooks/useExternalState.ts';
 import { electronLlmRpc } from '../rpc/llmRpc.ts';
 import { llmState } from '../state/llmState.ts';
 import type { VoiceSettings } from '../types';
+import { DEFAULT_VOICE_SETTINGS } from '../types';
 import { ChatHistory } from './components/ChatHistory/ChatHistory.tsx';
 import { InputRow } from './components/InputRow/InputRow.tsx';
 import { Welcome } from './components/Welcome';
@@ -21,10 +22,7 @@ export function Chat() {
     const wasAtBottomRef = useRef<boolean>(true);
 
     // Voice settings state
-    const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
-        model: 'tiny',
-        language: '',
-    });
+    const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>(DEFAULT_VOICE_SETTINGS);
 
     // Load voice settings on component mount
     useEffect(() => {

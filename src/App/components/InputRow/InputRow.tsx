@@ -3,6 +3,7 @@ import { ArrowUp, CircleStop } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
+import { DEFAULT_VOICE_SETTINGS } from '@/types';
 import { VoiceInput } from '../VoiceInput';
 
 import './InputRow.css';
@@ -13,7 +14,7 @@ export function InputRow({
     sendPrompt,
     generatingResult,
     autoSubmitVoice = true,
-    voiceSettings = { model: 'tiny', language: '' },
+    voiceSettings = DEFAULT_VOICE_SETTINGS,
 }: InputRowProps) {
     const [inputText, setInputText] = useState<string>('');
     const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
@@ -136,15 +137,17 @@ export function InputRow({
                         <CircleStop />
                     </Button>
 
-                    {/* Voice Input Component */}
-                    <VoiceInput
-                        onTranscriptionComplete={handleVoiceTranscriptionComplete}
-                        onTranscriptionError={handleVoiceTranscriptionError}
-                        onStateChange={handleVoiceStateChange}
-                        disabled={disabled || generatingResult}
-                        language={voiceSettings.language}
-                        model={voiceSettings.model}
-                    />
+                    {/* Voice Input Component - only show if enabled */}
+                    {voiceSettings.enabled && (
+                        <VoiceInput
+                            onTranscriptionComplete={handleVoiceTranscriptionComplete}
+                            onTranscriptionError={handleVoiceTranscriptionError}
+                            onStateChange={handleVoiceStateChange}
+                            disabled={disabled || generatingResult}
+                            language={voiceSettings.language}
+                            model={voiceSettings.model}
+                        />
+                    )}
 
                     <Button
                         variant="outline"

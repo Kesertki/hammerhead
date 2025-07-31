@@ -69,9 +69,16 @@ export interface TranscriptionResult {
 }
 
 export interface VoiceSettings {
+    enabled: boolean;
     model: string;
     language: string;
 }
+
+export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
+    enabled: false, // Default to disabled
+    model: 'tiny',
+    language: '',
+};
 
 declare global {
     interface Window {

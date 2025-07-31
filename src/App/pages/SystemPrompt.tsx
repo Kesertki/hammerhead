@@ -1,7 +1,5 @@
-import { Edit3, Plus } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -12,9 +10,10 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { SystemPromptConfig } from '@/types.ts';
+import { eventBus } from '@/utils/eventBus.ts';
 
 const SystemPrompt = () => {
     const [systemPrompts, setSystemPrompts] = useState<SystemPromptConfig>();
@@ -35,19 +34,41 @@ const SystemPrompt = () => {
             if (selectedPrompt) {
                 setPromptText(selectedPrompt.prompt);
             }
+
+            // Send state update to layout
+            updateLayoutState(config, config.selectedPromptId);
         });
     }, []);
 
-    // Update prompt text when a different prompt is selected
-    const handlePromptChange = (promptId: string) => {
-        setActivePromptId(promptId);
-        const selectedPrompt = systemPrompts?.prompts.find((p) => p.id === promptId);
-        if (selectedPrompt) {
-            setPromptText(selectedPrompt.prompt);
-        }
-    };
+    // Send state updates to the layout via event bus
+    const updateLayoutState = useCallback((config: SystemPromptConfig, activeId: string) => {
+        eventBus.emit('systemPrompt:stateUpdate', {
+            activePromptId: activeId,
+            prompts: config.prompts.map((p) => ({ id: p.id, name: p.name })),
+            canDelete: config.prompts.length > 1,
+        });
+    }, []);
 
-    const handleSave = () => {
+    // Update layout state when activePromptId or systemPrompts change
+    useEffect(() => {
+        if (systemPrompts) {
+            updateLayoutState(systemPrompts, activePromptId);
+        }
+    }, [systemPrompts, activePromptId, updateLayoutState]);
+
+    // Update prompt text when a different prompt is selected
+    const handlePromptChange = useCallback(
+        (promptId: string) => {
+            setActivePromptId(promptId);
+            const selectedPrompt = systemPrompts?.prompts.find((p) => p.id === promptId);
+            if (selectedPrompt) {
+                setPromptText(selectedPrompt.prompt);
+            }
+        },
+        [systemPrompts]
+    );
+
+    const handleSave = useCallback(() => {
         if (!systemPrompts || !activePromptId) return;
 
         // Create updated prompts with the new text
@@ -67,9 +88,9 @@ const SystemPrompt = () => {
             .catch(() => {
                 toast.error('Failed to save prompt');
             });
-    };
+    }, [systemPrompts, activePromptId, promptText]);
 
-    const handleDelete = () => {
+    const handleDelete = useCallback(() => {
         if (!systemPrompts || !activePromptId) return;
 
         // Don't allow deleting if there's only one prompt
@@ -101,18 +122,18 @@ const SystemPrompt = () => {
             .catch(() => {
                 toast.error('Failed to delete prompt');
             });
-    };
+    }, [systemPrompts, activePromptId]);
 
-    const handleAddNewPrompt = () => {
+    const handleAddNewPrompt = useCallback(() => {
         if (!systemPrompts) return;
 
         // Set up dialog for creating new prompt
         setNameDialogMode('create');
         setNameDialogValue(`New Prompt ${systemPrompts.prompts.length + 1}`);
         setShowNameDialog(true);
-    };
+    }, [systemPrompts]);
 
-    const handleRenamePrompt = () => {
+    const handleRenamePrompt = useCallback(() => {
         if (!systemPrompts || !activePromptId) return;
 
         // Find the current prompt
@@ -123,7 +144,7 @@ const SystemPrompt = () => {
         setNameDialogMode('rename');
         setNameDialogValue(currentPrompt.name);
         setShowNameDialog(true);
-    };
+    }, [systemPrompts, activePromptId]);
 
     const handleConfirmNameDialog = () => {
         if (!systemPrompts || !nameDialogValue.trim()) {
@@ -190,53 +211,37 @@ const SystemPrompt = () => {
         setNameDialogValue('');
     };
 
+    // Listen for action events from the layout
+    useEffect(() => {
+        const unsubscribeAction = eventBus.on<string>('systemPrompt:action', (action) => {
+            switch (action) {
+                case 'save':
+                    handleSave();
+                    break;
+                case 'delete':
+                    handleDelete();
+                    break;
+                case 'add':
+                    handleAddNewPrompt();
+                    break;
+                case 'rename':
+                    handleRenamePrompt();
+                    break;
+            }
+        });
+
+        const unsubscribePromptChange = eventBus.on<string>('systemPrompt:promptChange', (promptId) => {
+            handlePromptChange(promptId);
+        });
+
+        return () => {
+            unsubscribeAction();
+            unsubscribePromptChange();
+        };
+    }, [handleSave, handleDelete, handleAddNewPrompt, handleRenamePrompt, handlePromptChange]);
+
     return (
         <div className="flex flex-col h-full p-4">
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <Select value={activePromptId} onValueChange={handlePromptChange}>
-                        <SelectTrigger className="w-[200px]">
-                            <SelectValue placeholder="Select a prompt" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {systemPrompts?.prompts.map((prompt) => (
-                                <SelectItem key={prompt.id} value={prompt.id}>
-                                    {prompt.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleAddNewPrompt}
-                        className="flex items-center gap-1"
-                    >
-                        <Plus className="w-4 h-4" />
-                        Add New
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleRenamePrompt}
-                        disabled={!activePromptId}
-                        className="flex items-center gap-1"
-                    >
-                        <Edit3 className="w-4 h-4" />
-                        Rename
-                    </Button>
-                </div>
-                <div className="space-x-2">
-                    <Button onClick={handleSave}>Save</Button>
-                    <Button
-                        variant="destructive"
-                        onClick={handleDelete}
-                        disabled={!systemPrompts || systemPrompts.prompts.length <= 1}
-                    >
-                        Delete
-                    </Button>
-                </div>
-            </div>
             <Textarea
                 className="flex-1 p-4 border rounded-md"
                 placeholder="Enter your prompt here..."

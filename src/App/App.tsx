@@ -3,23 +3,12 @@ import { Route, HashRouter as Router, Routes, useNavigate } from 'react-router-d
 import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
+import SettingsLayout from './components/SettingsLayout.tsx';
 import { Settings } from './pages/Settings.tsx';
-import SystemPrompt from './pages/SystemPrompt.tsx';
 
 import './App.css';
 import { ModelSelector } from './components/ModelSelector.tsx';
 import { Logs } from './pages/Logs.tsx';
-
-const KnowledgeBase = () => {
-    return (
-        <div className="p-4">
-            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance">
-                Knowledge Base
-            </h1>
-            <p>Access your knowledge base here.</p>
-        </div>
-    );
-};
 
 const PlaceholderPage = ({ title }: { title: string }) => {
     return (
@@ -49,28 +38,43 @@ export function App() {
     return (
         <Router>
             <NavigationHandler />
-            <Layout>
-                <Routes>
-                    <Route path="/" element={<Chat />} />
-                    <Route path="/settings/*" element={<Settings />} />
-                    <Route path="/mcp-servers" element={<McpServersConfig />} />
-                    <Route path="/knowledge-base" element={<KnowledgeBase />} />
-                    <Route path="/assistants" element={<PlaceholderPage title="Assistants" />} />
-                    <Route
-                        path="/models"
-                        element={
-                            <div className="p-4">
-                                <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
-                                    Models
-                                </h1>
-                                <ModelSelector />
-                            </div>
-                        }
-                    />
-                    <Route path="/system-prompt" element={<SystemPrompt />} />
-                    <Route path="/logs" element={<Logs />} />
-                </Routes>
-            </Layout>
+            <Routes>
+                {/* Settings route with custom layout */}
+                <Route
+                    path="/settings/*"
+                    element={
+                        <SettingsLayout>
+                            <Settings />
+                        </SettingsLayout>
+                    }
+                />
+
+                {/* All other routes with main Layout */}
+                <Route
+                    path="/*"
+                    element={
+                        <Layout>
+                            <Routes>
+                                <Route path="/" element={<Chat />} />
+                                <Route path="/mcp-servers" element={<McpServersConfig />} />
+                                <Route path="/agents" element={<PlaceholderPage title="Agents" />} />
+                                <Route
+                                    path="/models"
+                                    element={
+                                        <div className="p-4">
+                                            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
+                                                Models
+                                            </h1>
+                                            <ModelSelector />
+                                        </div>
+                                    }
+                                />
+                                <Route path="/logs" element={<Logs />} />
+                            </Routes>
+                        </Layout>
+                    }
+                />
+            </Routes>
         </Router>
     );
 }

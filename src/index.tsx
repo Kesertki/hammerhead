@@ -11,7 +11,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <TooltipProvider>
             <App />
         </TooltipProvider>
-        <Toaster position="top-right" />
+        <Toaster position="bottom-center" />
     </React.StrictMode>
 );
 

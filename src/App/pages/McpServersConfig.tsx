@@ -1,11 +1,9 @@
 import Editor, { loader } from '@monaco-editor/react';
-import { Settings } from 'lucide-react';
 import type * as Monaco from 'monaco-editor';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
+import { eventBus } from '@/utils/eventBus.ts';
 
 // Set up Monaco environment for Electron before loader config
 (self as any).MonacoEnvironment = {
@@ -53,11 +51,37 @@ export default function McpServersConfig() {
     const [isLoading, setIsLoading] = useState(true);
     const [isUserEditing, setIsUserEditing] = useState(false);
     const [isProgrammaticChange, setIsProgrammaticChange] = useState(false);
-    const [showControls, setShowControls] = useState(false);
 
     useEffect(() => {
-        loadConfig();
+        // Call loadConfig once on mount
+        (async () => {
+            try {
+                setIsLoading(true);
+                setIsUserEditing(false);
+                setIsProgrammaticChange(true);
+                const config = await window.electronAPI.getMCPConfig();
+                if (config) {
+                    const configString = JSON.stringify(config, null, 2);
+                    setCurrentConfig(configString);
+                    setHasUnsavedChanges(false);
+                }
+            } catch (error) {
+                console.error('Error loading MCP config:', error);
+                toast.error('Failed to load MCP configuration');
+            } finally {
+                setIsLoading(false);
+                setTimeout(() => setIsProgrammaticChange(false), 100);
+            }
+        })();
     }, []);
+
+    // Send state updates to the layout via event bus
+    useEffect(() => {
+        eventBus.emit('mcp:stateUpdate', {
+            hasUnsavedChanges,
+            validationErrors: validationErrors.length,
+        });
+    }, [hasUnsavedChanges, validationErrors]);
 
     // Update editor when currentConfig changes (after loading) - but not during user editing
     useEffect(() => {
@@ -66,7 +90,7 @@ export default function McpServersConfig() {
         }
     }, [currentConfig, isLoading, isUserEditing]);
 
-    const loadConfig = async () => {
+    const loadConfig = useCallback(async () => {
         try {
             setIsLoading(true);
             setIsUserEditing(false);
@@ -86,9 +110,9 @@ export default function McpServersConfig() {
             // Reset the flag after a brief delay to allow editor to update
             setTimeout(() => setIsProgrammaticChange(false), 100);
         }
-    };
+    }, []);
 
-    const saveConfig = async () => {
+    const saveConfig = useCallback(async () => {
         try {
             // Validate JSON syntax first
             let parsedConfig: McpConfig;
@@ -115,9 +139,9 @@ export default function McpServersConfig() {
             console.error('Error saving MCP config:', error);
             toast.error('Failed to save MCP configuration');
         }
-    };
+    }, [currentConfig, validationErrors]);
 
-    const resetConfig = () => {
+    const resetConfig = useCallback(() => {
         setIsUserEditing(false);
         setIsProgrammaticChange(true);
         setCurrentConfig(defaultMcpConfig);
@@ -126,9 +150,9 @@ export default function McpServersConfig() {
             editorRef.current.setValue(defaultMcpConfig);
         }
         setTimeout(() => setIsProgrammaticChange(false), 100);
-    };
+    }, []);
 
-    const formatConfig = () => {
+    const formatConfig = useCallback(() => {
         try {
             const parsed = JSON.parse(currentConfig);
             const formatted = JSON.stringify(parsed, null, 2);
@@ -146,7 +170,29 @@ export default function McpServersConfig() {
         } catch {
             toast.error('Cannot format invalid JSON');
         }
-    };
+    }, [currentConfig]);
+
+    // Listen for action events from the layout
+    useEffect(() => {
+        const unsubscribe = eventBus.on<string>('mcp:action', (action) => {
+            switch (action) {
+                case 'save':
+                    saveConfig();
+                    break;
+                case 'reload':
+                    loadConfig();
+                    break;
+                case 'format':
+                    formatConfig();
+                    break;
+                case 'reset':
+                    resetConfig();
+                    break;
+            }
+        });
+
+        return unsubscribe;
+    }, [saveConfig, loadConfig, formatConfig, resetConfig]);
 
     function handleEditorChange(value: string | undefined, _event: Monaco.editor.IModelContentChangedEvent) {
         // Ignore changes that are programmatic (loading, formatting, etc.)
@@ -164,6 +210,12 @@ export default function McpServersConfig() {
         console.log('onMount: the monaco instance:', monaco);
         editorRef.current = editor;
         monacoRef.current = monaco;
+
+        // Add keyboard shortcut for save (Cmd+S / Ctrl+S)
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+            // Trigger save action via event bus (same as clicking the save button)
+            eventBus.emit('mcp:action', 'save');
+        });
 
         // Set the current config value only if loading is complete
         if (!isLoading) {
@@ -197,55 +249,8 @@ export default function McpServersConfig() {
 
     return (
         <div className="h-full flex flex-col">
-            {/* Toggle Button */}
-            <div className="m-4 mb-2 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                    <Settings className="w-4 h-4 text-gray-500" />
-
-                    {!showControls && hasUnsavedChanges && (
-                        <Badge variant="secondary" className="text-xs">
-                            Unsaved
-                        </Badge>
-                    )}
-                    {!showControls && validationErrors.length > 0 && (
-                        <Badge variant="destructive" className="text-xs">
-                            {validationErrors.length} Error(s)
-                        </Badge>
-                    )}
-                </div>
-                <Button onClick={() => setShowControls(!showControls)} variant="ghost" size="sm" className="text-xs">
-                    {showControls ? 'Hide' : 'Show'}
-                </Button>
-            </div>
-
-            {/* Header with action buttons */}
-            {showControls && (
-                <div className="mx-4 mb-4 flex gap-2 flex-wrap">
-                    <Button size="sm" onClick={saveConfig} disabled={!hasUnsavedChanges || validationErrors.length > 0}>
-                        Save
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={loadConfig}>
-                        Reload
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={formatConfig}>
-                        Format
-                    </Button>
-                    <Button variant="outline" size="sm" onClick={resetConfig}>
-                        Reset
-                    </Button>
-                    {hasUnsavedChanges && (
-                        <span className="text-sm text-orange-600 self-center ml-2">• Unsaved changes</span>
-                    )}
-                    {validationErrors.length > 0 && (
-                        <span className="text-sm text-red-600 self-center ml-2">
-                            • {validationErrors.length} validation error(s)
-                        </span>
-                    )}
-                </div>
-            )}
-
             {/* Monaco Editor */}
-            <div className="flex-1 mx-4 mb-4 min-h-0">
+            <div className="flex-1 m-4 min-h-0">
                 <Editor
                     height="100%"
                     width="100%"

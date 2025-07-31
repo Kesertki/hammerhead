@@ -118,12 +118,10 @@ export function NavActions() {
 
     return (
         <div className="flex items-center gap-2 text-sm">
-            {/* <div className="hidden font-medium text-muted-foreground md:inline-block">
-        Edit Oct 08
-      </div> */}
+            {/* <div className="hidden font-medium text-muted-foreground md:inline-block">Edit Oct 08</div> */}
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-7 w-7 data-[state=open]:bg-accent">
+                    <Button variant="ghost" size="icon" className="data-[state=open]:bg-accent cursor-pointer">
                         <MoreHorizontal />
                     </Button>
                 </PopoverTrigger>

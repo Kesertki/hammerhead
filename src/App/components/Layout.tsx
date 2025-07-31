@@ -50,7 +50,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <div className="flex flex-1 items-center gap-2 px-3">
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <SidebarTrigger className="-ml-1" />
+                                <SidebarTrigger className="-ml-1 cursor-pointer" />
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>Toggle sidebar</p>
@@ -60,7 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                     {isOnChatRoute && (
                         <>
-                            <div className="text-sm font-semibold">
+                            <div className="text-sm">
                                 {loading ? (
                                     'Loading...'
                                 ) : isOnChatRoute ? (
@@ -87,7 +87,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-7 w-7 ml-auto"
+                                                    className="cursor-pointer"
                                                     onClick={async () => {
                                                         await electronLlmRpc.unloadModel(true);
                                                     }}
@@ -105,7 +105,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="h-7 w-7"
+                                                className="cursor-pointer"
                                                 onClick={openSelectModelFileDialog}
                                             >
                                                 <HardDriveUpload />
@@ -131,7 +131,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-7 w-7"
+                                            className="cursor-pointer"
                                             onClick={resetChatHistory}
                                         >
                                             <Trash />

@@ -1,6 +1,6 @@
 import { Bot, BotMessageSquare, Computer } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
+// import { WorkspaceSwitcher } from '@/App/components/WorkspaceSwitcher.tsx';
 import {
     Sidebar,
     SidebarContent,
@@ -8,7 +8,7 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
-    SidebarHeader,
+    // SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -30,16 +30,6 @@ const items = [
         url: '/',
         icon: BotMessageSquare,
     },
-    // {
-    // 	title: 'MCP Servers',
-    // 	url: '/mcp-servers',
-    // 	icon: Server
-    // },
-    // {
-    // 	title: 'Voice',
-    // 	url: '/voice',
-    // 	icon: Mic
-    // },
     {
         title: 'Agents',
         url: '/agents',
@@ -55,10 +45,10 @@ const items = [
 export function AppSidebar() {
     return (
         <Sidebar variant="inset">
-            <SidebarHeader>
+            {/* <SidebarHeader>
                 <WorkspaceSwitcher />
-                {/* <SearchForm /> */}
-            </SidebarHeader>
+                <SearchForm />
+            </SidebarHeader> */}
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupLabel>Application</SidebarGroupLabel>

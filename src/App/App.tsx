@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { Route, HashRouter as Router, Routes, useNavigate } from 'react-router-dom';
-import McpServersConfig from '@/App/pages/McpServersConfig.tsx';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
-import SettingsLayout from './components/SettingsLayout.tsx';
-import { Settings } from './pages/Settings.tsx';
+import SettingsLayout from './settings/SettingsLayout.tsx';
+import Settings from './settings/Settings.tsx';
 
 import './App.css';
 import { ModelSelector } from './components/ModelSelector.tsx';
@@ -56,8 +55,6 @@ export function App() {
                         <Layout>
                             <Routes>
                                 <Route path="/" element={<Chat />} />
-                                <Route path="/mcp-servers" element={<McpServersConfig />} />
-                                {/* <Route path="/agents" element={<PlaceholderPage title="Agents" />} /> */}
                                 <Route
                                     path="/models"
                                     element={

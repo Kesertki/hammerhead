@@ -58,9 +58,11 @@ async function connect() {
     }
     channels.length = 0; // Clear the channels array
 
-    // clear mcpFunctions
+    // clear mcpFunctions but preserve modelFunctions
     Object.keys(mcpFunctions).forEach((key) => {
-        delete mcpFunctions[key];
+        if (!(key in modelFunctions)) {
+            delete mcpFunctions[key];
+        }
     });
 
     if (!config?.servers) {

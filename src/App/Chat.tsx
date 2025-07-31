@@ -31,13 +31,13 @@ export function Chat() {
 
     const loadVoiceSettings = async () => {
         try {
-            console.log('Loading voice settings...');
+            console.log('Chat: Loading voice settings...');
             const settings = await window.electronAPI.getVoiceSettings();
             if (settings) {
                 setVoiceSettings(settings);
             }
         } catch (error) {
-            console.error('Error loading voice settings:', error);
+            console.error('Chat: Error loading voice settings:', error);
             // Use default settings if loading fails
         }
     };

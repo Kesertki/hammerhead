@@ -41,6 +41,19 @@ function createMenu() {
                       submenu: [
                           { role: 'about' as const },
                           { type: 'separator' as const },
+                          {
+                              label: 'Settings...',
+                              click: () => {
+                                  win?.webContents.send('navigate-to-route', '/settings');
+                              },
+                          },
+                          {
+                              label: 'Logs',
+                              click: () => {
+                                  win?.webContents.send('navigate-to-route', '/logs');
+                              },
+                          },
+                          { type: 'separator' as const },
                           { role: 'services' as const },
                           { type: 'separator' as const },
                           { role: 'hide' as const },
@@ -95,18 +108,6 @@ function createMenu() {
                 { type: 'separator' as const },
                 { role: 'togglefullscreen' as const },
                 { type: 'separator' as const },
-                {
-                    label: 'Settings',
-                    click: () => {
-                        win?.webContents.send('navigate-to-route', '/settings');
-                    },
-                },
-                {
-                    label: 'Logs',
-                    click: () => {
-                        win?.webContents.send('navigate-to-route', '/logs');
-                    },
-                },
             ],
         },
         // Window menu

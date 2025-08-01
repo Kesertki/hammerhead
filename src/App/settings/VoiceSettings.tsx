@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown, Copy } from 'lucide-react';
+import { Check, ChevronsUpDown, Copy, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
@@ -132,6 +133,11 @@ const languages = [
 
 const FormSchema = z.object({
     enabled: z.boolean(),
+    dockerImage: z
+        .string({
+            required_error: 'Please enter a Docker image name.',
+        })
+        .min(1, 'Docker image name is required.'),
     model: z.string({
         required_error: 'Please select a transcription model.',
     }),
@@ -183,6 +189,7 @@ export function VoiceSettings() {
         if (settings) {
             form.reset({
                 enabled: settings.enabled,
+                dockerImage: settings.dockerImage,
                 model: settings.model,
                 language: settings.language,
             });
@@ -196,12 +203,14 @@ export function VoiceSettings() {
                 const currentFormData = form.getValues();
                 // Only auto-save if all required fields have values
                 if (
+                    currentFormData.dockerImage &&
                     currentFormData.model &&
                     currentFormData.language !== undefined &&
                     currentFormData.enabled !== undefined
                 ) {
                     const newSettings: VoiceSettings = {
                         enabled: currentFormData.enabled,
+                        dockerImage: currentFormData.dockerImage,
                         model: currentFormData.model,
                         language: currentFormData.language,
                     };
@@ -251,6 +260,11 @@ export function VoiceSettings() {
         }
     };
 
+    const clearTranscription = () => {
+        setTranscription(null);
+        setCopied(false);
+    };
+
     return (
         <div className="h-full flex flex-col mx-auto p-4">
             <Form {...form}>
@@ -266,6 +280,32 @@ export function VoiceSettings() {
                                     <FormItem className="flex flex-row">
                                         <Switch checked={field.value} onCheckedChange={field.onChange} />
                                         <FormDescription>Enable or disable voice input.</FormDescription>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="dockerImage"
+                                render={({ field }) => (
+                                    <FormItem className="flex flex-col">
+                                        <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            Docker Image Name
+                                        </FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                disabled={!isEnabled}
+                                                placeholder="whisper"
+                                                className={cn(
+                                                    'w-[200px]',
+                                                    !isEnabled && 'opacity-50 cursor-not-allowed'
+                                                )}
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                            The Docker image name to use for transcription (e.g., "whisper").
+                                        </FormDescription>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
@@ -430,12 +470,25 @@ export function VoiceSettings() {
 
                                 {/* Voice Input Test */}
                                 {isEnabled && settings ? (
-                                    <VoiceInput
-                                        onTranscriptionComplete={handleTranscriptionComplete}
-                                        onTranscriptionError={handleTranscriptionError}
-                                        model={settings.model}
-                                        language={settings.language}
-                                    />
+                                    <div className="flex items-center gap-2">
+                                        <VoiceInput
+                                            onTranscriptionComplete={handleTranscriptionComplete}
+                                            onTranscriptionError={handleTranscriptionError}
+                                            dockerImage={settings.dockerImage}
+                                            model={settings.model}
+                                            language={settings.language}
+                                        />
+                                        {transcription && (
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                onClick={clearTranscription}
+                                                title="Clear transcription"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
+                                    </div>
                                 ) : (
                                     <div className="text-center text-muted-foreground py-4">
                                         Voice input is disabled. Enable it above to test.

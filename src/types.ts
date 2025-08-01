@@ -70,12 +70,14 @@ export interface TranscriptionResult {
 
 export interface VoiceSettings {
     enabled: boolean;
+    dockerImage: string;
     model: string;
     language: string;
 }
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
     enabled: false, // Default to disabled
+    dockerImage: 'whisper',
     model: 'tiny',
     language: '',
 };

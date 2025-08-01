@@ -40,10 +40,11 @@ export class TranscriptionService {
     static async transcribeWithWhisper(
         audioFilePath: string,
         model: string = 'tiny',
-        language?: string
+        language?: string,
+        dockerImage: string = 'whisper'
     ): Promise<TranscriptionResult> {
         try {
-            console.log(`Starting Docker transcription of: ${audioFilePath}`);
+            console.log(`Starting Docker transcription of: ${audioFilePath} using image: ${dockerImage}`);
 
             // Verify audio file exists
             await fs.access(audioFilePath);
@@ -60,7 +61,7 @@ export class TranscriptionService {
                 '--rm', // Remove container after execution
                 '-v',
                 `${outputDir}:/app`, // Mount the audio directory
-                'whisper', // Docker image name
+                dockerImage, // Use the provided Docker image name
                 `/app/${audioFileBaseName}`, // Audio file path inside container
                 '--model',
                 model,
@@ -77,13 +78,13 @@ export class TranscriptionService {
                 dockerArgs.push('--language', language);
             }
 
-            console.log('Running Docker whisper with args:', dockerArgs);
+            console.log(`Running Docker ${dockerImage} with args:`, dockerArgs);
 
             // Run docker command as child process
             const result = await this.runChildProcess('docker', dockerArgs, 60000); // 60 second timeout
 
             if (result.exitCode !== 0) {
-                throw new Error(`Docker Whisper failed with exit code ${result.exitCode}: ${result.stderr}`);
+                throw new Error(`Docker ${dockerImage} failed with exit code ${result.exitCode}: ${result.stderr}`);
             }
 
             // Read the generated JSON file
@@ -106,7 +107,7 @@ export class TranscriptionService {
     /**
      * Check if Docker and Whisper container are available
      */
-    static async checkWhisperAvailability(): Promise<boolean> {
+    static async checkWhisperAvailability(dockerImage: string = 'whisper'): Promise<boolean> {
         try {
             // First check if Docker is available
             const dockerResult = await this.runChildProcess('docker', ['--version'], 5000);
@@ -115,17 +116,17 @@ export class TranscriptionService {
                 return false;
             }
 
-            // Check if Whisper Docker image exists
-            const imageResult = await this.runChildProcess('docker', ['images', '-q', 'whisper'], 5000);
+            // Check if specified Docker image exists
+            const imageResult = await this.runChildProcess('docker', ['images', '-q', dockerImage], 5000);
             if (imageResult.exitCode !== 0 || !imageResult.stdout.trim()) {
-                console.log('Whisper Docker image not found');
+                console.log(`Docker image '${dockerImage}' not found`);
                 return false;
             }
 
-            console.log('Docker Whisper available');
+            console.log(`Docker image '${dockerImage}' available`);
             return true;
         } catch (error) {
-            console.log('Docker Whisper availability check failed:', error);
+            console.log(`Docker image '${dockerImage}' availability check failed:`, error);
             return false;
         }
     }

@@ -97,11 +97,12 @@ export class AudioStorageService {
     static async transcribeAudio(
         audioFilePath: string,
         model: string = 'tiny',
-        language?: string
+        language?: string,
+        dockerImage?: string
     ): Promise<TranscriptionResult | null> {
         try {
             console.log(`Transcribing audio: ${audioFilePath}`);
-            return await electronAudioRpc.transcribeAudioFile(audioFilePath, model, language);
+            return await electronAudioRpc.transcribeAudioFile(audioFilePath, model, language, dockerImage);
         } catch (error) {
             console.error('Failed to transcribe audio:', error);
             return null;
@@ -111,9 +112,9 @@ export class AudioStorageService {
     /**
      * Check if transcription is available
      */
-    static async checkTranscriptionAvailability(): Promise<boolean> {
+    static async checkTranscriptionAvailability(dockerImage?: string): Promise<boolean> {
         try {
-            return await electronAudioRpc.checkTranscriptionAvailability();
+            return await electronAudioRpc.checkTranscriptionAvailability(dockerImage);
         } catch (error) {
             console.error('Failed to check transcription availability:', error);
             return false;

@@ -17,6 +17,7 @@ type VoiceInputProps = {
     showNotifications?: boolean; // Whether to show toast notifications
     model?: string; // Optional model to use for transcription
     language?: string; // Optional language for transcription
+    dockerImage?: string; // Optional Docker image name for transcription
 };
 
 export function VoiceInput({
@@ -28,6 +29,7 @@ export function VoiceInput({
     showNotifications = true,
     model = 'tiny',
     language = 'en',
+    dockerImage = 'whisper',
 }: VoiceInputProps) {
     const [isTranscribing, setIsTranscribing] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -46,9 +48,9 @@ export function VoiceInput({
     }, []);
 
     // Check transcription availability on component mount
-    useState(() => {
-        AudioStorageService.checkTranscriptionAvailability().then(setTranscriptionAvailable);
-    });
+    useEffect(() => {
+        AudioStorageService.checkTranscriptionAvailability(dockerImage).then(setTranscriptionAvailable);
+    }, [dockerImage]);
 
     const handleRecordingComplete = async (blob: Blob, duration: number): Promise<string | undefined> => {
         try {
@@ -112,7 +114,7 @@ export function VoiceInput({
 
         try {
             console.log('Starting transcription...');
-            const result = await AudioStorageService.transcribeAudio(pathToTranscribe, model, language);
+            const result = await AudioStorageService.transcribeAudio(pathToTranscribe, model, language, dockerImage);
 
             if (result) {
                 if (showNotifications) {
@@ -162,9 +164,11 @@ export function VoiceInput({
             <div className="text-center py-6">
                 <p className="text-muted-foreground">Speech-to-text transcription is not available.</p>
                 <p className="text-xs text-muted-foreground mt-2">
-                    Install OpenAI Whisper to enable transcription:
+                    Build the Whisper Docker image to enable transcription:
                     <br />
-                    <code className="bg-muted px-2 py-1 rounded text-xs">pip install openai-whisper</code>
+                    <code className="bg-muted px-2 py-1 rounded text-xs">cd docker/whisper</code>
+                    <br />
+                    <code className="bg-muted px-2 py-1 rounded text-xs">docker build -t whisper .</code>
                 </p>
             </div>
         );

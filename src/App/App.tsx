@@ -4,10 +4,10 @@ import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
 import SettingsLayout from './settings/SettingsLayout.tsx';
 import Settings from './settings/Settings.tsx';
+import { Logs } from './pages/Logs.tsx';
+import { Models } from './pages/Models.tsx';
 
 import './App.css';
-import { ModelSelector } from './components/ModelSelector.tsx';
-import { Logs } from './pages/Logs.tsx';
 
 // const PlaceholderPage = ({ title }: { title: string }) => {
 //     return (
@@ -55,17 +55,7 @@ export function App() {
                         <Layout>
                             <Routes>
                                 <Route path="/" element={<Chat />} />
-                                <Route
-                                    path="/models"
-                                    element={
-                                        <div className="p-4">
-                                            <h1 className="scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance mb-8">
-                                                Models
-                                            </h1>
-                                            <ModelSelector />
-                                        </div>
-                                    }
-                                />
+                                <Route path="/models" element={<Models />} />
                                 <Route path="/logs" element={<Logs />} />
                             </Routes>
                         </Layout>

@@ -49,17 +49,31 @@ export class ElectronLlmRpc {
             }
             return false;
         },
-        async selectModelFileAndLoad(preserveChat: boolean = false) {
-            const res = await dialog.showOpenDialog({
-                message: 'Select a model file',
-                title: 'Select a model file',
-                filters: [{ name: 'Model file', extensions: ['gguf'] }],
-                buttonLabel: 'Open',
-                defaultPath: (await pathExists(modelDirectoryPath)) ? modelDirectoryPath : undefined,
-                properties: ['openFile'],
-            });
+        async selectModelFileAndLoad(preserveChat: boolean = false, filePath?: string) {
+            let selectedFilePath: string | undefined;
 
-            if (!res.canceled && res.filePaths.length > 0) {
+            if (filePath) {
+                // Use provided file path
+                selectedFilePath = filePath;
+                console.log('Using provided file path:', selectedFilePath);
+            } else {
+                // Show dialog to select file
+                const res = await dialog.showOpenDialog({
+                    message: 'Select a model file',
+                    title: 'Select a model file',
+                    filters: [{ name: 'Model file', extensions: ['gguf'] }],
+                    buttonLabel: 'Open',
+                    defaultPath: (await pathExists(modelDirectoryPath)) ? modelDirectoryPath : undefined,
+                    properties: ['openFile'],
+                });
+
+                if (res.canceled || res.filePaths.length === 0) {
+                    return;
+                }
+                selectedFilePath = res.filePaths[0]!;
+            }
+
+            if (selectedFilePath) {
                 // Unload current model if one is loaded (preserving chat if requested)
                 if (llmState.state.model.loaded) {
                     await llmFunctions.unloadModel(preserveChat);
@@ -67,7 +81,7 @@ export class ElectronLlmRpc {
 
                 llmState.state = {
                     ...llmState.state,
-                    selectedModelFilePath: path.resolve(res.filePaths[0]!),
+                    selectedModelFilePath: path.resolve(selectedFilePath),
                 };
 
                 if (!llmState.state.llama.loaded) await llmFunctions.loadLlama();

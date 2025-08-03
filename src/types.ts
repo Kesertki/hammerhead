@@ -99,3 +99,59 @@ declare global {
         };
     }
 }
+
+export interface ModelDownloadProgress {
+    modelId: string;
+    title: string;
+    downloadUrl: string;
+    totalSize: number;
+    downloadedSize: number;
+    percentage: number;
+    status: 'downloading' | 'completed' | 'error' | 'cancelled';
+    error?: string;
+    filePath?: string;
+}
+
+export interface ModelInfo {
+    id: string;
+    title: string;
+    description: string;
+    size: number;
+    author: string;
+    variants: string[];
+    filePath: string;
+    fileSize: number;
+    downloadedAt: string;
+    downloadUrl: string;
+    modelUrl?: string;
+}
+
+export interface ModelMetadata {
+    models: Record<string, ModelInfo>;
+    lastUpdated: string;
+}
+
+// Model types
+export interface ModelDownloadProgress {
+    modelId: string;
+    title: string;
+    downloadUrl: string;
+    totalSize: number;
+    downloadedSize: number;
+    percentage: number;
+    status: 'downloading' | 'completed' | 'error' | 'cancelled';
+    error?: string;
+    filePath?: string;
+}
+
+export interface ModelInfo {
+    id: string;
+    title: string;
+    description: string;
+    size: number;
+    author: string;
+    variants: string[];
+    filePath: string;
+    fileSize: number;
+    downloadedAt: string;
+}

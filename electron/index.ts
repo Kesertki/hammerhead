@@ -4,6 +4,7 @@ import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
 import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
+import { registerModelRpc } from './rpc/modelRpc.ts';
 import { getMcpConfig, getVoiceSettings, initializeLogger, setMcpConfig, setVoiceSettings } from './settings';
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import { getSystemPrompts, SystemPromptConfig, setSystemPrompts } from './settings/prompts.ts';
@@ -175,6 +176,7 @@ function createWindow() {
 
     registerLlmRpc(win);
     registerAudioRpc(win);
+    registerModelRpc(win);
 
     // open external links in the default browser
     win.webContents.setWindowOpenHandler(({ url }) => {

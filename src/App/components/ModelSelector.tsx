@@ -1,4 +1,4 @@
-import { Download, Search } from 'lucide-react';
+import { Download } from 'lucide-react';
 import './ModelSelector.css';
 
 export function ModelSelector() {
@@ -51,16 +51,6 @@ export function ModelSelector() {
                         <div className="text">Get Gemma 2 2B</div>
                     </a>
                 </div>
-
-                <div className="separator" />
-                <a
-                    className="browseLink"
-                    target="_blank"
-                    href="https://huggingface.co/models?pipeline_tag=text-generation&library=gguf&sort=trending"
-                >
-                    <Search />
-                    <div className="text">Find more models</div>
-                </a>
             </div>
         </div>
     );

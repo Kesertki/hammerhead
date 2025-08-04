@@ -68,7 +68,7 @@ export class ElectronAudioRpc {
         ): Promise<TranscriptionResult> {
             try {
                 console.log(`Transcribing audio file: ${audioFilePath}`);
-                return await TranscriptionService.transcribeWithWhisper(audioFilePath, model, language, dockerImage);
+                return await TranscriptionService.transcribe(audioFilePath, model, language, dockerImage);
             } catch (error) {
                 console.error('Failed to transcribe audio file:', error);
                 throw error;
@@ -76,7 +76,7 @@ export class ElectronAudioRpc {
         },
 
         async checkTranscriptionAvailability(dockerImage?: string): Promise<boolean> {
-            return await TranscriptionService.checkWhisperAvailability(dockerImage);
+            return await TranscriptionService.checkImageAvailability(dockerImage);
         },
 
         async getAvailableTranscriptionModels(): Promise<string[]> {

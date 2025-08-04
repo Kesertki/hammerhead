@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, Copy, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -131,6 +131,9 @@ const languages = [
     { label: 'Yoruba', value: 'yo' },
 ] as const;
 
+// Debounce delay for text input auto-save (in milliseconds)
+const DEBOUNCE_DELAY = 500;
+
 const FormSchema = z.object({
     enabled: z.boolean(),
     dockerImage: z
@@ -151,6 +154,9 @@ export function VoiceSettings() {
     const [modelOpen, setModelOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<VoiceSettings>(DEFAULT_VOICE_SETTINGS);
+
+    // Debouncing for text inputs
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Test functionality state
     const [transcription, setTranscription] = useState<TranscriptionResult | null>(null);
@@ -196,7 +202,25 @@ export function VoiceSettings() {
         }
     }, [settings, form]);
 
-    // Watch for changes in any form field and auto-save
+    // Debounced save function for text inputs
+    const debouncedSave = useCallback((newSettings: VoiceSettings) => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        debounceTimeoutRef.current = setTimeout(() => {
+            saveSettings(newSettings);
+        }, DEBOUNCE_DELAY);
+    }, []);
+
+    // Immediate save function for switches and dropdowns
+    const immediateSave = useCallback((newSettings: VoiceSettings) => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        saveSettings(newSettings);
+    }, []);
+
+    // Watch for changes in form fields with different save strategies
     useEffect(() => {
         const subscription = form.watch((value, { name }) => {
             if (name && value[name as keyof typeof value] !== undefined) {
@@ -214,11 +238,49 @@ export function VoiceSettings() {
                         model: currentFormData.model,
                         language: currentFormData.language,
                     };
-                    saveSettings(newSettings);
+
+                    // Use immediate save for switches/dropdowns, debounced for text inputs
+                    if (name === 'dockerImage') {
+                        debouncedSave(newSettings);
+                    } else {
+                        // enabled, model, language changes should be immediate
+                        immediateSave(newSettings);
+                    }
                 }
             }
         });
-        return () => subscription.unsubscribe();
+        return () => {
+            subscription.unsubscribe();
+            // Clean up debounce timeout on unmount
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, [form, debouncedSave, immediateSave]);
+
+    // Cleanup effect to ensure pending saves are executed on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+                // Execute any pending save immediately on unmount
+                const currentFormData = form.getValues();
+                if (
+                    currentFormData.dockerImage &&
+                    currentFormData.model &&
+                    currentFormData.language !== undefined &&
+                    currentFormData.enabled !== undefined
+                ) {
+                    const newSettings: VoiceSettings = {
+                        enabled: currentFormData.enabled,
+                        dockerImage: currentFormData.dockerImage,
+                        model: currentFormData.model,
+                        language: currentFormData.language,
+                    };
+                    saveSettings(newSettings);
+                }
+            }
+        };
     }, [form]);
 
     const saveSettings = async (newSettings: VoiceSettings) => {

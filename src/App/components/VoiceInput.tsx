@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import type { TranscriptionResult } from '@/types';
 import { AudioStorageService } from '@/utils/audioStorageService';
 import { VoiceRecorder } from './VoiceRecorder';
+import { DEFAULT_WHISPER_IMAGE, DEFAULT_WHISPER_LANGUAGE, DEFAULT_WHISPER_MODEL } from '../../../globals';
 
 type VoiceInputProps = {
     onTranscriptionComplete?: (result: TranscriptionResult) => void;
@@ -27,9 +28,9 @@ export function VoiceInput({
     disabled = false,
     durationLimit = 0,
     showNotifications = true,
-    model = 'tiny',
-    language = 'en',
-    dockerImage = 'whisper',
+    model = DEFAULT_WHISPER_MODEL,
+    language = DEFAULT_WHISPER_LANGUAGE,
+    dockerImage = DEFAULT_WHISPER_IMAGE,
 }: VoiceInputProps) {
     const [isTranscribing, setIsTranscribing] = useState(false);
     const [isRecording, setIsRecording] = useState(false);
@@ -163,12 +164,11 @@ export function VoiceInput({
         return (
             <div className="text-center py-6">
                 <p className="text-muted-foreground">Speech-to-text transcription is not available.</p>
-                <p className="text-xs text-muted-foreground mt-2">
-                    Build the Whisper Docker image to enable transcription:
-                    <br />
-                    <code className="bg-muted px-2 py-1 rounded text-xs">cd docker/whisper</code>
-                    <br />
-                    <code className="bg-muted px-2 py-1 rounded text-xs">docker build -t whisper .</code>
+                <p className="text-xs text-muted-foreground mt-2 text-left">
+                    Pull the Whisper Docker image to enable transcription:
+                    <p className="mt-2">
+                        <code className="bg-muted px-2 py-1 rounded text-xs">docker pull kesertki/whisper</code>
+                    </p>
                 </p>
             </div>
         );

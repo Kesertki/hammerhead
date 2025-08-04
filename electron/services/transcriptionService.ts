@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { DEFAULT_WHISPER_IMAGE, DEFAULT_WHISPER_LANGUAGE, DEFAULT_WHISPER_MODEL } from '../../globals';
 
 export interface TranscriptionResult {
     text: string;
@@ -37,11 +38,11 @@ export class TranscriptionService {
     /**
      * Transcribe audio file using OpenAI Whisper via Docker
      */
-    static async transcribeWithWhisper(
+    static async transcribe(
         audioFilePath: string,
-        model: string = 'tiny',
-        language?: string,
-        dockerImage: string = 'whisper'
+        model: string = DEFAULT_WHISPER_MODEL,
+        language: string = DEFAULT_WHISPER_LANGUAGE,
+        dockerImage: string = DEFAULT_WHISPER_IMAGE
     ): Promise<TranscriptionResult> {
         try {
             console.log(`Starting Docker transcription of: ${audioFilePath} using image: ${dockerImage}`);
@@ -107,7 +108,7 @@ export class TranscriptionService {
     /**
      * Check if Docker and Whisper container are available
      */
-    static async checkWhisperAvailability(dockerImage: string = 'whisper'): Promise<boolean> {
+    static async checkImageAvailability(dockerImage: string = DEFAULT_WHISPER_IMAGE): Promise<boolean> {
         try {
             // First check if Docker is available
             const dockerResult = await this.runChildProcess('docker', ['--version'], 5000);

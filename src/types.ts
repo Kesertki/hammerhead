@@ -1,3 +1,5 @@
+import { DEFAULT_WHISPER_IMAGE, DEFAULT_WHISPER_MODEL, DEFAULT_WHISPER_LANGUAGE } from '../globals';
+
 export interface Connection {
     name: string;
     transport: 'stdio' | 'streamable http';
@@ -77,9 +79,9 @@ export interface VoiceSettings {
 
 export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
     enabled: false, // Default to disabled
-    dockerImage: 'whisper',
-    model: 'tiny',
-    language: '',
+    dockerImage: DEFAULT_WHISPER_IMAGE,
+    model: DEFAULT_WHISPER_MODEL,
+    language: DEFAULT_WHISPER_LANGUAGE,
 };
 
 declare global {

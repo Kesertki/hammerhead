@@ -6,6 +6,7 @@ import { electronModelRpc, onDownloadProgress, getCurrentDownloadProgress } from
 import type { ModelDownloadProgress } from '@/types';
 import { toast } from 'sonner';
 import { Download, Trash2, OctagonX } from 'lucide-react';
+import { ModelSizeDisplay } from '@/components/ModelSizeDisplay';
 
 interface ModelDetails {
     title: string;
@@ -269,8 +270,8 @@ export function ModelCards() {
                         )}
                         <div className="line-clamp-1 flex gap-2 font-medium">{model.description}</div>
                         <div className="text-muted-foreground">
-                            {model.size}B parameters • {model.variants.length} variant
-                            {model.variants.length !== 1 ? 's' : ''}
+                            {model.size}B parameters • {model.variants[0]} •{' '}
+                            <ModelSizeDisplay downloadUrl={model.downloadLink} />
                         </div>
                     </CardFooter>
                 </Card>

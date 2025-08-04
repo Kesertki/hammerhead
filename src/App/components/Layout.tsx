@@ -1,18 +1,16 @@
-import { HardDriveUpload, Loader2Icon, Search, Trash, Unplug, Check, ChevronsUpDown } from 'lucide-react';
+import { Loader2Icon, Search, Trash, Unplug } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AppSidebar } from '@/App/components/AppSidebar';
 import { NavActions } from '@/App/components/NavActions';
 import { Button } from '@/components/ui/button.tsx';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ModelSelector } from '@/components/ModelSelector';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { useExternalState } from '@/hooks/useExternalState.ts';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { electronModelRpc } from '@/rpc/modelRpc.ts';
 import { llmState } from '@/state/llmState.ts';
-import { cn } from '@/lib/utils';
 import type { ModelInfo } from '@/types';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -22,7 +20,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     // State for downloaded models combobox
     const [downloadedModels, setDownloadedModels] = useState<ModelInfo[]>([]);
-    const [modelsOpen, setModelsOpen] = useState(false);
     const [selectedModel, setSelectedModel] = useState<string>('');
 
     // console.log(state);
@@ -90,7 +87,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             await electronLlmRpc.selectModelFileAndLoad(true, absolutePath); // preserve chat, use file path
 
             setSelectedModel(modelInfo.id);
-            setModelsOpen(false);
         } catch (error) {
             console.error('Failed to load downloaded model:', error);
             console.error('Error details:', error instanceof Error ? error.message : 'Unknown error');
@@ -129,88 +125,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
                     {isOnChatRoute && (
                         <>
-                            <div className="text-sm min-w-0">
-                                {loading ? (
-                                    'Loading...'
-                                ) : downloadedModels.length > 0 ? (
-                                    <Popover open={modelsOpen} onOpenChange={setModelsOpen}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline"
-                                                role="combobox"
-                                                aria-expanded={modelsOpen}
-                                                className="w-[250px] justify-between text-left font-normal"
-                                            >
-                                                <span className="truncate">
-                                                    {selectedModel
-                                                        ? downloadedModels.find((model) => model.id === selectedModel)
-                                                              ?.title || modelName
-                                                        : modelName}
-                                                </span>
-                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-[250px] p-0">
-                                            <Command>
-                                                <CommandInput placeholder="Search downloaded models..." />
-                                                <CommandList>
-                                                    <CommandEmpty>No downloaded models found.</CommandEmpty>
-                                                    <CommandGroup>
-                                                        {downloadedModels.map((model) => (
-                                                            <CommandItem
-                                                                key={model.id}
-                                                                value={model.title}
-                                                                onSelect={() => loadDownloadedModel(model)}
-                                                                className="cursor-pointer"
-                                                            >
-                                                                <div className="flex flex-col flex-1 min-w-0">
-                                                                    <span className="font-medium truncate">
-                                                                        {model.title}
-                                                                    </span>
-                                                                    <span className="text-xs text-muted-foreground truncate">
-                                                                        {model.author} • {model.size}B params
-                                                                    </span>
-                                                                </div>
-                                                                <Check
-                                                                    className={cn(
-                                                                        'ml-2 h-4 w-4',
-                                                                        selectedModel === model.id
-                                                                            ? 'opacity-100'
-                                                                            : 'opacity-0'
-                                                                    )}
-                                                                />
-                                                            </CommandItem>
-                                                        ))}
-                                                        <CommandItem
-                                                            onSelect={() => {
-                                                                setModelsOpen(false);
-                                                                openSelectModelFileDialog();
-                                                            }}
-                                                            className="cursor-pointer border-t"
-                                                        >
-                                                            <div className="flex items-center gap-2">
-                                                                <HardDriveUpload className="h-4 w-4" />
-                                                                <span>Browse for model file...</span>
-                                                            </div>
-                                                        </CommandItem>
-                                                    </CommandGroup>
-                                                </CommandList>
-                                            </Command>
-                                        </PopoverContent>
-                                    </Popover>
-                                ) : (
-                                    <Button
-                                        variant="link"
-                                        size="sm"
-                                        className="cursor-pointer"
-                                        onClick={() => {
-                                            openSelectModelFileDialog();
-                                        }}
-                                    >
-                                        {modelName}
-                                    </Button>
-                                )}
-                            </div>
+                            <ModelSelector
+                                models={downloadedModels}
+                                selectedModelId={selectedModel}
+                                fallbackName={modelName}
+                                loading={loading}
+                                onModelSelect={loadDownloadedModel}
+                                onBrowseFiles={openSelectModelFileDialog}
+                            />
 
                             {!loading && (
                                 <>

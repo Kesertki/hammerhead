@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { BrowserWindow, dialog } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import type { RenderedFunctions } from '../../src/rpc/llmRpc.ts';
 import { llmFunctions, llmState } from '../state/llmState.ts';
 import { createElectronSideBirpc } from '../utils/createElectronSideBirpc.ts';
@@ -15,15 +15,18 @@ export class ElectronLlmRpc {
     public readonly functions = {
         async exportChatSession(): Promise<boolean> {
             if (llmState.state.chatSession.loaded) {
+                // Use Documents directory as default location
+                const documentsPath = app.getPath('documents');
+                const modelName = llmState.state.selectedModelFilePath?.split(path.sep).pop() || 'chat-session';
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                const defaultFileName = `${modelName}-${timestamp}.json`;
+
                 const res = await dialog.showSaveDialog({
                     message: 'Save chat session',
                     title: 'Save chat session',
                     filters: [{ name: 'Chat session', extensions: ['json'] }],
                     buttonLabel: 'Save',
-                    defaultPath: path.join(
-                        modelDirectoryPath,
-                        `${llmState.state.selectedModelFilePath!.split(path.sep).pop()!}.json`
-                    ),
+                    defaultPath: path.join(documentsPath, defaultFileName),
                 });
 
                 if (!res.canceled && res.filePath) {

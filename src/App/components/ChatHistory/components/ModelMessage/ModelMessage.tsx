@@ -1,6 +1,6 @@
 import { Timer } from 'lucide-react';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState.ts';
-import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown.tsx';
+import { MessageMarkdownWithSVG } from '../../../MessageMarkdownWithSVG/MessageMarkdownWithSVG.tsx';
 import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
 import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.tsx';
 
@@ -28,12 +28,12 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
                 }
 
                 return (
-                    <MessageMarkdown key={responseIndex} activeDot={isLastMessage && active} className="text">
+                    <MessageMarkdownWithSVG key={responseIndex} activeDot={isLastMessage && active} className="text">
                         {message.text}
-                    </MessageMarkdown>
+                    </MessageMarkdownWithSVG>
                 );
             })}
-            {modelMessage.message.length === 0 && active && <MessageMarkdown className="text" activeDot />}
+            {modelMessage.message.length === 0 && active && <MessageMarkdownWithSVG className="text" activeDot />}
             <div className="buttons items-center" inert={active}>
                 <ModelMessageCopyButton modelMessage={modelMessage.message} />
 

@@ -1,5 +1,5 @@
 import { SimplifiedUserChatItem } from '@/electron/state/llmState.ts';
-import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
+import { MessageMarkdownWithSVG } from '../../../MessageMarkdownWithSVG/MessageMarkdownWithSVG.tsx';
 import { DeleteMessageButton } from '../ModelMessage/components/DeleteMessageButton/DeleteMessageButton.tsx';
 
 import './UserMessage.css';
@@ -7,7 +7,7 @@ import './UserMessage.css';
 export function UserMessage({ message }: UserMessageProps) {
     return (
         <div className="message user">
-            <MessageMarkdown className="text">{message.message}</MessageMarkdown>
+            <MessageMarkdownWithSVG className="text">{message.message}</MessageMarkdownWithSVG>
             <div className="buttons items-center">
                 <DeleteMessageButton message={message} />
             </div>

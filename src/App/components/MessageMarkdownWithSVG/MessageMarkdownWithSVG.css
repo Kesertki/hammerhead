@@ -1,0 +1,15 @@
+.appMessageMarkdown .message-svg {
+    margin: 1rem 0;
+}
+
+.appMessageMarkdown .message-text-part {
+    margin: 0;
+}
+
+.appMessageMarkdown .message-text-part:not(:last-child) {
+    margin-bottom: 0.5rem;
+}
+
+.appMessageMarkdown .message-text-part:not(:first-child) {
+    margin-top: 0.5rem;
+}

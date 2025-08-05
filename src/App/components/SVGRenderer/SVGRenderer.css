@@ -1,0 +1,81 @@
+.svg-renderer {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    background-color: #f9fafb;
+    position: relative;
+}
+
+.svg-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.svg-toggle-button {
+    padding: 0.25rem !important;
+    height: auto !important;
+}
+
+.svg-content.rendered {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.svg-content.rendered svg {
+    max-width: 100%;
+    max-height: 400px;
+    height: auto;
+}
+
+.svg-content.code {
+    margin: 0;
+    padding: 0.75rem;
+    background-color: #1f2937;
+    border-radius: 0.375rem;
+    overflow-x: auto;
+}
+
+.svg-content.code code {
+    color: #e5e7eb;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.svg-renderer.svg-error {
+    border-color: #fca5a5;
+    background-color: #fef2f2;
+}
+
+.svg-renderer .error-message {
+    color: #dc2626;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .svg-renderer {
+        border-color: #374151;
+        background-color: #1f2937;
+    }
+
+    .svg-content.code {
+        background-color: #111827;
+    }
+
+    .svg-renderer.svg-error {
+        border-color: #dc2626;
+        background-color: #7f1d1d;
+    }
+
+    .svg-renderer .error-message {
+        color: #fca5a5;
+    }
+}

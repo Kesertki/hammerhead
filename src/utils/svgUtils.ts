@@ -99,6 +99,9 @@ export function splitTextWithSVG(text: string): Array<{ type: 'text' | 'svg'; co
  * Validates if SVG content is safe to render
  */
 export function isSafeSVG(svgContent: string): boolean {
+    // First unescape the content to check properly
+    const unescaped = unescapeSVG(svgContent);
+
     // Basic safety checks - remove script tags and event handlers
     const dangerousPatterns = [
         /<script[\s\S]*?<\/script>/gi,
@@ -108,15 +111,30 @@ export function isSafeSVG(svgContent: string): boolean {
         /data:text\/html/gi,
     ];
 
-    return !dangerousPatterns.some((pattern) => pattern.test(svgContent));
+    return !dangerousPatterns.some((pattern) => pattern.test(unescaped));
+}
+
+/**
+ * Unescapes SVG content by converting escaped quotes and newlines
+ */
+export function unescapeSVG(svgContent: string): string {
+    return svgContent
+        .replace(/\\"/g, '"') // Unescape quotes
+        .replace(/\\'/g, "'") // Unescape single quotes
+        .replace(/\\n/g, '\n') // Unescape newlines
+        .replace(/\\t/g, '\t') // Unescape tabs
+        .replace(/\\r/g, '\r'); // Unescape carriage returns
 }
 
 /**
  * Sanitizes SVG content by removing potentially dangerous elements
  */
 export function sanitizeSVG(svgContent: string): string {
+    // First unescape the content
+    let sanitized = unescapeSVG(svgContent);
+
     // Remove script tags
-    let sanitized = svgContent.replace(/<script[\s\S]*?<\/script>/gi, '');
+    sanitized = sanitized.replace(/<script[\s\S]*?<\/script>/gi, '');
 
     // Remove event handlers (both quoted and unquoted)
     sanitized = sanitized.replace(/\son\w+\s*=\s*["'][^"']*["']/gi, '');

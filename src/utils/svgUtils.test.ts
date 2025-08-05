@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { detectSVGContent, splitTextWithSVG, isSafeSVG, sanitizeSVG } from './svgUtils';
+import { detectSVGContent, splitTextWithSVG, isSafeSVG, sanitizeSVG, unescapeSVG } from './svgUtils';
 
 describe('SVG Utils', () => {
     describe('detectSVGContent', () => {
@@ -98,6 +98,31 @@ That's a simple duck!`;
             expect(sanitized).not.toContain('onmouseover');
             expect(sanitized).toContain('<svg>');
             expect(sanitized).toContain('<circle');
+        });
+    });
+
+    describe('unescapeSVG', () => {
+        it('should unescape quotes and newlines', () => {
+            const escapedSVG = `<svg xmlns=\\"http://www.w3.org/2000/svg\\">\\n  <circle cx=\\"50\\" cy=\\"50\\" r=\\"40\\" fill=\\"red\\" />\\n</svg>`;
+            const unescaped = unescapeSVG(escapedSVG);
+
+            expect(unescaped).toBe(
+                '<svg xmlns="http://www.w3.org/2000/svg">\n  <circle cx="50" cy="50" r="40" fill="red" />\n</svg>'
+            );
+        });
+
+        it('should handle single quotes and tabs', () => {
+            const escapedSVG = `<svg>\\n\\t<circle fill=\\'blue\\' />\\n</svg>`;
+            const unescaped = unescapeSVG(escapedSVG);
+
+            expect(unescaped).toBe("<svg>\n\t<circle fill='blue' />\n</svg>");
+        });
+
+        it('should handle mixed escaped characters', () => {
+            const escapedSVG = `<svg>\\r\\n\\t<rect width=\\"100\\" height=\\"50\\" />\\r\\n</svg>`;
+            const unescaped = unescapeSVG(escapedSVG);
+
+            expect(unescaped).toBe('<svg>\r\n\t<rect width="100" height="50" />\r\n</svg>');
         });
     });
 });

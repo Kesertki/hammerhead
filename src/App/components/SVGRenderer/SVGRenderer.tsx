@@ -3,7 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import hljs from 'highlight.js';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { sanitizeSVG, isSafeSVG } from '@/utils/svgUtils';
+import { sanitizeSVG, isSafeSVG, unescapeSVG } from '@/utils/svgUtils';
 
 import './SVGRenderer.css';
 
@@ -14,18 +14,18 @@ export function SVGRenderer({ svgContent, className }: SVGRendererProps) {
         const isValid = isSafeSVG(svgContent);
         const sanitizedSVG = isValid ? sanitizeSVG(svgContent) : '';
 
-        // Highlight SVG code as XML
+        // Highlight SVG code as XML - use unescaped content for better display
+        const unescapedContent = unescapeSVG(svgContent);
         let highlightedCode = '';
         try {
-            highlightedCode = hljs.highlight(svgContent, { language: 'xml' }).value;
+            highlightedCode = hljs.highlight(unescapedContent, { language: 'xml' }).value;
         } catch {
             // Fallback to auto-detection if XML highlighting fails
-            highlightedCode = hljs.highlightAuto(svgContent).value;
+            highlightedCode = hljs.highlightAuto(unescapedContent).value;
         }
 
         return { isValid, sanitizedSVG, highlightedCode };
     }, [svgContent]);
-
     const toggleView = () => {
         setShowRendered(!showRendered);
     };

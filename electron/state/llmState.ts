@@ -20,6 +20,7 @@ import { generateQueryEmbeddings, isChromaConnected, retrieveRelevantInformation
 import { loadMcpTools } from '../mcp/client.ts';
 import { getSelectedPrompt } from '../settings/prompts.ts';
 import { eventBus } from '../utils/eventBus.ts';
+import { RAG_ENABLED } from '../../globals.ts';
 
 // const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const originalUserMessages = new Map<string, string>();
@@ -622,9 +623,8 @@ export const llmFunctions = {
                 try {
                     let finalQuery = originalMessage;
 
-                    try {
-                        // const isChromaConnected = await checkChromaConnection();
-                        if (isChromaConnected) {
+                    if (isChromaConnected) {
+                        try {
                             const queryEmbeddings = await generateQueryEmbeddings(message);
                             const relevantInformation = await retrieveRelevantInformation(queryEmbeddings);
 
@@ -643,12 +643,10 @@ export const llmFunctions = {
                                 // No augmentation needed - use original message
                                 finalQuery = originalMessage;
                             }
-                        } else {
-                            console.warn('Chroma not connected, using original message');
+                        } catch (err) {
+                            console.error('Failed to generate query embeddings', err);
+                            finalQuery = originalMessage; // Fallback to original message
                         }
-                    } catch (err) {
-                        console.error('Failed to generate query embeddings', err);
-                        finalQuery = originalMessage; // Fallback to original message
                     }
 
                     await chatSession.prompt(finalQuery, {

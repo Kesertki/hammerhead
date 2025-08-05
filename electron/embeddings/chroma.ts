@@ -2,9 +2,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ChromaClient } from 'chromadb';
 import { getLlama } from 'node-llama-cpp';
+import { RAG_EMBEDDING_MODEL, RAG_ENABLED } from '../../globals';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const EMBEDDING_MODEL = 'hf_CompendiumLabs_bge-small-en-v1.5.Q8_0.gguf';
 
 export const chromaClient = new ChromaClient({
     // Configuration options for the Chroma client
@@ -25,7 +25,7 @@ export async function checkChromaConnection(): Promise<boolean> {
     }
 }
 
-export const isChromaConnected = await checkChromaConnection();
+export const isChromaConnected = RAG_ENABLED ? await checkChromaConnection() : false;
 
 // Add proper types to the function parameters
 export async function generateQueryEmbeddings(
@@ -34,7 +34,7 @@ export async function generateQueryEmbeddings(
 ): Promise<readonly number[]> {
     const llama = await getLlama();
     const model = await llama.loadModel({
-        modelPath: join(__dirname, '../models', EMBEDDING_MODEL),
+        modelPath: join(__dirname, '../models', RAG_EMBEDDING_MODEL),
     });
 
     // Generate embedding for the query

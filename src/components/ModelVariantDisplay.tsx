@@ -1,4 +1,3 @@
-import React from 'react';
 import { useModelVariantFiles } from '../hooks/useModelVariantFiles';
 import { formatBytes } from '../utils/formatBytes';
 

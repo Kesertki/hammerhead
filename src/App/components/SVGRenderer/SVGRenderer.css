@@ -12,12 +12,23 @@
 .svg-controls {
     display: flex;
     justify-content: flex-end;
+    gap: 0.25rem;
     margin-bottom: 0.5rem;
 }
 
-.svg-toggle-button {
+.svg-toggle-button,
+.svg-copy-button {
     padding: 0.25rem !important;
     height: auto !important;
+    transition: background-color 0.1s ease-in-out;
+}
+
+.svg-copy-button {
+    position: relative;
+}
+
+.svg-copy-button svg {
+    transition: opacity 0.2s ease-in-out;
 }
 
 .svg-content.rendered {

@@ -1,14 +1,16 @@
-import { useState, useMemo } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { useState, useMemo, useCallback } from 'react';
+import { Eye, EyeOff, Copy, Check } from 'lucide-react';
 import hljs from 'highlight.js';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { sanitizeSVG, isSafeSVG, unescapeSVG } from '@/utils/svgUtils';
+import { copyToClipboard } from '@/utils/clipboard';
 
 import './SVGRenderer.css';
 
 export function SVGRenderer({ svgContent, className }: SVGRendererProps) {
     const [showRendered, setShowRendered] = useState(true);
+    const [isCopied, setIsCopied] = useState(false);
 
     const { isValid, sanitizedSVG, highlightedCode } = useMemo(() => {
         const isValid = isSafeSVG(svgContent);
@@ -30,6 +32,24 @@ export function SVGRenderer({ svgContent, className }: SVGRendererProps) {
         setShowRendered(!showRendered);
     };
 
+    const handleCopy = useCallback(async () => {
+        try {
+            const unescapedContent = unescapeSVG(svgContent);
+            const success = await copyToClipboard(unescapedContent);
+
+            if (success) {
+                setIsCopied(true);
+                setTimeout(() => {
+                    setIsCopied(false);
+                }, 2000); // Show copied state for 2 seconds
+            } else {
+                console.error('Failed to copy SVG to clipboard');
+            }
+        } catch (error) {
+            console.error('Failed to copy SVG to clipboard:', error);
+        }
+    }, [svgContent]);
+
     if (!isValid) {
         return (
             <div className={`svg-renderer svg-error ${className || ''}`}>
@@ -50,6 +70,15 @@ export function SVGRenderer({ svgContent, className }: SVGRendererProps) {
                         </Button>
                     </TooltipTrigger>
                     <TooltipContent>{showRendered ? 'Show SVG code' : 'Show rendered SVG'}</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button variant="ghost" size="sm" onClick={handleCopy} className="svg-copy-button">
+                            {isCopied ? <Check size={16} /> : <Copy size={16} />}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>{isCopied ? 'Copied!' : 'Copy SVG code'}</TooltipContent>
                 </Tooltip>
             </div>
 

@@ -14,7 +14,7 @@
     "type-check": "tsc --noEmit",
 		"postinstall": "npm run setup:monaco",
 		"setup:monaco": "node scripts/copy-monaco-workers.js",
-		"models:pull": "node-llama-cpp pull --dir ./models \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K\" \"hf:Qwen/Qwen3-4B-GGUF:Q4_K_M\" \"hf:Qwen/Qwen3-1.7B-GGUF:Q8_0\" \"hf:Qwen/Qwen3-0.6B-GGUF:Q8_0\"",
+		"models:pull": "node-llama-cpp pull --dir ./models \"hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-4B-Thinking-2507-GGUF:Q6_K_L\" ",
 		"start": "vite dev",
 		"start:build": "electron ./dist-electron",
 		"prebuild": "rimraf ./dist ./dist-electron ./release",

@@ -173,7 +173,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                             )}
 
                             {/* Clear chat history button */}
-                            {!isEmptyChat && (
+                            {!loading && !isEmptyChat && (
                                 <Tooltip>
                                     <TooltipTrigger asChild>
                                         <Button

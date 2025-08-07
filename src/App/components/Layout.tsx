@@ -1,6 +1,6 @@
 import { Loader2Icon, Search, Trash, Unplug } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AppSidebar } from '@/App/components/AppSidebar';
 import { NavActions } from '@/App/components/NavActions';
 import { Button } from '@/components/ui/button.tsx';
@@ -15,6 +15,7 @@ import type { ModelInfo } from '@/types';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     const location = useLocation();
+    const navigate = useNavigate();
     const state = useExternalState(llmState);
     const modelName = state.model?.name || 'No model loaded';
 
@@ -107,6 +108,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         void electronLlmRpc.clearChat();
     }, []);
 
+    const browseModels = useCallback(() => {
+        navigate('/models');
+    }, [navigate]);
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -132,6 +137,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                 loading={loading}
                                 onModelSelect={loadDownloadedModel}
                                 onBrowseFiles={openSelectModelFileDialog}
+                                onBrowseModels={browseModels}
                             />
 
                             {!loading && (

@@ -10,14 +10,23 @@
  *   loading={isLoading}
  *   onModelSelect={(model) => loadModel(model)}
  *   onBrowseFiles={() => openFileDialog()}
+ *   onBrowseModels={() => navigate('/models')}
  * />
  * ```
  */
 
-import { HardDriveUpload, Check, ChevronsUpDown } from 'lucide-react';
-import React, { useState } from 'react';
+import { HardDriveUpload, Check, ChevronsUpDown, Search } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+    CommandSeparator,
+} from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import type { ModelInfo } from '@/types';
@@ -36,6 +45,8 @@ interface ModelSelectorProps {
     onModelSelect: (model: ModelInfo) => void;
     /** Callback when "Browse for model file" is clicked */
     onBrowseFiles: () => void;
+    /** Callback when "Browse models..." is clicked */
+    onBrowseModels: () => void;
     /** Optional className for styling */
     className?: string;
 }
@@ -47,6 +58,7 @@ export function ModelSelector({
     loading = false,
     onModelSelect,
     onBrowseFiles,
+    onBrowseModels,
     className,
 }: ModelSelectorProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -111,16 +123,29 @@ export function ModelSelector({
                                         />
                                     </CommandItem>
                                 ))}
+                                <CommandSeparator />
                                 <CommandItem
                                     onSelect={() => {
                                         setIsOpen(false);
                                         onBrowseFiles();
                                     }}
-                                    className="cursor-pointer border-t"
+                                    className="cursor-pointer"
                                 >
                                     <div className="flex items-center gap-2">
                                         <HardDriveUpload className="h-4 w-4" />
                                         <span>Browse for model file...</span>
+                                    </div>
+                                </CommandItem>
+                                <CommandItem
+                                    onSelect={() => {
+                                        setIsOpen(false);
+                                        onBrowseModels();
+                                    }}
+                                    className="cursor-pointer"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Search className="h-4 w-4" />
+                                        <span>Browse models...</span>
                                     </div>
                                 </CommandItem>
                             </CommandGroup>

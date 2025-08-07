@@ -16,14 +16,11 @@ import {
 } from 'node-llama-cpp';
 import { SystemPrompt } from '@/types.ts';
 import packageJson from '../../package.json';
-import { generateQueryEmbeddings, isChromaConnected, retrieveRelevantInformation } from '../embeddings/chroma.ts';
 import { loadMcpTools } from '../mcp/client.ts';
 import { getSelectedPrompt } from '../settings/prompts.ts';
 import { eventBus } from '../utils/eventBus.ts';
-import { RAG_ENABLED } from '../../globals.ts';
 
 // const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const originalUserMessages = new Map<string, string>();
 
 // Track stable IDs for messages based on their position in chat history
 const messageIdCache = new Map<string, string>();
@@ -592,8 +589,7 @@ export const llmFunctions = {
                 if (chatSession == null) throw new Error('Chat session not loaded');
                 if (contextSequence == null) throw new Error('Context sequence not loaded');
 
-                // Store original message before augmentation
-                const originalMessage = message.trim();
+                let promptMessage = message.trim();
 
                 // Capture initial token meter state and start timing
                 const initialTokenState = contextSequence.tokenMeter.getState();
@@ -621,35 +617,7 @@ export const llmFunctions = {
 
                 const abortSignal = promptAbortController.signal;
                 try {
-                    let finalQuery = originalMessage;
-
-                    if (isChromaConnected) {
-                        try {
-                            const queryEmbeddings = await generateQueryEmbeddings(message);
-                            const relevantInformation = await retrieveRelevantInformation(queryEmbeddings);
-
-                            // Only augment if we actually have relevant information
-                            if (Array.isArray(relevantInformation) && relevantInformation.length > 0) {
-                                const formattedContext = relevantInformation
-                                    .map((doc, i) => `Document ${i + 1}: ${doc}`)
-                                    .join('\n\n');
-
-                                finalQuery = `Context Information:\n${formattedContext}\n\nUser Query: ${message}\n\nPlease answer based on the context provided above.`;
-                                console.log('Augmented Prompt:', finalQuery);
-
-                                // Store mapping between augmented and original message
-                                originalUserMessages.set(finalQuery, originalMessage);
-                            } else {
-                                // No augmentation needed - use original message
-                                finalQuery = originalMessage;
-                            }
-                        } catch (err) {
-                            console.error('Failed to generate query embeddings', err);
-                            finalQuery = originalMessage; // Fallback to original message
-                        }
-                    }
-
-                    await chatSession.prompt(finalQuery, {
+                    await chatSession.prompt(promptMessage, {
                         signal: abortSignal,
                         stopOnAbortSignal: true,
                         functions: mcpFunctions,
@@ -696,7 +664,7 @@ export const llmFunctions = {
 
                 // Store token stats for this message pair using original message as key
                 if (tokenDiff) {
-                    const messageKey = `${originalMessage}-${endTime}`;
+                    const messageKey = `${promptMessage}-${endTime}`;
                     messageTokenStats.set(messageKey, {
                         inputTokens: tokenDiff.usedInputTokens,
                         outputTokens: tokenDiff.usedOutputTokens,
@@ -736,7 +704,6 @@ export const llmFunctions = {
             // Clear token tracking maps and ID cache
             messageTokenStats.clear();
             messagePerformanceStats.clear();
-            originalUserMessages.clear();
             messageIdCache.clear();
 
             // Clear chat state regardless of whether a model is loaded
@@ -868,8 +835,7 @@ export const llmFunctions = {
             for (let i = actualIndex; i < currentHistory.length; i++) {
                 const item = currentHistory[i];
                 if (item?.type === 'user') {
-                    const originalMessage = originalUserMessages.get(item.text) || item.text;
-                    messageIdCache.delete(`user-${i}-${originalMessage}`);
+                    messageIdCache.delete(`user-${i}-${item.text}`);
                 } else if (item?.type === 'model') {
                     messageIdCache.delete(`model-${i}`);
                 }
@@ -901,7 +867,7 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
             if (item.type === 'system') return [];
             if (item.type === 'user') {
                 // Use original message if available, otherwise use the augmented one
-                const originalMessage = originalUserMessages.get(item.text) || item.text;
+                const originalMessage = item.text;
 
                 // Generate stable ID based on message content and position
                 const messageKey = `user-${index}-${originalMessage}`;
@@ -943,8 +909,7 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
                     | undefined;
 
                 if (previousUserMessage) {
-                    const originalMessage =
-                        originalUserMessages.get(previousUserMessage.text) || previousUserMessage.text;
+                    const originalMessage = previousUserMessage.text;
                     const messageKeys = Array.from(messageTokenStats.keys());
                     const matchingKey = messageKeys.find((key) => key.startsWith(originalMessage + '-'));
 

@@ -11,9 +11,7 @@ It supports multiple languages and provides a user-friendly experience for query
 Good for testing and experimenting with LLMs, Hammerhead is designed to be extensible, allowing developers to add custom components and features.
 
 > **⚠️ Development Status**: Hammerhead is in active development and features may break or change between releases.
-
 > **🚀 Perfect Base for Custom Apps**: This project serves as an excellent foundation for building custom chat applications with LLMs.
-
 > **🤝 Contributions Welcome**: We welcome contributions, bug reports, and feedback! Feel free to open issues or submit pull requests.
 
 ## Features
@@ -71,26 +69,6 @@ Download these models from Hugging Face:
 Recommended servers:
 
 - [DuckDuckGo](https://hub.docker.com/mcp/server/duckduckgo/overview)
-
-## RAG (Retrieval-Augmented Generation)
-
-> Note: RAG functionality is currently in development and may not be fully functional.
-
-To enable RAG functionality, you need to set up a vector database and configure the application to use it. Follow these steps:
-
-1. **Get RAG models**:
-   - Use the `npm run rag:models:pull` command to download the necessary RAG models.
-   - This will pull the models into the `./models` directory.
-
-2. **Run the Chroma vector database**:
-   - You can use the provided `npm run rag:chroma` command to run the database locally.
-   - Make sure you have Docker installed and running.
-
-3. **Configure the ingestion of documents**:
-   - Use the `npm run rag:ingest` command to ingest documents into the vector database.
-   - This command will read files from the `./data` directory and store them in the database.
-
-The application will automatically connect to the Chroma vector database and use it for RAG functionality.
 
 ## Development
 

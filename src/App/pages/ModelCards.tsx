@@ -7,92 +7,7 @@ import type { ModelDownloadProgress } from '@/types';
 import { toast } from 'sonner';
 import { Download, Trash2, OctagonX } from 'lucide-react';
 import { ModelSizeDisplay } from '@/components/ModelSizeDisplay';
-
-interface ModelDetails {
-    title: string;
-    description: string;
-    size: number;
-    author: string;
-    authorUrl: string;
-    modelUrl: string;
-    downloadLink: string;
-    variants: string[];
-}
-
-const models: ModelDetails[] = [
-    {
-        title: 'Qwen3-8B',
-        description: 'A 8B parameter version of the Qwen model.',
-        size: 8,
-        author: 'Qwen',
-        authorUrl: 'https://huggingface.co/Qwen',
-        modelUrl: 'https://huggingface.co/Qwen/Qwen3-8B-GGUF',
-        downloadLink: 'https://huggingface.co/Qwen/Qwen3-8B-GGUF/resolve/main/Qwen3-8B-Q6_K.gguf',
-        variants: ['Q6_K'],
-    },
-    {
-        title: 'Qwen3-4B',
-        description: 'A 4B parameter version of the Qwen model.',
-        size: 4,
-        author: 'Qwen',
-        authorUrl: 'https://huggingface.co/Qwen',
-        modelUrl: 'https://huggingface.co/Qwen/Qwen3-4B-GGUF',
-        downloadLink: 'https://huggingface.co/Qwen/Qwen3-4B-GGUF/resolve/main/Qwen3-4B-Q4_K_M.gguf',
-        variants: ['Q4_K_M'],
-    },
-    {
-        title: 'Qwen3-1.7B',
-        description: 'A 1.7B parameter version of the Qwen model.',
-        size: 1.7,
-        author: 'Qwen',
-        authorUrl: 'https://huggingface.co/Qwen',
-        modelUrl: 'https://huggingface.co/Qwen/Qwen3-1.7B-GGUF',
-        downloadLink: 'https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/main/Qwen3-1.7B-Q8_0.gguf',
-        variants: ['Q8_0'],
-    },
-    {
-        title: 'Qwen3-0.6B',
-        description: 'A 0.6B parameter version of the Qwen model.',
-        size: 0.6,
-        author: 'Qwen',
-        authorUrl: 'https://huggingface.co/Qwen',
-        modelUrl: 'https://huggingface.co/Qwen/Qwen3-0.6B-GGUF',
-        downloadLink: 'https://huggingface.co/Qwen/Qwen3-0.6B-GGUF/resolve/main/Qwen3-0.6B-Q8_0.gguf',
-        variants: ['Q8_0'],
-    },
-    {
-        title: 'DeepSeek R1 Distill Qwen 7B',
-        description: 'A distilled version of the Qwen model optimized for performance.',
-        size: 7,
-        author: 'team mradermacher',
-        authorUrl: 'https://huggingface.co/mradermacher',
-        modelUrl: 'https://huggingface.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-GGUF',
-        downloadLink:
-            'https://huggingface.co/mradermacher/DeepSeek-R1-Distill-Qwen-7B-GGUF/resolve/main/DeepSeek-R1-Distill-Qwen-7B.Q4_K_M.gguf',
-        variants: ['Q4_K_M'],
-    },
-    {
-        title: 'Meta Llama 3.1 8B Instruct',
-        description: 'An 8B instruction-tuned version of the Meta Llama 3.1 model.',
-        size: 8,
-        author: 'team mradermacher',
-        authorUrl: 'https://huggingface.co/mradermacher',
-        modelUrl: 'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF',
-        downloadLink:
-            'https://huggingface.co/mradermacher/Meta-Llama-3.1-8B-Instruct-GGUF/resolve/main/Meta-Llama-3.1-8B-Instruct.Q4_K_M.gguf',
-        variants: ['Q4_K_M'],
-    },
-    {
-        title: 'Gemma 2 2B',
-        description: 'A 2B parameter version of the Gemma 2 model.',
-        size: 2,
-        author: 'Bartowski',
-        authorUrl: 'https://huggingface.co/bartowski',
-        modelUrl: 'https://huggingface.co/bartowski/gemma-2-2b-it-GGUF',
-        downloadLink: 'https://huggingface.co/bartowski/gemma-2-2b-it-GGUF/resolve/main/gemma-2-2b-it-Q4_K_M.gguf',
-        variants: ['Q4_K_M'],
-    },
-];
+import { ModelDetails, SUPPORTED_MODELS } from '@/config';
 
 export function ModelCards() {
     const [downloadProgress, setDownloadProgress] = useState<ModelDownloadProgress | null>(null);
@@ -199,7 +114,7 @@ export function ModelCards() {
 
     return (
         <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 md:grid-cols-2 xl:grid-cols-3">
-            {models.map((model, index) => (
+            {SUPPORTED_MODELS.map((model, index) => (
                 <Card key={index} className="@container/card">
                     <CardHeader>
                         <CardDescription>

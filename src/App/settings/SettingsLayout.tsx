@@ -1,6 +1,6 @@
 import { House } from 'lucide-react';
 import { useEffect, useState, ReactNode } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { McpActions, type McpState } from '@/App/components/McpActions';
 import { SettingsSidebar } from '@/App/settings/SettingsSidebar';
 import { SystemPromptActions, type SystemPromptState } from '@/App/components/SystemPromptActions';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button.tsx';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { eventBus } from '@/utils/eventBus.ts';
+import { getPreviousRoute } from '@/utils/navigationHistory';
 
 interface SettingsLayoutProps {
     children: ReactNode;
@@ -15,6 +16,7 @@ interface SettingsLayoutProps {
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
     const location = useLocation();
+    const navigate = useNavigate();
     const [mcpState, setMcpState] = useState<McpState>({ hasUnsavedChanges: false, validationErrors: 0 });
     const [systemPromptState, setSystemPromptState] = useState<SystemPromptState>({
         activePromptId: '',
@@ -24,6 +26,29 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
 
     const isMcpRoute = location.pathname === '/settings/mcp';
     const isSystemPromptRoute = location.pathname === '/settings/system-prompt';
+
+    // Determine the back navigation path
+    // Check if we came from a specific chat via location state, or fallback to navigation history
+    const getBackPath = () => {
+        const state = location.state as { from?: string } | null;
+        if (state?.from && state.from.startsWith('/chats/')) {
+            return state.from;
+        }
+
+        // Fallback to navigation history for menu-based navigation
+        const previousRoute = getPreviousRoute();
+        if (previousRoute.startsWith('/chats/')) {
+            return previousRoute;
+        }
+
+        return '/';
+    };
+
+    const handleBackNavigation = () => {
+        const backPath = getBackPath();
+        console.log('SettingsLayout: Navigating back to:', backPath);
+        navigate(backPath);
+    };
 
     useEffect(() => {
         // Listen for MCP state updates
@@ -85,14 +110,12 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                     <div className="ml-auto">
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-                                    <Link to="/">
-                                        <House className="h-4 w-4" />
-                                    </Link>
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleBackNavigation}>
+                                    <House className="h-4 w-4" />
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Back to Home</p>
+                                <p>Back to {getBackPath().startsWith('/chats/') ? 'Chat' : 'Home'}</p>
                             </TooltipContent>
                         </Tooltip>
                     </div>

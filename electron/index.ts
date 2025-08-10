@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron';
 import type { McpConfig } from '../src/types.ts';
 import { registerAudioRpc } from './rpc/audioRpc.ts';
+import { registerChatRpc } from './rpc/chatRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { registerModelRpc } from './rpc/modelRpc.ts';
 import { getMcpConfig, getVoiceSettings, initializeLogger, setMcpConfig, setVoiceSettings } from './settings';
@@ -177,6 +178,7 @@ function createWindow() {
     registerLlmRpc(win);
     registerAudioRpc(win);
     registerModelRpc(win);
+    registerChatRpc(win);
 
     // open external links in the default browser
     win.webContents.setWindowOpenHandler(({ url }) => {

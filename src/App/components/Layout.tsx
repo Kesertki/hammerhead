@@ -38,8 +38,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     const isEmptyChat = state.chatSession.simplifiedChat.length === 0;
 
-    // Check if we're on the chat route (assistant page)
-    const isOnChatRoute = location.pathname === '/';
+    // Check if we're on any chat route (new chat or existing chat)
+    const isOnChatRoute = location.pathname === '/' || location.pathname.startsWith('/chats/');
 
     // Check if we're on the models page
     const isOnModelsRoute = location.pathname === '/models';

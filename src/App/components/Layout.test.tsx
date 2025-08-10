@@ -3,14 +3,14 @@ import { HashRouter } from 'react-router-dom';
 import { describe, expect, it } from 'vitest';
 import Layout from './Layout';
 
-const renderWithRouter = (ui: React.ReactElement) => {
+const renderWithProviders = (ui: React.ReactElement) => {
     return render(<HashRouter>{ui}</HashRouter>);
 };
 
 describe('Layout', () => {
     it('renders children content', () => {
         const testContent = 'Test Content';
-        renderWithRouter(
+        renderWithProviders(
             <Layout>
                 <div>{testContent}</div>
             </Layout>
@@ -20,7 +20,7 @@ describe('Layout', () => {
     });
 
     it('renders sidebar trigger button', () => {
-        renderWithRouter(
+        renderWithProviders(
             <Layout>
                 <div>Test</div>
             </Layout>

@@ -16,6 +16,7 @@ Object.defineProperty(window, 'ipcRenderer', {
     value: {
         send: vi.fn(),
         on: vi.fn(),
+        off: vi.fn(),
         removeListener: vi.fn(),
     },
 });

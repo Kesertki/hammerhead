@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
-import { Route, HashRouter as Router, Routes, useNavigate } from 'react-router-dom';
+import { Route, HashRouter as Router, Routes, useNavigate, useLocation } from 'react-router-dom';
 import { Chat } from './Chat.tsx';
 import Layout from './components/Layout.tsx';
 import SettingsLayout from './settings/SettingsLayout.tsx';
 import Settings from './settings/Settings.tsx';
 import { Logs } from './pages/Logs.tsx';
 import { Models } from './pages/Models.tsx';
+import { setNavigationHistory } from '../utils/navigationHistory.ts';
 
 import './App.css';
 
@@ -20,6 +21,12 @@ import './App.css';
 
 function NavigationHandler() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Track navigation history for non-settings routes
+    useEffect(() => {
+        setNavigationHistory(location.pathname);
+    }, [location.pathname]);
 
     useEffect(() => {
         // Set up the electron navigation listener
@@ -55,6 +62,7 @@ export function App() {
                         <Layout>
                             <Routes>
                                 <Route path="/" element={<Chat />} />
+                                <Route path="/chats/:chatId" element={<Chat />} />
                                 <Route path="/models" element={<Models />} />
                                 <Route path="/logs" element={<Logs />} />
                             </Routes>

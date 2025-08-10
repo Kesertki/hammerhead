@@ -5,16 +5,7 @@ import { llmState } from '@/state/llmState.ts';
 import McpServersConfig from './McpServersConfig';
 import SystemPrompt from './SystemPrompt';
 import { VoiceSettings } from './VoiceSettings';
-
-// Sub-components for different settings sections
-const KnowledgeBase = () => {
-    return (
-        <div>
-            <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-4">Knowledge Base</h2>
-            <p>Access your knowledge base here.</p>
-        </div>
-    );
-};
+import { ModelCards } from '../pages/ModelCards';
 
 const GeneralSettings = () => {
     const state = useExternalState(llmState);
@@ -71,10 +62,10 @@ export default function Settings() {
                         }
                     />
                     <Route
-                        path="/knowledge-base"
+                        path="/models"
                         element={
                             <ScrollArea className="h-full">
-                                <KnowledgeBase />
+                                <ModelCards />
                             </ScrollArea>
                         }
                     />

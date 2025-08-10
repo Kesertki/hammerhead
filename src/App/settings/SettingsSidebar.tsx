@@ -1,4 +1,4 @@
-import { ArrowLeft, Server, Settings as SettingsIcon, Volume2, FileText } from 'lucide-react';
+import { ArrowLeft, Server, Settings as SettingsIcon, Volume2, FileText, Container } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sidebar,
@@ -19,6 +19,11 @@ const settingsItems = [
         title: 'General',
         url: '/settings/general',
         icon: SettingsIcon,
+    },
+    {
+        title: 'Models',
+        url: '/settings/models',
+        icon: Container,
     },
     {
         title: 'Voice',

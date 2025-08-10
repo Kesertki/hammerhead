@@ -50,6 +50,12 @@ function createMenu() {
                               },
                           },
                           {
+                              label: 'Models',
+                              click: () => {
+                                  win?.webContents.send('navigate-to-route', '/models');
+                              },
+                          },
+                          {
                               label: 'Logs',
                               click: () => {
                                   win?.webContents.send('navigate-to-route', '/logs');

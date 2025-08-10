@@ -127,19 +127,17 @@ export function ModelCards() {
                                 {model.author}
                             </a>
                         </CardDescription>
-                        <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+                        <CardTitle>
                             <a
                                 href={model.modelUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl text-foreground hover:text-primary hover:underline break-words hyphens-auto block"
+                                className="text-foreground hover:text-primary hover:underline break-words hyphens-auto block"
                             >
                                 {model.title}
                             </a>
                         </CardTitle>
-                        {isModelDownloadedStatus(model) && (
-                            <div className="text-green-600 text-sm font-medium">Downloaded</div>
-                        )}
+                        {isModelDownloadedStatus(model) && <div className="text-green-600 text-sm">Downloaded</div>}
                         <CardAction>
                             {isModelDownloading(model) ? (
                                 <Button

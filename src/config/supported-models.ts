@@ -9,9 +9,18 @@ export interface ModelDetails {
     variants: string[];
 }
 
-// \"hf:bartowski/Qwen_Qwen3-4B-Instruct-2507-GGUF:Q6_K_L\" \"hf:bartowski/Qwen_Qwen3-4B-Thinking-2507-GGUF:Q6_K_L\"
-
 export const SUPPORTED_MODELS: ModelDetails[] = [
+    {
+        title: 'openai_gpt-oss-20b',
+        description: 'A 20B parameter version of the OpenAI GPT model.',
+        size: 20,
+        author: 'Bartowski',
+        authorUrl: 'https://huggingface.co/bartowski',
+        modelUrl: 'https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF',
+        downloadLink:
+            'https://huggingface.co/bartowski/openai_gpt-oss-20b-GGUF/resolve/main/openai_gpt-oss-20b-MXFP4.gguf',
+        variants: ['MXFP4'],
+    },
     {
         title: 'Qwen3-4B-Instruct-2507',
         description: 'A 4B instruction-tuned version of the Qwen model.',

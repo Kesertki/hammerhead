@@ -30,7 +30,7 @@ Before getting started, make sure you have:
 
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
-- **Docker** (required for Chroma vector database)
+- **Docker** (required for voice input)
 - At least **8GB RAM** (recommended for running larger models)
 
 ## Get started
@@ -49,20 +49,7 @@ npm start
 
 ## Models
 
-The application supports GGUF format models. Suggested models are available in the `./models` directory.
-
-### Recommended Models
-
-Download these models from Hugging Face:
-
-- **hf:bartowski/Qwen_Qwen3-8B-GGUF:Q6_K** - Balanced performance and quality ([Hugging Face](https://huggingface.co/bartowski/Qwen_Qwen3-8B-GGUF))
-- **hf:bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF:Q6_K_L** - Enhanced reasoning capabilities ([Hugging Face](https://huggingface.co/bartowski/deepseek-ai_DeepSeek-R1-0528-Qwen3-8B-GGUF))
-
-### Adding Custom Models
-
-1. Download GGUF format models from Hugging Face or other sources
-2. Place them in the `./models` directory
-3. Configure the model path in the application settings
+The application supports GGUF format models.
 
 ## MCP (Model Context Protocol)
 

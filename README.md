@@ -100,8 +100,7 @@ npm run build
 
 - `electron/` - Electron main process and related services
 - `src/` - React frontend application
-- `models/` - LLM model files (GGUF format)
-- `data/` - Document storage for RAG functionality
+- `models/` - LLM model files (GGUF format) for development and testing
 
 ### Contributing
 

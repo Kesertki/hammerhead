@@ -57,6 +57,14 @@ You can download models from Hugging Face or other sources. Hammerhead provides 
 
 ![Model Hub](docs/images/settings-model-hub.webp)
 
+## System Prompts
+
+Hammerhead allows you to configure system prompts for different models. This can help tailor the behavior of the models to better suit your needs.
+
+Access system prompts via the `Settings` menu. You can have multiple system prompts for different scenarios.
+
+![System Prompts](docs/images/settings-system-prompts.webp)
+
 ## MCP (Model Context Protocol)
 
 Hammerhead can connect to MCP servers to run functions like text generation, summarization, and more.

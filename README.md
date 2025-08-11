@@ -10,9 +10,11 @@ It supports multiple languages and provides a user-friendly experience for query
 
 Good for testing and experimenting with LLMs, Hammerhead is designed to be extensible, allowing developers to add custom components and features.
 
-> **⚠️ Development Status**: Hammerhead is in active development and features may break or change between releases.
-> **🚀 Perfect Base for Custom Apps**: This project serves as an excellent foundation for building custom chat applications with LLMs.
-> **🤝 Contributions Welcome**: We welcome contributions, bug reports, and feedback! Feel free to open issues or submit pull requests.
+> [!WARNING]  
+> **Development Status**: Hammerhead is in active development and features may break or change between releases.
+
+**🚀 Perfect Base for Custom Apps**: This project serves as an excellent foundation for building custom chat applications with LLMs.  
+**🤝 Contributions Welcome**: We welcome contributions, bug reports, and feedback! Feel free to open issues or submit pull requests.
 
 ## Features
 

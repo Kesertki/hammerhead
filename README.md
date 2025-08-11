@@ -47,7 +47,7 @@ Start the project:
 npm start
 ```
 
-![Chat Example](docs/images/chat-example.webp)
+![Chat Example](docs/images/chat-example.png)
 
 ## Models
 
@@ -55,7 +55,7 @@ The application supports GGUF format models.
 
 You can download models from Hugging Face or other sources. Hammerhead provides minimalistic model hub for easy access. Reach it via the `Models` menu or model selector.
 
-![Model Hub](docs/images/settings-model-hub.webp)
+![Model Hub](docs/images/settings-model-hub.png)
 
 ## System Prompts
 
@@ -63,7 +63,7 @@ Hammerhead allows you to configure system prompts for different models. This can
 
 Access system prompts via the `Settings` menu. You can have multiple system prompts for different scenarios.
 
-![System Prompts](docs/images/settings-system-prompts.webp)
+![System Prompts](docs/images/settings-system-prompts.png)
 
 ## MCP (Model Context Protocol)
 
@@ -73,7 +73,7 @@ You can configure MCP server settings in the application:
 
 `Menu -> Settings -> MCP Servers`
 
-![MCP Servers](docs/images/settings-mcp.webp)
+![MCP Servers](docs/images/settings-mcp.png)
 
 Recommended servers:
 

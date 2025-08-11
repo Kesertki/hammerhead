@@ -47,11 +47,25 @@ Start the project:
 npm start
 ```
 
+![Chat Example](docs/images/chat-example.webp)
+
 ## Models
 
 The application supports GGUF format models.
 
+You can download models from Hugging Face or other sources. Hammerhead provides minimalistic model hub for easy access. Reach it via the `Models` menu or model selector.
+
+![Model Hub](docs/images/settings-model-hub.webp)
+
 ## MCP (Model Context Protocol)
+
+Hammerhead can connect to MCP servers to run functions like text generation, summarization, and more.
+
+You can configure MCP server settings in the application:
+
+`Menu -> Settings -> MCP Servers`
+
+![MCP Servers](docs/images/settings-mcp.webp)
 
 Recommended servers:
 
@@ -85,7 +99,9 @@ npm run build
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+5. Run tests (`npm test`)
+6. Run linting (`npm run lint`)
+7. Open a Pull Request
 
 ## License
 

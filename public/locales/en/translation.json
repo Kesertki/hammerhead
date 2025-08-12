@@ -6,5 +6,17 @@
     "search_language": "Search language...",
     "no_language_found": "No language found.",
     "language_description": "This is the language that will be used for the application interface.",
-    "loading_settings": "Loading settings..."
+    "loading_settings": "Loading settings...",
+    "menu": {
+        "settings": "Settings...",
+        "models": "Models",
+        "logs": "Logs",
+        "file": "File",
+        "edit": "Edit", 
+        "view": "View",
+        "window": "Window",
+        "help": "Help",
+        "learn_more": "Learn More",
+        "speech": "Speech"
+    }
 }

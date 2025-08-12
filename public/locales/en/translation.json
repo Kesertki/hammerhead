@@ -1,5 +1,6 @@
 {
     "language": "Language",
+    "welcome": "Welcome to Hammerhead",
     "welcome_choose_a_model": "Choose a model file to start chatting",
     "select_language": "Select language",
     "search_language": "Search language...",

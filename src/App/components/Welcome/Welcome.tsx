@@ -4,12 +4,13 @@ import headerImage from '/header.webp';
 import './Welcome.css';
 
 export function Welcome() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     return (
         <div className="welcome-container">
             <h1 className="welcome">
-                Welcome to Hammerhead<sup className="alpha">(alpha)</sup>
+                {t('welcome')}
+                <sup className="alpha">(alpha)</sup>
             </h1>
             <div className="hint">
                 <p className="hint-text">{t('welcome_choose_a_model')}</p>

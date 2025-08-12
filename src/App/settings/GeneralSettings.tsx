@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { DEFAULT_GENERAL_SETTINGS, GeneralSettings } from '@/types';
 
@@ -18,7 +18,6 @@ const languages = [
 ];
 
 const FormSchema = z.object({
-    enabled: z.boolean(),
     language: z.string({
         required_error: 'Please select a language.',
     }),
@@ -30,13 +29,14 @@ export const GeneralSettingsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<GeneralSettings>(DEFAULT_GENERAL_SETTINGS);
 
+    // Debouncing for text inputs
+    const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const DEBOUNCE_DELAY = 500;
+
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: DEFAULT_GENERAL_SETTINGS,
+        defaultValues: { language: DEFAULT_GENERAL_SETTINGS.language },
     });
-
-    // Watch the enabled field to control other field states
-    const isEnabled = form.watch('enabled');
 
     // Load settings on component mount
     useEffect(() => {
@@ -46,10 +46,10 @@ export const GeneralSettingsPage = () => {
     const loadSettings = async () => {
         try {
             setIsLoading(true);
-            // const loadedSettings = await window.electronAPI.getGeneralSettings();
-            // if (loadedSettings) {
-            // setSettings(loadedSettings);
-            // }
+            const loadedSettings = await window.electronAPI.getGeneralSettings();
+            if (loadedSettings) {
+                setSettings(loadedSettings);
+            }
         } catch (error) {
             console.error('Error loading general settings:', error);
             // Use default settings if loading fails
@@ -62,17 +62,84 @@ export const GeneralSettingsPage = () => {
     useEffect(() => {
         if (settings) {
             form.reset({
-                enabled: settings.enabled,
                 language: settings.language,
             });
         }
     }, [settings, form]);
 
+    // Debounced save function for text inputs
+    const debouncedSave = useCallback((newSettings: GeneralSettings) => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        debounceTimeoutRef.current = setTimeout(() => {
+            saveSettings(newSettings);
+        }, DEBOUNCE_DELAY);
+    }, []);
+
+    // Immediate save function for switches and dropdowns
+    const immediateSave = useCallback((newSettings: GeneralSettings) => {
+        if (debounceTimeoutRef.current) {
+            clearTimeout(debounceTimeoutRef.current);
+        }
+        saveSettings(newSettings);
+    }, []);
+
+    // Watch for changes in form fields with different save strategies
+    useEffect(() => {
+        const subscription = form.watch((value, { name }) => {
+            if (name && value[name as keyof typeof value] !== undefined) {
+                const currentFormData = form.getValues();
+                // Only auto-save if all required fields have values
+                if (currentFormData.language !== undefined) {
+                    const newSettings: GeneralSettings = {
+                        language: currentFormData.language,
+                    };
+
+                    // Use immediate save for language changes
+                    immediateSave(newSettings);
+                }
+            }
+        });
+        return () => {
+            subscription.unsubscribe();
+            // Clean up debounce timeout on unmount
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+            }
+        };
+    }, [form, debouncedSave, immediateSave]);
+
+    // Cleanup effect to ensure pending saves are executed on unmount
+    useEffect(() => {
+        return () => {
+            if (debounceTimeoutRef.current) {
+                clearTimeout(debounceTimeoutRef.current);
+                // Execute any pending save immediately on unmount
+                const currentFormData = form.getValues();
+                if (currentFormData.language !== undefined) {
+                    const newSettings: GeneralSettings = {
+                        language: currentFormData.language,
+                    };
+                    saveSettings(newSettings);
+                }
+            }
+        };
+    }, [form]);
+
+    const saveSettings = async (newSettings: GeneralSettings) => {
+        try {
+            await window.electronAPI.setGeneralSettings(newSettings);
+            setSettings(newSettings);
+            // toast.success('Settings updated successfully');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            // toast.error('Failed to save settings');
+        }
+    };
+
     return (
         <div className="h-full flex flex-col mx-auto p-4">
-            {/* <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-4">General Settings</h2> */}
-            {/* <p>Version: {state.appVersion}</p> */}
-            {/* Add more general settings here */}
             <Form {...form}>
                 <div className="space-y-6">
                     {isLoading ? (
@@ -84,23 +151,16 @@ export const GeneralSettingsPage = () => {
                                 name="language"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            Language
-                                        </FormLabel>
-                                        <Popover
-                                            open={isEnabled && langOpen}
-                                            onOpenChange={(open) => isEnabled && setLangOpen(open)}
-                                        >
+                                        <FormLabel>Language</FormLabel>
+                                        <Popover open={langOpen} onOpenChange={setLangOpen}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
-                                                        disabled={!isEnabled}
                                                         variant="outline"
                                                         role="combobox"
                                                         className={cn(
                                                             'w-[200px] justify-between',
-                                                            field.value === undefined && 'text-muted-foreground',
-                                                            !isEnabled && 'opacity-50 cursor-not-allowed'
+                                                            field.value === undefined && 'text-muted-foreground'
                                                         )}
                                                     >
                                                         {field.value !== undefined
@@ -123,12 +183,10 @@ export const GeneralSettingsPage = () => {
                                                                     value={language.label}
                                                                     key={language.value}
                                                                     onSelect={() => {
-                                                                        if (isEnabled) {
-                                                                            form.setValue('language', language.value, {
-                                                                                shouldValidate: true,
-                                                                            });
-                                                                            setLangOpen(false);
-                                                                        }
+                                                                        form.setValue('language', language.value, {
+                                                                            shouldValidate: true,
+                                                                        });
+                                                                        setLangOpen(false);
                                                                     }}
                                                                 >
                                                                     {language.label}
@@ -147,7 +205,7 @@ export const GeneralSettingsPage = () => {
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
-                                        <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
+                                        <FormDescription>
                                             This is the language that will be used for the application interface.
                                         </FormDescription>
                                         <FormMessage />

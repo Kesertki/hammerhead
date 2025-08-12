@@ -30,6 +30,8 @@ Object.defineProperty(window, 'electronAPI', {
         setSystemPrompts: vi.fn().mockResolvedValue(undefined),
         getVoiceSettings: vi.fn().mockResolvedValue({ model: 'test-model', language: 'en' }),
         setVoiceSettings: vi.fn().mockResolvedValue(undefined),
+        getGeneralSettings: vi.fn().mockResolvedValue({ language: 'en' }),
+        setGeneralSettings: vi.fn().mockResolvedValue(undefined),
         openExternal: vi.fn().mockResolvedValue(undefined),
         getLogs: vi.fn().mockResolvedValue([]),
         clearLogs: vi.fn().mockResolvedValue(undefined),

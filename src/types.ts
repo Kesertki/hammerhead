@@ -71,12 +71,10 @@ export interface TranscriptionResult {
 }
 
 export interface GeneralSettings {
-    enabled: boolean;
     language: string;
 }
 
 export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
-    enabled: true,
     language: 'en',
 };
 
@@ -103,6 +101,8 @@ declare global {
             setSystemPrompts: (prompts: SystemPromptConfig) => Promise<void>;
             getVoiceSettings: () => Promise<VoiceSettings>;
             setVoiceSettings: (settings: VoiceSettings) => Promise<void>;
+            getGeneralSettings: () => Promise<GeneralSettings>;
+            setGeneralSettings: (settings: GeneralSettings) => Promise<void>;
             openExternal: (url: string) => Promise<void>;
             getLogs: (limit?: number) => Promise<LogEntry[]>;
             clearLogs: () => Promise<void>;

@@ -6,7 +6,15 @@ import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerChatRpc } from './rpc/chatRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { registerModelRpc } from './rpc/modelRpc.ts';
-import { getMcpConfig, getVoiceSettings, initializeLogger, setMcpConfig, setVoiceSettings } from './settings';
+import {
+    getMcpConfig,
+    getVoiceSettings,
+    getGeneralSettings,
+    initializeLogger,
+    setMcpConfig,
+    setVoiceSettings,
+    setGeneralSettings,
+} from './settings';
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import { getSystemPrompts, SystemPromptConfig, setSystemPrompts } from './settings/prompts.ts';
 
@@ -247,6 +255,14 @@ ipcMain.handle('get-voice-settings', async () => {
 
 ipcMain.handle('set-voice-settings', async (_event, settings) => {
     await setVoiceSettings(settings);
+});
+
+ipcMain.handle('get-general-settings', async () => {
+    return await getGeneralSettings();
+});
+
+ipcMain.handle('set-general-settings', async (_event, settings) => {
+    await setGeneralSettings(settings);
 });
 
 // Log-related IPC handlers

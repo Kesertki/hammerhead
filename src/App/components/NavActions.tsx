@@ -15,6 +15,7 @@ import {
 import { useExternalState } from '@/hooks/useExternalState.ts';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { llmState } from '@/state/llmState.ts';
+import { useTranslation } from 'react-i18next';
 
 interface ActionGroup {
     label: string;
@@ -25,6 +26,7 @@ interface ActionGroup {
 }
 
 export function NavActions() {
+    const { t } = useTranslation();
     const state = useExternalState(llmState);
     const hasModel = state.model != null && state.model.name != null;
 
@@ -100,14 +102,14 @@ export function NavActions() {
         // ],
         [
             {
-                label: 'Import',
+                label: t('import'),
                 action: 'import',
                 icon: ArrowUp,
                 disabled: !hasModel,
                 onClick: importChat,
             },
             {
-                label: 'Export',
+                label: t('export'),
                 action: 'export',
                 icon: ArrowDown,
                 disabled: !hasModel,

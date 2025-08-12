@@ -93,9 +93,7 @@ export function AppSidebar() {
                             ))}
                             {chats.length === 0 && (
                                 <SidebarMenuItem>
-                                    <div className="px-2 py-2 text-sm text-muted-foreground">
-                                        No chats yet. Start a conversation!
-                                    </div>
+                                    <div className="px-2 py-2 text-sm text-muted-foreground">{t('no_chats')}</div>
                                 </SidebarMenuItem>
                             )}
                         </SidebarMenu>

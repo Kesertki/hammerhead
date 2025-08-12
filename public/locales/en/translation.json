@@ -17,6 +17,9 @@
     "unload_model": "Unload model",
     "chats": "Chats",
     "new_chat": "New chat",
+    "no_chats": "No chats yet. Start a conversation!",
+    "import": "Import",
+    "export": "Export",
     "nav": {
         "settings": {
             "general": "General",

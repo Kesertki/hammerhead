@@ -12,54 +12,56 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { getPreviousRoute } from '@/utils/navigationHistory';
-
-// Settings menu items.
-const settingsItems = [
-    {
-        title: 'General',
-        url: '/settings/general',
-        icon: SettingsIcon,
-    },
-    {
-        title: 'Models',
-        url: '/settings/models',
-        icon: Container,
-    },
-    {
-        title: 'Voice',
-        url: '/settings/voice',
-        icon: Volume2,
-    },
-    {
-        title: 'System Prompt',
-        url: '/settings/system-prompt',
-        icon: FileText,
-    },
-    // {
-    //     title: 'Appearance',
-    //     url: '/settings/appearance',
-    //     icon: Palette,
-    // },
-    // {
-    //     title: 'Knowledge Base',
-    //     url: '/settings/knowledge-base',
-    //     icon: Database,
-    // },
-    {
-        title: 'MCP Servers',
-        url: '/settings/mcp',
-        icon: Server,
-    },
-    // {
-    //     title: 'Advanced',
-    //     url: '/settings/advanced',
-    //     icon: Zap,
-    // },
-];
+import { useTranslation } from 'react-i18next';
 
 export function SettingsSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { t } = useTranslation();
+
+    // Settings menu items.
+    const settingsItems = [
+        {
+            title: t('nav.settings.general'),
+            url: '/settings/general',
+            icon: SettingsIcon,
+        },
+        {
+            title: t('nav.settings.models'),
+            url: '/settings/models',
+            icon: Container,
+        },
+        {
+            title: t('nav.settings.voice'),
+            url: '/settings/voice',
+            icon: Volume2,
+        },
+        {
+            title: t('nav.settings.system_prompt'),
+            url: '/settings/system-prompt',
+            icon: FileText,
+        },
+        // {
+        //     title: 'Appearance',
+        //     url: '/settings/appearance',
+        //     icon: Palette,
+        // },
+        // {
+        //     title: 'Knowledge Base',
+        //     url: '/settings/knowledge-base',
+        //     icon: Database,
+        // },
+        {
+            title: t('nav.settings.mcp'),
+            url: '/settings/mcp',
+            icon: Server,
+        },
+        // {
+        //     title: 'Advanced',
+        //     url: '/settings/advanced',
+        //     icon: Zap,
+        // },
+    ];
 
     // Determine the back navigation path - check location state first, then navigation history
     const getBackPath = () => {
@@ -92,13 +94,13 @@ export function SettingsSidebar() {
                         className="flex items-center gap-2 text-sm font-medium hover:text-foreground transition-colors cursor-pointer"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back to {getBackPath().startsWith('/chats/') ? 'Chat' : 'Home'}
+                        {getBackPath().startsWith('/chats/') ? t('back_to_chat') : t('back_to_home')}
                     </button>
                 </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Settings</SidebarGroupLabel>
+                    <SidebarGroupLabel>{t('settings')}</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {settingsItems.map((item) => (

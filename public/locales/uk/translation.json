@@ -13,6 +13,19 @@
     "no_language_found": "Мову не знайдено.",
     "language_description": "Це мова, яка буде використовуватися для інтерфейсу програми.",
     "loading_settings": "Завантаження налаштувань...",
+    "clear_chat_history": "Очистити історію чату",
+    "unload_model": "Вивантажити модель",
+    "chats": "Чати",
+    "new_chat": "Новий чат",
+    "nav": {
+        "settings": {
+            "general": "Загальні",
+            "models": "Моделі",
+            "voice": "Голос",
+            "system_prompt": "Системний запит",
+            "mcp": "Сервери MCP"
+        }
+    },
     "menu": {
         "settings": "Налаштування...",
         "models": "Моделі",

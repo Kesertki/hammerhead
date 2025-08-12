@@ -2,7 +2,7 @@
     "language": "Мова",
     "settings": "Налаштування",
     "welcome": {
-        "title": "Ласкаво просимо до Hammerhead",
+        "title": "Hammerhead",
         "choose_a_model": "Виберіть файл моделі, щоб почати спілкування"
     },
     "toggle_sidebar": "Перемкнути бічну панель",

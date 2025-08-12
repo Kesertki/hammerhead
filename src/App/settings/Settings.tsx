@@ -1,23 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useExternalState } from '@/hooks/useExternalState.ts';
-import { llmState } from '@/state/llmState.ts';
 import McpServersConfig from './McpServersConfig';
 import SystemPrompt from './SystemPrompt';
 import { VoiceSettings } from './VoiceSettings';
 import { ModelCards } from '../pages/ModelCards';
-
-const GeneralSettings = () => {
-    const state = useExternalState(llmState);
-
-    return (
-        <div>
-            <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight mb-4">General Settings</h2>
-            <p>Version: {state.appVersion}</p>
-            {/* Add more general settings here */}
-        </div>
-    );
-};
+import { GeneralSettings } from './GeneralSettings';
 
 const AppearanceSettings = () => {
     return (

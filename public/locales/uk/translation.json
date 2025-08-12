@@ -1,4 +1,9 @@
 {
     "language": "Мова",
-    "welcome_choose_a_model": "Виберіть файл моделі, щоб почати спілкування"
+    "welcome_choose_a_model": "Виберіть файл моделі, щоб почати спілкування",
+    "select_language": "Виберіть мову",
+    "search_language": "Пошук мови...",
+    "no_language_found": "Мову не знайдено.",
+    "language_description": "Це мова, яка буде використовуватися для інтерфейсу програми.",
+    "loading_settings": "Завантаження налаштувань..."
 }

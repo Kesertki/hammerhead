@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { DEFAULT_GENERAL_SETTINGS, GeneralSettings } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 const languages = [
     { value: 'en', label: 'English' },
@@ -25,6 +26,7 @@ const FormSchema = z.object({
 
 export const GeneralSettingsPage = () => {
     // const state = useExternalState(llmState);
+    const { t, i18n } = useTranslation();
     const [langOpen, setLangOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [settings, setSettings] = useState<GeneralSettings>(DEFAULT_GENERAL_SETTINGS);
@@ -131,6 +133,12 @@ export const GeneralSettingsPage = () => {
         try {
             await window.electronAPI.setGeneralSettings(newSettings);
             setSettings(newSettings);
+
+            // Update i18n language when language setting changes
+            if (newSettings.language && i18n.language !== newSettings.language) {
+                await i18n.changeLanguage(newSettings.language);
+            }
+
             // toast.success('Settings updated successfully');
         } catch (error) {
             console.error('Error saving settings:', error);
@@ -143,7 +151,7 @@ export const GeneralSettingsPage = () => {
             <Form {...form}>
                 <div className="space-y-6">
                     {isLoading ? (
-                        <div className="text-center py-4">Loading settings...</div>
+                        <div className="text-center py-4">{t('loading_settings')}</div>
                     ) : (
                         <>
                             <FormField
@@ -151,7 +159,7 @@ export const GeneralSettingsPage = () => {
                                 name="language"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel>Language</FormLabel>
+                                        <FormLabel>{t('language')}</FormLabel>
                                         <Popover open={langOpen} onOpenChange={setLangOpen}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
@@ -167,16 +175,16 @@ export const GeneralSettingsPage = () => {
                                                             ? languages.find(
                                                                   (language) => language.value === field.value
                                                               )?.label
-                                                            : 'Select language'}
+                                                            : t('select_language')}
                                                         <ChevronsUpDown className="opacity-50" />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[200px] p-0">
                                                 <Command>
-                                                    <CommandInput placeholder="Search language..." className="h-9" />
+                                                    <CommandInput placeholder={t('search_language')} className="h-9" />
                                                     <CommandList>
-                                                        <CommandEmpty>No language found.</CommandEmpty>
+                                                        <CommandEmpty>{t('no_language_found')}</CommandEmpty>
                                                         <CommandGroup>
                                                             {languages.map((language) => (
                                                                 <CommandItem
@@ -205,9 +213,7 @@ export const GeneralSettingsPage = () => {
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
-                                        <FormDescription>
-                                            This is the language that will be used for the application interface.
-                                        </FormDescription>
+                                        <FormDescription>{t('language_description')}</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}

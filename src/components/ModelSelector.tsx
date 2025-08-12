@@ -31,6 +31,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { cn } from '@/lib/utils';
 import type { ModelInfo } from '@/types';
 import { formatBytes } from '@/utils/formatBytes';
+import { useTranslation } from 'react-i18next';
 
 interface ModelSelectorProps {
     /** Array of available downloaded models */
@@ -61,12 +62,13 @@ export function ModelSelector({
     onBrowseModels,
     className,
 }: ModelSelectorProps) {
+    const { t } = useTranslation();
     const [isOpen, setIsOpen] = useState(false);
 
     const selectedModel = models.find((model) => model.id === selectedModelId);
 
     if (loading) {
-        return <div className={cn('text-sm', className)}>Loading...</div>;
+        return <div className={cn('text-sm', className)}>{t('loading')}</div>;
     }
 
     if (models.length === 0) {
@@ -95,9 +97,9 @@ export function ModelSelector({
                 </PopoverTrigger>
                 <PopoverContent className="w-[250px] p-0">
                     <Command>
-                        <CommandInput placeholder="Search downloaded models..." />
+                        <CommandInput placeholder={t('model_selector.search_models')} />
                         <CommandList>
-                            <CommandEmpty>No downloaded models found.</CommandEmpty>
+                            <CommandEmpty>{t('model_selector.no_models_found')}</CommandEmpty>
                             <CommandGroup>
                                 {models.map((model) => (
                                     <CommandItem
@@ -133,7 +135,7 @@ export function ModelSelector({
                                 >
                                     <div className="flex items-center gap-2">
                                         <HardDriveUpload className="h-4 w-4" />
-                                        <span>Browse for model file...</span>
+                                        <span>{t('model_selector.browse_for_model_file')}</span>
                                     </div>
                                 </CommandItem>
                                 <CommandItem
@@ -145,7 +147,7 @@ export function ModelSelector({
                                 >
                                     <div className="flex items-center gap-2">
                                         <Search className="h-4 w-4" />
-                                        <span>Browse models...</span>
+                                        <span>{t('model_selector.browse_models')}</span>
                                     </div>
                                 </CommandItem>
                             </CommandGroup>

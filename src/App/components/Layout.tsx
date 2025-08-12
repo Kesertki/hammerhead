@@ -15,11 +15,11 @@ import type { ModelInfo } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const state = useExternalState(llmState);
-    const modelName = state.model?.name || 'No model loaded';
-    const { t } = useTranslation();
+    const modelName = state.model?.name || t('model_selector.no_model_loaded');
 
     // State for downloaded models combobox
     const [downloadedModels, setDownloadedModels] = useState<ModelInfo[]>([]);

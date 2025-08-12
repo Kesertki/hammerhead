@@ -4,7 +4,7 @@ import McpServersConfig from './McpServersConfig';
 import SystemPrompt from './SystemPrompt';
 import { VoiceSettings } from './VoiceSettings';
 import { ModelCards } from '../pages/ModelCards';
-import { GeneralSettings } from './GeneralSettings';
+import { GeneralSettingsPage } from './GeneralSettings';
 
 const AppearanceSettings = () => {
     return (
@@ -36,7 +36,7 @@ export default function Settings() {
                         path="/general"
                         element={
                             <ScrollArea className="h-full">
-                                <GeneralSettings />
+                                <GeneralSettingsPage />
                             </ScrollArea>
                         }
                     />

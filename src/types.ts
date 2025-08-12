@@ -70,6 +70,16 @@ export interface TranscriptionResult {
     }>;
 }
 
+export interface GeneralSettings {
+    enabled: boolean;
+    language: string;
+}
+
+export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
+    enabled: true,
+    language: 'en',
+};
+
 export interface VoiceSettings {
     enabled: boolean;
     dockerImage: string;

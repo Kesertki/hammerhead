@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
+import { DEFAULT_GENERAL_SETTINGS, GeneralSettings } from '@/types';
 
 const languages = [
     { value: 'en', label: 'English' },
@@ -23,25 +24,15 @@ const FormSchema = z.object({
     }),
 });
 
-interface GeneralSettings {
-    enabled: boolean;
-    language: string;
-}
-
-export const GeneralSettings = () => {
+export const GeneralSettingsPage = () => {
     // const state = useExternalState(llmState);
     const [langOpen, setLangOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [settings, setSettings] = useState<GeneralSettings>({
-        enabled: true,
-        language: 'en',
-    });
+    const [settings, setSettings] = useState<GeneralSettings>(DEFAULT_GENERAL_SETTINGS);
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
-        defaultValues: {
-            language: 'en',
-        },
+        defaultValues: DEFAULT_GENERAL_SETTINGS,
     });
 
     // Watch the enabled field to control other field states

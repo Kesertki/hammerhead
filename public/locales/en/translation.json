@@ -1,7 +1,13 @@
 {
     "language": "Language",
-    "welcome": "Welcome to Hammerhead",
-    "welcome_choose_a_model": "Choose a model file to start chatting",
+    "settings": "Settings",
+    "welcome": {
+        "title": "Welcome to Hammerhead",
+        "choose_a_model": "Choose a model file to start chatting"
+    },
+    "toggle_sidebar": "Toggle sidebar",
+    "back_to_home": "Back to Home",
+    "back_to_chat": "Back to Chat",
     "select_language": "Select language",
     "search_language": "Search language...",
     "no_language_found": "No language found.",

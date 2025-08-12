@@ -9,11 +9,11 @@ export function Welcome() {
     return (
         <div className="welcome-container">
             <h1 className="welcome">
-                {t('welcome')}
+                {t('welcome.title')}
                 <sup className="alpha">(alpha)</sup>
             </h1>
             <div className="hint">
-                <p className="hint-text">{t('welcome_choose_a_model')}</p>
+                <p className="hint-text">{t('welcome.choose_a_model')}</p>
             </div>
             <img src={headerImage} alt="Hammerhead Logo" />
         </div>

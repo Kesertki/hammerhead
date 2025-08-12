@@ -9,12 +9,14 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { eventBus } from '@/utils/eventBus.ts';
 import { getPreviousRoute } from '@/utils/navigationHistory';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsLayoutProps {
     children: ReactNode;
 }
 
 export default function SettingsLayout({ children }: SettingsLayoutProps) {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const [mcpState, setMcpState] = useState<McpState>({ hasUnsavedChanges: false, validationErrors: 0 });
@@ -89,10 +91,10 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                 <SidebarTrigger className="-ml-1" />
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Toggle sidebar</p>
+                                <p>{t('toggle_sidebar')}</p>
                             </TooltipContent>
                         </Tooltip>
-                        <h1 className="text-lg font-semibold">Settings</h1>
+                        <h1 className="text-lg font-semibold">{t('settings')}</h1>
                     </div>
 
                     {/* MCP Actions when on MCP route */}
@@ -115,7 +117,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Back to {getBackPath().startsWith('/chats/') ? 'Chat' : 'Home'}</p>
+                                <p>{getBackPath().startsWith('/chats/') ? t('back_to_chat') : t('back_to_home')}</p>
                             </TooltipContent>
                         </Tooltip>
                     </div>

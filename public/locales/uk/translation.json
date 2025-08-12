@@ -1,7 +1,13 @@
 {
     "language": "Мова",
-    "welcome": "Ласкаво просимо до Hammerhead",
-    "welcome_choose_a_model": "Виберіть файл моделі, щоб почати спілкування",
+    "settings": "Налаштування",
+    "welcome": {
+        "title": "Ласкаво просимо до Hammerhead",
+        "choose_a_model": "Виберіть файл моделі, щоб почати спілкування"
+    },
+    "toggle_sidebar": "Перемкнути бічну панель",
+    "back_to_home": "Назад до головної",
+    "back_to_chat": "Назад до чату",
     "select_language": "Виберіть мову",
     "search_language": "Пошук мови...",
     "no_language_found": "Мову не знайдено.",

@@ -41,6 +41,32 @@
         "unsaved": "unsaved",
         "errors": "error(s)"
     },
+    "prompts": {
+        "select_a_prompt": "Select a prompt",
+        "create_new": "Create new prompt",
+        "rename_current": "Rename current prompt",
+        "save_current": "Save current prompt",
+        "delete_current": "Delete current prompt",
+        "input_placeholder": "Enter your prompt here...",
+        "dialog": {
+            "name": "Name",
+            "create_new_prompt": "Create New Prompt",
+            "rename_prompt": "Rename Prompt",
+            "enter_name": "Enter a name for the new prompt.",
+            "enter_new_name": "Enter a new name for this prompt."
+        },
+        "msg": {
+            "created_successfully": "Prompt created successfully.",
+            "renamed_successfully": "Prompt renamed successfully.",
+            "saved_successfully": "Prompt saved successfully.",
+            "deleted_successfully": "Prompt deleted successfully.",
+            "failed_to_save": "Failed to save prompt.",
+            "failed_to_delete": "Failed to delete prompt.",
+            "failed_to_create": "Failed to create new prompt.",
+            "failed_to_rename": "Failed to rename prompt.",
+            "cannot_delete_only": "Cannot delete the only prompt."
+        }
+    },
     "msg": {
         "chat_exported": "Chat exported successfully!",
         "chat_imported": "Chat imported successfully!",

@@ -41,6 +41,32 @@
         "unsaved": "незбережено",
         "errors": "помилка(и)"
     },
+    "prompts": {
+        "select_a_prompt": "Виберіть запит",
+        "create_new": "Створити новий запит",
+        "rename_current": "Перейменувати поточний запит",
+        "save_current": "Зберегти поточний запит",
+        "delete_current": "Видалити поточний запит",
+        "input_placeholder": "Введіть ваш запит тут...",
+        "dialog": {
+            "name": "Назва",
+            "create_new_prompt": "Створити новий запит",
+            "rename_prompt": "Перейменувати запит",
+            "enter_name": "Введіть назву для нового запиту.",
+            "enter_new_name": "Введіть нову назву для цього запиту."
+        },
+        "msg": {
+            "created_successfully": "Запит успішно створено.",
+            "renamed_successfully": "Запит успішно перейменовано.",
+            "saved_successfully": "Запит успішно збережено.",
+            "deleted_successfully": "Запит успішно видалено.",
+            "failed_to_save": "Не вдалося зберегти запит.",
+            "failed_to_delete": "Не вдалося видалити запит.",
+            "failed_to_create": "Не вдалося створити новий запит.",
+            "failed_to_rename": "Не вдалося перейменувати запит.",
+            "cannot_delete_only": "Не можна видалити єдиний запит."
+        }
+    },
     "msg": {
         "chat_exported": "Чат успішно експортовано!",
         "chat_imported": "Чат успішно імпортовано!",

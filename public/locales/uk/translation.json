@@ -47,6 +47,11 @@
         "finished_thinking": "Закінчив думати"
     },
     "tokens_per_second": "токенів/сек",
+    "tokens": {
+        "input_tokens": "вхідні токени",
+        "output_tokens": "вихідні токени",
+        "total_tokens": "всього токенів"
+    },
     "nav": {
         "settings": {
             "general": "Загальні",

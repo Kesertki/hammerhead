@@ -47,6 +47,11 @@
         "finished_thinking": "Finished thinking"
     },
     "tokens_per_second": "tokens/sec",
+    "tokens": {
+        "input_tokens": "input tokens",
+        "output_tokens": "output tokens",
+        "total_tokens": "total tokens"
+    },
     "nav": {
         "settings": {
             "general": "General",

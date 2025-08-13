@@ -507,9 +507,9 @@ export function Chat() {
                 />
                 {state.model.loaded && state.chatSession.sessionTokenStats && (
                     <span className="text-xs text-muted-foreground mt-2">
-                        {state.chatSession.sessionTokenStats?.totalInputTokens} input tokens,{' '}
-                        {state.chatSession.sessionTokenStats?.totalOutputTokens} output tokens,{' '}
-                        {state.chatSession.sessionTokenStats?.totalTokens} total tokens
+                        {state.chatSession.sessionTokenStats?.totalInputTokens} {t('tokens.input_tokens')},{' '}
+                        {state.chatSession.sessionTokenStats?.totalOutputTokens} {t('tokens.output_tokens')},{' '}
+                        {state.chatSession.sessionTokenStats?.totalTokens} {t('tokens.total_tokens')}
                     </span>
                 )}
             </div>

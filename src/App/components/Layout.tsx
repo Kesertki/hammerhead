@@ -206,12 +206,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         rel="noopener noreferrer"
                                     >
                                         <Search className="h-4 w-4" />
-                                        Find more models
+                                        <span>{t('models.find_more')}</span>
                                     </a>
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Browse HuggingFace for more GGUF models</p>
+                                <p>{t('models.browse_for_more')}</p>
                             </TooltipContent>
                         </Tooltip>
                     )}

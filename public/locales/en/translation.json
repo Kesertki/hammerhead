@@ -61,6 +61,11 @@
             "mcp": "MCP Servers"
         }
     },
+    "models": {
+        "find_more": "Find more models",
+        "browse_for_more": "Browse HuggingFace for more GGUF models",
+        "downloaded": "downloaded"
+    },
     "menu": {
         "settings": "Settings...",
         "models": "Models",

@@ -61,6 +61,11 @@
             "mcp": "Сервери MCP"
         }
     },
+    "models": {
+        "find_more": "Знайти більше моделей",
+        "browse_for_more": "Переглянути HuggingFace для більше GGUF моделей",
+        "downloaded": "завантажено"
+    },
     "menu": {
         "settings": "Налаштування...",
         "models": "Моделі",

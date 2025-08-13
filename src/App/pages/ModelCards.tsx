@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react';
 import { electronModelRpc, onDownloadProgress, getCurrentDownloadProgress } from '@/rpc/modelRpc';
 import type { ModelDownloadProgress } from '@/types';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { Download, Trash2, OctagonX } from 'lucide-react';
 import { ModelSizeDisplay } from '@/components/ModelSizeDisplay';
 import { ModelDetails, SUPPORTED_MODELS } from '@/config';
 
 export function ModelCards() {
+    const { t } = useTranslation();
     const [downloadProgress, setDownloadProgress] = useState<ModelDownloadProgress | null>(null);
     const [isAnyDownloading, setIsAnyDownloading] = useState(false);
     const [downloadedModels, setDownloadedModels] = useState<Set<string>>(new Set());
@@ -137,7 +139,9 @@ export function ModelCards() {
                                 {model.title}
                             </a>
                         </CardTitle>
-                        {isModelDownloadedStatus(model) && <div className="text-green-600 text-sm">Downloaded</div>}
+                        {isModelDownloadedStatus(model) && (
+                            <div className="text-green-600 text-sm">{t('models.downloaded')}</div>
+                        )}
                         <CardAction>
                             {isModelDownloading(model) ? (
                                 <Button

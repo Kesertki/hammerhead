@@ -34,6 +34,11 @@
         "browse_models": "Browse models..."
     },
     "loading": "Loading...",
+    "model_response": {
+        "thinking": "Thinking...",
+        "thought_for": "Thought for {{duration}}",
+        "finished_thinking": "Finished thinking"
+    },
     "nav": {
         "settings": {
             "general": "General",

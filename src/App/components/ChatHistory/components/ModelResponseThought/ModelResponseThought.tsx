@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 import prettyMilliseconds from 'pretty-ms';
 import { useCallback, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 import { MarkdownContent } from '../../../MarkdownContent/MarkdownContent';
 import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
 
@@ -11,22 +12,23 @@ const excerptLength = 1024;
 
 export function ModelResponseThought({ text, active, duration }: ModelResponseThoughtProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const { t } = useTranslation();
 
     const toggleIsOpen = useCallback(() => {
         setIsOpen((isOpen) => !isOpen);
     }, []);
 
     const title = useMemo(() => {
-        if (active) return 'Thinking';
+        if (active) return t('model_response.thinking');
         if (duration != null) {
             const formattedDuration = prettyMilliseconds(duration, {
                 secondsDecimalDigits: duration < 1000 * 10 ? 2 : 0,
                 verbose: true,
             });
-            return `Thought for ${formattedDuration}`;
+            return t('model_response.thought_for', { duration: formattedDuration });
         }
 
-        return 'Finished thinking';
+        return t('model_response.finished_thinking');
     }, [active, duration]);
 
     return (

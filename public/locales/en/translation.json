@@ -67,6 +67,28 @@
             "cannot_delete_only": "Cannot delete the only prompt."
         }
     },
+    "voice": {
+        "toggle": "Enable or disable voice input.",
+        "docker_image_name": "Docker Image Name",
+        "docker_image_description": "The Docker image name to use for transcription (e.g., \"kesertki/whisper\").",
+        "model": "Model",
+        "select_model": "Select model",
+        "search_model": "Search model...",
+        "model_description": "This is the model that will be used for the voice transcription.",
+        "no_model_found": "No model found.",
+        "language": "Language",
+        "select_language": "Select language",
+        "search_language": "Search language...",
+        "no_language_found": "No language found.",
+        "language_description": "This is the language that will be used for the voice transcription.",
+        "test_voice_settings": "Test Voice Settings",
+        "test_voice_settings_description": "Test your voice settings to ensure they work correctly.",
+        "test_voice_input_disabled": "Voice input is disabled. Enable it above to test.",
+        "transcription_result": "Transcription Result",
+        "copied": "Copied",
+        "confidence": "Confidence",
+        "duration": "Duration"
+    },
     "msg": {
         "chat_exported": "Chat exported successfully!",
         "chat_imported": "Chat imported successfully!",

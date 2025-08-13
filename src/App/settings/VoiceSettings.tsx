@@ -15,6 +15,7 @@ import { cn } from '@/lib/utils';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
 import { DEFAULT_VOICE_SETTINGS } from '@/types';
 import { copyToClipboard } from '@/utils/clipboard';
+import { useTranslation } from 'react-i18next';
 import { Switch } from '@/components/ui/switch';
 import { VoiceInput } from '../components/VoiceInput';
 
@@ -150,6 +151,7 @@ const FormSchema = z.object({
 });
 
 export function VoiceSettings() {
+    const { t } = useTranslation();
     const [langOpen, setLangOpen] = useState(false);
     const [modelOpen, setModelOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -332,7 +334,7 @@ export function VoiceSettings() {
             <Form {...form}>
                 <div className="space-y-6">
                     {isLoading ? (
-                        <div className="text-center py-4">Loading settings...</div>
+                        <div className="text-center py-4">{t('loading')}</div>
                     ) : (
                         <>
                             <FormField
@@ -341,7 +343,7 @@ export function VoiceSettings() {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-row">
                                         <Switch checked={field.value} onCheckedChange={field.onChange} />
-                                        <FormDescription>Enable or disable voice input.</FormDescription>
+                                        <FormDescription>{t('voice.toggle')}</FormDescription>
                                     </FormItem>
                                 )}
                             />
@@ -351,7 +353,7 @@ export function VoiceSettings() {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            Docker Image Name
+                                            {t('voice.docker_image_name')}
                                         </FormLabel>
                                         <FormControl>
                                             <Input
@@ -365,7 +367,7 @@ export function VoiceSettings() {
                                             />
                                         </FormControl>
                                         <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            The Docker image name to use for transcription (e.g., "whisper").
+                                            {t('voice.docker_image_description')}
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -377,7 +379,7 @@ export function VoiceSettings() {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            Model
+                                            {t('voice.model')}
                                         </FormLabel>
                                         <Popover
                                             open={isEnabled && modelOpen}
@@ -397,16 +399,19 @@ export function VoiceSettings() {
                                                     >
                                                         {field.value !== undefined
                                                             ? models.find((model) => model.value === field.value)?.label
-                                                            : 'Select model'}
+                                                            : t('model.select_model')}
                                                         <ChevronsUpDown className="opacity-50" />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[200px] p-0">
                                                 <Command>
-                                                    <CommandInput placeholder="Search model..." className="h-9" />
+                                                    <CommandInput
+                                                        placeholder={t('model.search_model')}
+                                                        className="h-9"
+                                                    />
                                                     <CommandList>
-                                                        <CommandEmpty>No model found.</CommandEmpty>
+                                                        <CommandEmpty>{t('model.no_model_found')}</CommandEmpty>
                                                         <CommandGroup>
                                                             {models.map((model) => (
                                                                 <CommandItem
@@ -438,7 +443,7 @@ export function VoiceSettings() {
                                             </PopoverContent>
                                         </Popover>
                                         <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            This is the model that will be used for the voice transcription.
+                                            {t('voice.model_description')}
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -450,7 +455,7 @@ export function VoiceSettings() {
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
                                         <FormLabel className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            Language
+                                            {t('voice.language')}
                                         </FormLabel>
                                         <Popover
                                             open={isEnabled && langOpen}
@@ -472,16 +477,19 @@ export function VoiceSettings() {
                                                             ? languages.find(
                                                                   (language) => language.value === field.value
                                                               )?.label
-                                                            : 'Select language'}
+                                                            : t('voice.select_language')}
                                                         <ChevronsUpDown className="opacity-50" />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[200px] p-0">
                                                 <Command>
-                                                    <CommandInput placeholder="Search language..." className="h-9" />
+                                                    <CommandInput
+                                                        placeholder={t('voice.search_language')}
+                                                        className="h-9"
+                                                    />
                                                     <CommandList>
-                                                        <CommandEmpty>No language found.</CommandEmpty>
+                                                        <CommandEmpty>{t('voice.no_language_found')}</CommandEmpty>
                                                         <CommandGroup>
                                                             {languages.map((language) => (
                                                                 <CommandItem
@@ -513,7 +521,7 @@ export function VoiceSettings() {
                                             </PopoverContent>
                                         </Popover>
                                         <FormDescription className={!isEnabled ? 'text-muted-foreground' : ''}>
-                                            This is the language that will be used for the voice transcription.
+                                            {t('voice.language_description')}
                                         </FormDescription>
                                         <FormMessage />
                                     </FormItem>
@@ -524,9 +532,9 @@ export function VoiceSettings() {
                             <Separator className="my-6" />
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="text-lg font-medium">Test Voice Settings</h3>
+                                    <h3 className="text-lg font-medium">{t('voice.test_voice_settings')}</h3>
                                     <p className="text-sm text-muted-foreground">
-                                        Test your voice settings to ensure they work correctly.
+                                        {t('voice.test_voice_settings_description')}
                                     </p>
                                 </div>
 
@@ -553,7 +561,7 @@ export function VoiceSettings() {
                                     </div>
                                 ) : (
                                     <div className="text-center text-muted-foreground py-4">
-                                        Voice input is disabled. Enable it above to test.
+                                        {t('voice.test_voice_input_disabled')}
                                     </div>
                                 )}
 
@@ -561,7 +569,7 @@ export function VoiceSettings() {
                                 {isEnabled && transcription && (
                                     <Card className="w-full">
                                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                                            <CardTitle className="text-lg">Transcription Result</CardTitle>
+                                            <CardTitle className="text-lg">{t('voice.transcription_result')}</CardTitle>
                                             <Button
                                                 variant="outline"
                                                 size="sm"
@@ -571,12 +579,12 @@ export function VoiceSettings() {
                                                 {copied ? (
                                                     <>
                                                         <Check className="mr-2 h-4 w-4" />
-                                                        Copied
+                                                        {t('actions.copied')}
                                                     </>
                                                 ) : (
                                                     <>
                                                         <Copy className="mr-2 h-4 w-4" />
-                                                        Copy
+                                                        {t('actions.copy')}
                                                     </>
                                                 )}
                                             </Button>
@@ -592,15 +600,20 @@ export function VoiceSettings() {
                                                 {/* Transcription metadata */}
                                                 <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                                                     {transcription.language && (
-                                                        <span>Language: {transcription.language}</span>
+                                                        <span>
+                                                            {t('voice.language')}: {transcription.language}
+                                                        </span>
                                                     )}
                                                     {transcription.confidence && (
                                                         <span>
-                                                            Confidence: {Math.round(transcription.confidence * 100)}%
+                                                            {t('voice.confidence')}:{' '}
+                                                            {Math.round(transcription.confidence * 100)}%
                                                         </span>
                                                     )}
                                                     {transcription.duration && (
-                                                        <span>Duration: {transcription.duration.toFixed(1)}s</span>
+                                                        <span>
+                                                            {t('voice.duration')}: {transcription.duration.toFixed(1)}s
+                                                        </span>
                                                     )}
                                                 </div>
                                             </div>

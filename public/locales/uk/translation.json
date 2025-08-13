@@ -67,6 +67,28 @@
             "cannot_delete_only": "Не можна видалити єдиний запит."
         }
     },
+    "voice": {
+        "toggle": "Увімкнути або вимкнути голосовий ввід.",
+        "docker_image_name": "Назва Docker образу",
+        "docker_image_description": "Назва Docker образу, який буде використовуватися для транскрипції (наприклад, \"kesertki/whisper\").",
+        "model": "Модель",
+        "select_model": "Виберіть модель",
+        "search_model": "Пошук моделі...",
+        "model_description": "Це модель, яка буде використовуватися для голосової транскрипції.",
+        "no_model_found": "Модель не знайдена.",
+        "language": "Мова",
+        "select_language": "Виберіть мову",
+        "search_language": "Пошук мови...",
+        "no_language_found": "Мову не знайдено.",
+        "language_description": "Це мова, яка буде використовуватися для голосової транскрипції.",
+        "test_voice_settings": "Перевірити налаштування голосу",
+        "test_voice_settings_description": "Перевірте свої налаштування голосу, щоб переконатися, що вони працюють правильно.",
+        "test_voice_input_disabled": "Голосовий ввід вимкнено. Увімкніть його вище, щоб протестувати.",
+        "transcription_result": "Результат транскрипції",
+        "copied": "Скопійовано",
+        "confidence": "Достовірність",
+        "duration": "Тривалість"
+    },
     "msg": {
         "chat_exported": "Чат успішно експортовано!",
         "chat_imported": "Чат успішно імпортовано!",

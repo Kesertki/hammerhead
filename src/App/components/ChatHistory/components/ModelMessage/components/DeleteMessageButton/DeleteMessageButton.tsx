@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { SimplifiedUserChatItem } from '@/electron/state/llmState';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
+import { useTranslation } from 'react-i18next';
 
 import './DeleteMessageButton.css';
 
 export function DeleteMessageButton({ message }: DeleteMessageButtonProps) {
+    const { t } = useTranslation();
+
     const onClick = useCallback(() => {
         void electronLlmRpc.deleteMessage(message);
     }, [message]);
@@ -19,7 +22,7 @@ export function DeleteMessageButton({ message }: DeleteMessageButtonProps) {
                     <Trash2 />
                 </Button>
             </TooltipTrigger>
-            <TooltipContent>Delete</TooltipContent>
+            <TooltipContent>{t('actions.delete')}</TooltipContent>
         </Tooltip>
     );
 }

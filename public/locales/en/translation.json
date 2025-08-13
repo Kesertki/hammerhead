@@ -21,6 +21,11 @@
     "import": "Import",
     "export": "Export",
     "message": "Message",
+    "actions": {
+        "delete": "Delete",
+        "edit": "Edit",
+        "copy": "Copy"
+    },
     "msg": {
         "chat_exported": "Chat exported successfully!",
         "chat_imported": "Chat imported successfully!",

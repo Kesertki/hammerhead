@@ -1,8 +1,8 @@
 import { ChevronRight } from 'lucide-react';
-import prettyMilliseconds from 'pretty-ms';
 import { useCallback, useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { formatDurationPositive } from '@/utils/timeUtils';
 import { MarkdownContent } from '../../../MarkdownContent/MarkdownContent';
 import { MessageMarkdown } from '../../../MessageMarkdown/MessageMarkdown';
 
@@ -12,7 +12,7 @@ const excerptLength = 1024;
 
 export function ModelResponseThought({ text, active, duration }: ModelResponseThoughtProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
 
     const toggleIsOpen = useCallback(() => {
         setIsOpen((isOpen) => !isOpen);
@@ -21,15 +21,12 @@ export function ModelResponseThought({ text, active, duration }: ModelResponseTh
     const title = useMemo(() => {
         if (active) return t('model_response.thinking');
         if (duration != null) {
-            const formattedDuration = prettyMilliseconds(duration, {
-                secondsDecimalDigits: duration < 1000 * 10 ? 2 : 0,
-                verbose: true,
-            });
+            const formattedDuration = formatDurationPositive(duration, i18n.language);
             return t('model_response.thought_for', { duration: formattedDuration });
         }
 
         return t('model_response.finished_thinking');
-    }, [active, duration]);
+    }, [active, duration, i18n.language, t]);
 
     return (
         <div className={cn('responseThought', active && 'active', isOpen && 'open')}>

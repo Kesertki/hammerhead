@@ -12,12 +12,14 @@ import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { electronModelRpc } from '@/rpc/modelRpc.ts';
 import { llmState } from '@/state/llmState.ts';
 import type { ModelInfo } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
     const state = useExternalState(llmState);
-    const modelName = state.model?.name || 'No model loaded';
+    const modelName = state.model?.name || t('model_selector.no_model_loaded');
 
     // State for downloaded models combobox
     const [downloadedModels, setDownloadedModels] = useState<ModelInfo[]>([]);
@@ -123,7 +125,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                 <SidebarTrigger className="-ml-1 cursor-pointer" />
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Toggle sidebar</p>
+                                <p>{t('toggle_sidebar')}</p>
                             </TooltipContent>
                         </Tooltip>
                     </div>
@@ -159,7 +161,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                                 </Button>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                <p>Unload model</p>
+                                                <p>{t('unload_model')}</p>
                                             </TooltipContent>
                                         </Tooltip>
                                     )}
@@ -186,7 +188,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Clear chat history</p>
+                                        <p>{t('clear_chat_history')}</p>
                                     </TooltipContent>
                                 </Tooltip>
                             )}
@@ -204,12 +206,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                                         rel="noopener noreferrer"
                                     >
                                         <Search className="h-4 w-4" />
-                                        Find more models
+                                        <span>{t('models.find_more')}</span>
                                     </a>
                                 </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                                <p>Browse HuggingFace for more GGUF models</p>
+                                <p>{t('models.browse_for_more')}</p>
                             </TooltipContent>
                         </Tooltip>
                     )}

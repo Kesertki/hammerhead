@@ -1,5 +1,5 @@
 import { Plus, Edit3, Save, Trash2 } from 'lucide-react';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button.tsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
@@ -17,11 +17,13 @@ interface SystemPromptActionsProps {
 }
 
 export function SystemPromptActions({ systemPromptState, onAction, onPromptChange }: SystemPromptActionsProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex gap-2 items-center">
             <Select value={systemPromptState.activePromptId} onValueChange={onPromptChange}>
                 <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Select a prompt" />
+                    <SelectValue placeholder={t('prompts.select_a_prompt')} />
                 </SelectTrigger>
                 <SelectContent>
                     {systemPromptState.prompts.map((prompt) => (
@@ -34,61 +36,57 @@ export function SystemPromptActions({ systemPromptState, onAction, onPromptChang
 
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => onAction('add')} className="gap-1">
-                        <Plus className="h-3 w-3" />
-                        Add
+                    <Button variant="ghost" size="sm" onClick={() => onAction('add')} className="cursor-pointer">
+                        <Plus />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Create new system prompt</p>
+                    <p>{t('prompts.create_new')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => onAction('rename')}
                         disabled={!systemPromptState.activePromptId}
-                        className="gap-1"
+                        className="cursor-pointer"
                     >
-                        <Edit3 className="h-3 w-3" />
-                        Rename
+                        <Edit3 />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Rename current prompt</p>
+                    <p>{t('prompts.rename_current')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button size="sm" onClick={() => onAction('save')} className="gap-1">
-                        <Save className="h-3 w-3" />
-                        Save
+                    <Button variant="ghost" size="sm" onClick={() => onAction('save')} className="cursor-pointer">
+                        <Save />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Save current prompt</p>
+                    <p>{t('prompts.save_current')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="sm"
                         onClick={() => onAction('delete')}
                         disabled={!systemPromptState.canDelete}
-                        className="gap-1"
+                        className="cursor-pointer"
                     >
-                        <Trash2 className="h-3 w-3" />
-                        Delete
+                        <Trash2 />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Delete current prompt</p>
+                    <p>{t('prompts.delete_current')}</p>
                 </TooltipContent>
             </Tooltip>
         </div>

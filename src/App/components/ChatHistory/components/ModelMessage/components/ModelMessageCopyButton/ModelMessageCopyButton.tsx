@@ -5,12 +5,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { SimplifiedModelChatItem } from '@/electron/state/llmState';
 import { cn } from '@/lib/utils';
 import { copyToClipboard } from '@/utils/clipboard';
+import { useTranslation } from 'react-i18next';
 
 import './ModelMessageCopyButton.css';
 
 const showCopiedTime = 1000 * 2;
 
 export function ModelMessageCopyButton({ modelMessage }: ModelMessageCopyButtonProps) {
+    const { t } = useTranslation();
     const [copies, setCopies] = useState(0);
 
     const onClick = useCallback(async () => {
@@ -45,7 +47,7 @@ export function ModelMessageCopyButton({ modelMessage }: ModelMessageCopyButtonP
                     <Check className="icon check" />
                 </Button>
             </TooltipTrigger>
-            <TooltipContent>Copy</TooltipContent>
+            <TooltipContent>{t('actions.copy')}</TooltipContent>
         </Tooltip>
     );
 }

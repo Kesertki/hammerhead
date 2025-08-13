@@ -14,10 +14,12 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useChatStore, initializeChatStore } from '@/stores/chatStore.ts';
+import { useTranslation } from 'react-i18next';
 
 export function AppSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     // Initialize store only once using useEffect instead of on every render
     useEffect(() => {
@@ -52,16 +54,16 @@ export function AppSidebar() {
     return (
         <Sidebar variant="inset">
             <SidebarHeader>
-                <Button variant="ghost" size="sm" onClick={handleNewChat}>
+                <Button variant="ghost" size="sm" onClick={handleNewChat} className="cursor-pointer">
                     <div className="flex items-center gap-2">
                         <CirclePlus className="w-4 h-4" />
-                        New Chat
+                        {t('new_chat')}
                     </div>
                 </Button>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Chats</SidebarGroupLabel>
+                    <SidebarGroupLabel>{t('chats')}</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {chats.map((chat) => (
@@ -91,9 +93,7 @@ export function AppSidebar() {
                             ))}
                             {chats.length === 0 && (
                                 <SidebarMenuItem>
-                                    <div className="px-2 py-2 text-sm text-muted-foreground">
-                                        No chats yet. Start a conversation!
-                                    </div>
+                                    <div className="px-2 py-2 text-sm text-muted-foreground">{t('no_chats')}</div>
                                 </SidebarMenuItem>
                             )}
                         </SidebarMenu>

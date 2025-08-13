@@ -70,6 +70,14 @@ export interface TranscriptionResult {
     }>;
 }
 
+export interface GeneralSettings {
+    language: string;
+}
+
+export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
+    language: 'en',
+};
+
 export interface VoiceSettings {
     enabled: boolean;
     dockerImage: string;
@@ -93,6 +101,8 @@ declare global {
             setSystemPrompts: (prompts: SystemPromptConfig) => Promise<void>;
             getVoiceSettings: () => Promise<VoiceSettings>;
             setVoiceSettings: (settings: VoiceSettings) => Promise<void>;
+            getGeneralSettings: () => Promise<GeneralSettings>;
+            setGeneralSettings: (settings: GeneralSettings) => Promise<void>;
             openExternal: (url: string) => Promise<void>;
             getLogs: (limit?: number) => Promise<LogEntry[]>;
             clearLogs: () => Promise<void>;

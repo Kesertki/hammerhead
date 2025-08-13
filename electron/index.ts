@@ -6,9 +6,18 @@ import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerChatRpc } from './rpc/chatRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { registerModelRpc } from './rpc/modelRpc.ts';
-import { getMcpConfig, getVoiceSettings, initializeLogger, setMcpConfig, setVoiceSettings } from './settings';
+import {
+    getMcpConfig,
+    getVoiceSettings,
+    getGeneralSettings,
+    initializeLogger,
+    setMcpConfig,
+    setVoiceSettings,
+    setGeneralSettings,
+} from './settings';
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import { getSystemPrompts, SystemPromptConfig, setSystemPrompts } from './settings/prompts.ts';
+import { initMainI18n, changeMainLanguage, t } from './i18n.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -44,19 +53,19 @@ function createMenu() {
                           { role: 'about' as const },
                           { type: 'separator' as const },
                           {
-                              label: 'Settings...',
+                              label: t('menu.settings'),
                               click: () => {
                                   win?.webContents.send('navigate-to-route', '/settings');
                               },
                           },
                           {
-                              label: 'Models',
+                              label: t('menu.models'),
                               click: () => {
                                   win?.webContents.send('navigate-to-route', '/models');
                               },
                           },
                           {
-                              label: 'Logs',
+                              label: t('menu.logs'),
                               click: () => {
                                   win?.webContents.send('navigate-to-route', '/logs');
                               },
@@ -75,12 +84,12 @@ function createMenu() {
             : []),
         // File menu
         {
-            label: 'File',
+            label: t('menu.file'),
             submenu: [isMac ? { role: 'close' as const } : { role: 'quit' as const }],
         },
         // Edit menu
         {
-            label: 'Edit',
+            label: t('menu.edit'),
             submenu: [
                 { role: 'undo' as const },
                 { role: 'redo' as const },
@@ -95,7 +104,7 @@ function createMenu() {
                           { role: 'selectAll' as const },
                           { type: 'separator' as const },
                           {
-                              label: 'Speech',
+                              label: t('menu.speech'),
                               submenu: [{ role: 'startSpeaking' as const }, { role: 'stopSpeaking' as const }],
                           },
                       ]
@@ -104,7 +113,7 @@ function createMenu() {
         },
         // View menu
         {
-            label: 'View',
+            label: t('menu.view'),
             submenu: [
                 { role: 'reload' as const },
                 { role: 'forceReload' as const },
@@ -120,7 +129,7 @@ function createMenu() {
         },
         // Window menu
         {
-            label: 'Window',
+            label: t('menu.window'),
             submenu: [
                 { role: 'minimize' as const },
                 { role: 'close' as const },
@@ -139,9 +148,9 @@ function createMenu() {
             role: 'help' as const,
             submenu: [
                 {
-                    label: 'Learn More',
+                    label: t('menu.learn_more'),
                     click: async () => {
-                        await shell.openExternal('https://electronjs.org');
+                        await shell.openExternal('https://github.com/Kesertki/hammerhead/blob/main/README.md');
                     },
                 },
             ],
@@ -249,6 +258,20 @@ ipcMain.handle('set-voice-settings', async (_event, settings) => {
     await setVoiceSettings(settings);
 });
 
+ipcMain.handle('get-general-settings', async () => {
+    return await getGeneralSettings();
+});
+
+ipcMain.handle('set-general-settings', async (_event, settings) => {
+    await setGeneralSettings(settings);
+
+    // Update main process language and rebuild menu if language changed
+    if (settings.language) {
+        await changeMainLanguage(settings.language);
+        createMenu(); // Rebuild menu with new language
+    }
+});
+
 // Log-related IPC handlers
 ipcMain.handle('get-logs', async (_event, limit?: number) => {
     const { getLogs } = await import('./settings/logger.ts');
@@ -268,6 +291,9 @@ ipcMain.handle('get-log-file-path', async () => {
 app.whenReady().then(async () => {
     // Initialize logger before anything else
     await initializeLogger();
+
+    // Initialize i18n for main process
+    await initMainI18n();
 
     // Initialize audio storage
     await initializeAudioStorage();

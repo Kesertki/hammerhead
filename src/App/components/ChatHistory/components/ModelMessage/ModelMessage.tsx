@@ -1,5 +1,6 @@
 import { Timer } from 'lucide-react';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState.ts';
+import { useTranslation } from 'react-i18next';
 import { MessageMarkdownWithSVG } from '../../../MessageMarkdownWithSVG/MessageMarkdownWithSVG.tsx';
 import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
 import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.tsx';
@@ -7,6 +8,8 @@ import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/Mode
 import './ModelMessage.css';
 
 export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="message model">
             {modelMessage.message.map((message, responseIndex) => {
@@ -37,12 +40,14 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
             <div className="buttons items-center" inert={active}>
                 <ModelMessageCopyButton modelMessage={modelMessage.message} />
 
-                <div className="flex items-center">
-                    <Timer className="w-4 h-4 ml-2 mr-1" />
-                    <span className="text-xs text-muted-foreground">
-                        {Math.round(modelMessage.performanceStats?.outputTokensPerSecond || 0)} tokens/sec
-                    </span>
-                </div>
+                {modelMessage.performanceStats && (
+                    <div className="flex items-center">
+                        <Timer className="w-4 h-4 ml-2 mr-1" />
+                        <span className="text-xs text-muted-foreground">
+                            {Math.round(modelMessage.performanceStats.outputTokensPerSecond)} {t('tokens_per_second')}
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );

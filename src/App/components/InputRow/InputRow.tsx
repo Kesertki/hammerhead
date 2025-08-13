@@ -4,6 +4,7 @@ import React, { useCallback, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button.tsx';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
 import { DEFAULT_VOICE_SETTINGS } from '@/types';
+import { useTranslation } from 'react-i18next';
 import { VoiceInput } from '../VoiceInput';
 
 import './InputRow.css';
@@ -16,6 +17,7 @@ export function InputRow({
     autoSubmitVoice = true,
     voiceSettings = DEFAULT_VOICE_SETTINGS,
 }: InputRowProps) {
+    const { t } = useTranslation();
     const [inputText, setInputText] = useState<string>('');
     const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -115,7 +117,7 @@ export function InputRow({
                         spellCheck
                         disabled={disabled}
                         onScroll={resizeInput}
-                        placeholder="Message"
+                        placeholder={t('message')}
                         // placeholder={autocompleteText === '' ? 'Message' : ''}
                     />
                     {/* <span>Assistant selector</span> */}

@@ -1,0 +1,144 @@
+{
+    "language": "Мова",
+    "settings": "Налаштування",
+    "welcome": {
+        "title": "Hammerhead",
+        "choose_a_model": "Виберіть файл моделі, щоб почати спілкування"
+    },
+    "toggle_sidebar": "Перемкнути бічну панель",
+    "back_to_home": "Назад до головної",
+    "back_to_chat": "Назад до чату",
+    "select_language": "Виберіть мову",
+    "search_language": "Пошук мови...",
+    "no_language_found": "Мову не знайдено.",
+    "language_description": "Це мова, яка буде використовуватися для інтерфейсу програми.",
+    "loading_settings": "Завантаження налаштувань...",
+    "clear_chat_history": "Очистити історію чату",
+    "unload_model": "Вивантажити модель",
+    "chats": "Чати",
+    "new_chat": "Новий чат",
+    "no_chats": "Ще немає чатів. Розпочніть розмову!",
+    "import": "Імпорт",
+    "export": "Експорт",
+    "message": "Повідомлення",
+    "actions": {
+        "delete": "Видалити",
+        "edit": "Редагувати",
+        "copy": "Копіювати",
+        "add": "Додати",
+        "create": "Створити",
+        "rename": "Перейменувати",
+        "save": "Зберегти",
+        "cancel": "Скасувати",
+        "reload": "Перезавантажити",
+        "format": "Форматувати"
+    },
+    "mcp": {
+        "reload_tooltip": "Перезавантажити конфігурацію з файлу",
+        "format_tooltip": "Форматувати JSON конфігурацію",
+        "save_tooltip": "Зберегти конфігурацію MCP",
+        "reset_tooltip": "Скинути до конфігурації за замовчуванням",
+        "unsaved": "незбережено",
+        "errors": "помилка(и)"
+    },
+    "prompts": {
+        "select_a_prompt": "Виберіть запит",
+        "create_new": "Створити новий запит",
+        "rename_current": "Перейменувати поточний запит",
+        "save_current": "Зберегти поточний запит",
+        "delete_current": "Видалити поточний запит",
+        "input_placeholder": "Введіть ваш запит тут...",
+        "dialog": {
+            "name": "Назва",
+            "create_new_prompt": "Створити новий запит",
+            "rename_prompt": "Перейменувати запит",
+            "enter_name": "Введіть назву для нового запиту.",
+            "enter_new_name": "Введіть нову назву для цього запиту."
+        },
+        "msg": {
+            "created_successfully": "Запит успішно створено.",
+            "renamed_successfully": "Запит успішно перейменовано.",
+            "saved_successfully": "Запит успішно збережено.",
+            "deleted_successfully": "Запит успішно видалено.",
+            "failed_to_save": "Не вдалося зберегти запит.",
+            "failed_to_delete": "Не вдалося видалити запит.",
+            "failed_to_create": "Не вдалося створити новий запит.",
+            "failed_to_rename": "Не вдалося перейменувати запит.",
+            "cannot_delete_only": "Не можна видалити єдиний запит."
+        }
+    },
+    "voice": {
+        "toggle": "Увімкнути або вимкнути голосовий ввід.",
+        "docker_image_name": "Назва Docker образу",
+        "docker_image_description": "Назва Docker образу, який буде використовуватися для транскрипції (наприклад, \"kesertki/whisper\").",
+        "model": "Модель",
+        "select_model": "Виберіть модель",
+        "search_model": "Пошук моделі...",
+        "model_description": "Це модель, яка буде використовуватися для голосової транскрипції.",
+        "no_model_found": "Модель не знайдена.",
+        "language": "Мова",
+        "select_language": "Виберіть мову",
+        "search_language": "Пошук мови...",
+        "no_language_found": "Мову не знайдено.",
+        "language_description": "Це мова, яка буде використовуватися для голосової транскрипції.",
+        "test_voice_settings": "Перевірити налаштування голосу",
+        "test_voice_settings_description": "Перевірте свої налаштування голосу, щоб переконатися, що вони працюють правильно.",
+        "test_voice_input_disabled": "Голосовий ввід вимкнено. Увімкніть його вище, щоб протестувати.",
+        "transcription_result": "Результат транскрипції",
+        "copied": "Скопійовано",
+        "confidence": "Достовірність",
+        "duration": "Тривалість"
+    },
+    "msg": {
+        "chat_exported": "Чат успішно експортовано!",
+        "chat_imported": "Чат успішно імпортовано!",
+        "chat_export_failed": "Не вдалося експортувати чат.",
+        "chat_import_failed": "Не вдалося імпортувати чат.",
+        "model_not_loaded": "Модель не завантажена. Будь ласка, виберіть модель для взаємодії з цим чатом."
+    },
+    "model_selector": {
+        "no_model_loaded": "Модель не завантажена.",
+        "search_models": "Пошук моделей...",
+        "no_models_found": "Не знайдено завантажених моделей.",
+        "browse_for_model_file": "Відкрити файл моделі...",
+        "browse_models": "Переглянути моделі..."
+    },
+    "loading": "Завантаження...",
+    "model_response": {
+        "thinking": "Думаю...",
+        "thought_for": "Думав протягом {{duration}}",
+        "finished_thinking": "Закінчив думати"
+    },
+    "tokens_per_second": "токенів/сек",
+    "tokens": {
+        "input_tokens": "вхідні токени",
+        "output_tokens": "вихідні токени",
+        "total_tokens": "всього токенів"
+    },
+    "nav": {
+        "settings": {
+            "general": "Загальні",
+            "models": "Моделі",
+            "voice": "Голос",
+            "system_prompt": "Системний запит",
+            "mcp": "Сервери MCP"
+        }
+    },
+    "models": {
+        "find_more": "Знайти більше моделей",
+        "browse_for_more": "Переглянути HuggingFace для більше GGUF моделей",
+        "downloaded": "завантажено"
+    },
+    "menu": {
+        "settings": "Налаштування...",
+        "models": "Моделі",
+        "logs": "Логи",
+        "file": "Файл",
+        "edit": "Редагувати",
+        "view": "Вигляд",
+        "window": "Вікно",
+        "help": "Допомога",
+        "learn_more": "Дізнатися більше",
+        "speech": "Мовлення"
+    }
+}

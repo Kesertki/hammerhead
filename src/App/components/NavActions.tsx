@@ -15,16 +15,18 @@ import {
 import { useExternalState } from '@/hooks/useExternalState.ts';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { llmState } from '@/state/llmState.ts';
+import { useTranslation } from 'react-i18next';
 
 interface ActionGroup {
     label: string;
     icon: ComponentType<any>;
-    action?: string; // Optional action for specific items
-    onClick?: () => void; // Optional click handler
+    action?: string;
+    onClick?: () => void;
     disabled?: boolean;
 }
 
 export function NavActions() {
+    const { t } = useTranslation();
     const state = useExternalState(llmState);
     const hasModel = state.model != null && state.model.name != null;
 
@@ -32,82 +34,32 @@ export function NavActions() {
         const result = await electronLlmRpc.exportChatSession();
 
         if (result) {
-            toast.success('Chat exported successfully!');
+            toast.success(t('msg.chat_exported'));
         } else {
-            toast.error('Failed to export chat.');
+            toast.error(t('msg.chat_export_failed'));
         }
     }, []);
 
     const importChat = useCallback(async () => {
         const result = await electronLlmRpc.importChatSession();
         if (result) {
-            toast.success('Chat imported successfully!');
+            toast.success(t('msg.chat_imported'));
         } else {
-            toast.error('Failed to import chat.');
+            toast.error(t('msg.chat_import_failed'));
         }
     }, []);
 
     const data: Array<ActionGroup[]> = [
-        // [
-        //     {
-        //         label: 'Customize Page',
-        //         icon: Settings2,
-        //     },
-        //     {
-        //         label: 'Turn into wiki',
-        //         icon: FileText,
-        //     },
-        // ],
-        // [
-        //     {
-        //         label: 'Copy Link',
-        //         icon: Link,
-        //     },
-        //     {
-        //         label: 'Duplicate',
-        //         icon: Copy,
-        //     },
-        //     {
-        //         label: 'Move to',
-        //         icon: CornerUpRight,
-        //     },
-        //     {
-        //         label: 'Move to Trash',
-        //         icon: Trash2,
-        //     },
-        // ],
-        // [
-        //     {
-        //         label: 'Undo',
-        //         icon: CornerUpLeft,
-        //     },
-        //     {
-        //         label: 'View analytics',
-        //         icon: LineChart,
-        //     },
-        //     {
-        //         label: 'Version History',
-        //         icon: GalleryVerticalEnd,
-        //     },
-        //     {
-        //         label: 'Show delete pages',
-        //         icon: Trash,
-        //     },
-        //     {
-        //         label: 'Notifications',
-        //         icon: Bell,
-        //     },
-        // ],
         [
             {
-                label: 'Import',
+                label: t('import'),
                 action: 'import',
                 icon: ArrowUp,
                 disabled: !hasModel,
                 onClick: importChat,
             },
             {
-                label: 'Export',
+                label: t('export'),
                 action: 'export',
                 icon: ArrowDown,
                 disabled: !hasModel,

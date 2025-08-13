@@ -14,8 +14,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { SystemPromptConfig } from '@/types.ts';
 import { eventBus } from '@/utils/eventBus.ts';
+import { useTranslation } from 'react-i18next';
 
 const SystemPrompt = () => {
+    const { t } = useTranslation();
     const [systemPrompts, setSystemPrompts] = useState<SystemPromptConfig>();
     const [activePromptId, setActivePromptId] = useState('');
     const [promptText, setPromptText] = useState('');
@@ -83,10 +85,10 @@ const SystemPrompt = () => {
             .setSystemPrompts(updatedPrompts)
             .then(() => {
                 setSystemPrompts(updatedPrompts);
-                toast.success('Prompt saved successfully');
+                toast.success(t('prompts.msg.saved_successfully'));
             })
             .catch(() => {
-                toast.error('Failed to save prompt');
+                toast.error(t('prompts.msg.failed_to_save'));
             });
     }, [systemPrompts, activePromptId, promptText]);
 
@@ -95,7 +97,7 @@ const SystemPrompt = () => {
 
         // Don't allow deleting if there's only one prompt
         if (systemPrompts.prompts.length <= 1) {
-            console.error('Cannot delete the only prompt');
+            console.error(t('prompts.msg.cannot_delete_only'));
             return;
         }
 
@@ -117,10 +119,10 @@ const SystemPrompt = () => {
                 setSystemPrompts(updatedPrompts);
                 setActivePromptId(newSelectedId);
                 setPromptText(filteredPrompts[0]?.prompt || '');
-                toast.success('Prompt deleted successfully');
+                toast.success(t('prompts.msg.deleted_successfully'));
             })
             .catch(() => {
-                toast.error('Failed to delete prompt');
+                toast.error(t('prompts.msg.failed_to_delete'));
             });
     }, [systemPrompts, activePromptId]);
 
@@ -176,11 +178,11 @@ const SystemPrompt = () => {
                     setPromptText('');
                     setShowNameDialog(false);
                     setNameDialogValue('');
-                    toast.success('New prompt created successfully');
+                    toast.success(t('prompts.msg.created_successfully'));
                 })
                 .catch(() => {
                     setShowNameDialog(false);
-                    toast.error('Failed to create new prompt');
+                    toast.error(t('prompts.msg.failed_to_create'));
                 });
         } else if (nameDialogMode === 'rename' && activePromptId) {
             // Rename existing prompt
@@ -197,10 +199,10 @@ const SystemPrompt = () => {
                     setSystemPrompts(updatedPrompts);
                     setShowNameDialog(false);
                     setNameDialogValue('');
-                    toast.success('Prompt renamed successfully');
+                    toast.success(t('prompts.msg.renamed_successfully'));
                 })
                 .catch(() => {
-                    toast.error('Failed to rename prompt');
+                    toast.error(t('prompts.msg.failed_to_rename'));
                     setShowNameDialog(false);
                 });
         }
@@ -244,7 +246,7 @@ const SystemPrompt = () => {
         <div className="flex flex-col h-full p-4">
             <Textarea
                 className="flex-1 p-4 border rounded-md"
-                placeholder="Enter your prompt here..."
+                placeholder={t('prompts.input_placeholder')}
                 value={promptText}
                 onChange={(e) => setPromptText(e.target.value)}
             />
@@ -253,17 +255,21 @@ const SystemPrompt = () => {
             <Dialog open={showNameDialog} onOpenChange={setShowNameDialog}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>{nameDialogMode === 'create' ? 'Create New Prompt' : 'Rename Prompt'}</DialogTitle>
+                        <DialogTitle>
+                            {nameDialogMode === 'create'
+                                ? t('prompts.dialog.create_new_prompt')
+                                : t('prompts.dialog.rename_prompt')}
+                        </DialogTitle>
                         <DialogDescription>
                             {nameDialogMode === 'create'
-                                ? 'Enter a name for the new prompt.'
-                                : 'Enter a new name for this prompt.'}
+                                ? t('prompts.dialog.enter_name')
+                                : t('prompts.dialog.enter_new_name')}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">
-                                Name
+                                {t('prompts.dialog.name')}
                             </Label>
                             <Input
                                 id="name"
@@ -282,10 +288,10 @@ const SystemPrompt = () => {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={handleCancelNameDialog}>
-                            Cancel
+                            {t('actions.cancel')}
                         </Button>
                         <Button onClick={handleConfirmNameDialog} disabled={!nameDialogValue.trim()}>
-                            {nameDialogMode === 'create' ? 'Create' : 'Rename'}
+                            {nameDialogMode === 'create' ? t('actions.create') : t('actions.rename')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

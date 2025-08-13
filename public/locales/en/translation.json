@@ -1,0 +1,144 @@
+{
+    "language": "Language",
+    "settings": "Settings",
+    "welcome": {
+        "title": "Hammerhead",
+        "choose_a_model": "Choose a model file to start chatting"
+    },
+    "toggle_sidebar": "Toggle sidebar",
+    "back_to_home": "Back to Home",
+    "back_to_chat": "Back to Chat",
+    "select_language": "Select language",
+    "search_language": "Search language...",
+    "no_language_found": "No language found.",
+    "language_description": "This is the language that will be used for the application interface.",
+    "loading_settings": "Loading settings...",
+    "clear_chat_history": "Clear chat history",
+    "unload_model": "Unload model",
+    "chats": "Chats",
+    "new_chat": "New chat",
+    "no_chats": "No chats yet. Start a conversation!",
+    "import": "Import",
+    "export": "Export",
+    "message": "Message",
+    "actions": {
+        "delete": "Delete",
+        "edit": "Edit",
+        "copy": "Copy",
+        "add": "Add",
+        "create": "Create",
+        "rename": "Rename",
+        "save": "Save",
+        "cancel": "Cancel",
+        "reload": "Reload",
+        "format": "Format"
+    },
+    "mcp": {
+        "reload_tooltip": "Reload configuration from file",
+        "format_tooltip": "Format JSON configuration",
+        "save_tooltip": "Save MCP configuration",
+        "reset_tooltip": "Reset to default configuration",
+        "unsaved": "unsaved",
+        "errors": "error(s)"
+    },
+    "prompts": {
+        "select_a_prompt": "Select a prompt",
+        "create_new": "Create new prompt",
+        "rename_current": "Rename current prompt",
+        "save_current": "Save current prompt",
+        "delete_current": "Delete current prompt",
+        "input_placeholder": "Enter your prompt here...",
+        "dialog": {
+            "name": "Name",
+            "create_new_prompt": "Create New Prompt",
+            "rename_prompt": "Rename Prompt",
+            "enter_name": "Enter a name for the new prompt.",
+            "enter_new_name": "Enter a new name for this prompt."
+        },
+        "msg": {
+            "created_successfully": "Prompt created successfully.",
+            "renamed_successfully": "Prompt renamed successfully.",
+            "saved_successfully": "Prompt saved successfully.",
+            "deleted_successfully": "Prompt deleted successfully.",
+            "failed_to_save": "Failed to save prompt.",
+            "failed_to_delete": "Failed to delete prompt.",
+            "failed_to_create": "Failed to create new prompt.",
+            "failed_to_rename": "Failed to rename prompt.",
+            "cannot_delete_only": "Cannot delete the only prompt."
+        }
+    },
+    "voice": {
+        "toggle": "Enable or disable voice input.",
+        "docker_image_name": "Docker Image Name",
+        "docker_image_description": "The Docker image name to use for transcription (e.g., \"kesertki/whisper\").",
+        "model": "Model",
+        "select_model": "Select model",
+        "search_model": "Search model...",
+        "model_description": "This is the model that will be used for the voice transcription.",
+        "no_model_found": "No model found.",
+        "language": "Language",
+        "select_language": "Select language",
+        "search_language": "Search language...",
+        "no_language_found": "No language found.",
+        "language_description": "This is the language that will be used for the voice transcription.",
+        "test_voice_settings": "Test Voice Settings",
+        "test_voice_settings_description": "Test your voice settings to ensure they work correctly.",
+        "test_voice_input_disabled": "Voice input is disabled. Enable it above to test.",
+        "transcription_result": "Transcription Result",
+        "copied": "Copied",
+        "confidence": "Confidence",
+        "duration": "Duration"
+    },
+    "msg": {
+        "chat_exported": "Chat exported successfully!",
+        "chat_imported": "Chat imported successfully!",
+        "chat_export_failed": "Failed to export chat.",
+        "chat_import_failed": "Failed to import chat.",
+        "model_not_loaded": "Model not loaded. Please select a model to interact with this chat."
+    },
+    "model_selector": {
+        "no_model_loaded": "No model loaded.",
+        "search_models": "Search models...",
+        "no_models_found": "No downloaded models found.",
+        "browse_for_model_file": "Browse for model file...",
+        "browse_models": "Browse models..."
+    },
+    "loading": "Loading...",
+    "model_response": {
+        "thinking": "Thinking...",
+        "thought_for": "Thought for {{duration}}",
+        "finished_thinking": "Finished thinking"
+    },
+    "tokens_per_second": "tokens/sec",
+    "tokens": {
+        "input_tokens": "input tokens",
+        "output_tokens": "output tokens",
+        "total_tokens": "total tokens"
+    },
+    "nav": {
+        "settings": {
+            "general": "General",
+            "models": "Models",
+            "voice": "Voice",
+            "system_prompt": "System Prompt",
+            "mcp": "MCP Servers"
+        }
+    },
+    "models": {
+        "find_more": "Find more models",
+        "browse_for_more": "Browse HuggingFace for more GGUF models",
+        "downloaded": "downloaded"
+    },
+    "menu": {
+        "settings": "Settings...",
+        "models": "Models",
+        "logs": "Logs",
+        "file": "File",
+        "edit": "Edit", 
+        "view": "View",
+        "window": "Window",
+        "help": "Help",
+        "learn_more": "Learn More",
+        "speech": "Speech"
+    }
+}

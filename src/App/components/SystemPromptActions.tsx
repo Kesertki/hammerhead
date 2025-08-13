@@ -76,7 +76,7 @@ export function SystemPromptActions({ systemPromptState, onAction, onPromptChang
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
-                        variant="destructive"
+                        variant="ghost"
                         size="sm"
                         onClick={() => onAction('delete')}
                         disabled={!systemPromptState.canDelete}

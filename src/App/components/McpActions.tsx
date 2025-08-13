@@ -1,4 +1,4 @@
-import { Save, RotateCcw, AlignJustify, RotateCcw as Reset } from 'lucide-react';
+import { Save, RotateCcw, LetterText, Trash } from 'lucide-react';
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
@@ -39,7 +39,7 @@ export function McpActions({ mcpState, onAction }: McpActionsProps) {
                         disabled={!mcpState.hasUnsavedChanges || mcpState.validationErrors > 0}
                         className="cursor-pointer"
                     >
-                        <Save className="h-3 w-3" />
+                        <Save />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -50,7 +50,7 @@ export function McpActions({ mcpState, onAction }: McpActionsProps) {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button variant="ghost" size="sm" onClick={() => onAction('reload')} className="cursor-pointer">
-                        <RotateCcw className="h-3 w-3" />
+                        <RotateCcw />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -61,7 +61,7 @@ export function McpActions({ mcpState, onAction }: McpActionsProps) {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button variant="ghost" size="sm" onClick={() => onAction('format')} className="cursor-pointer">
-                        <AlignJustify className="h-3 w-3" />
+                        <LetterText />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -72,7 +72,7 @@ export function McpActions({ mcpState, onAction }: McpActionsProps) {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button variant="ghost" size="sm" onClick={() => onAction('reset')} className="cursor-pointer">
-                        <Reset className="h-3 w-3" />
+                        <Trash />
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>

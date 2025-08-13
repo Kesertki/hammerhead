@@ -35,15 +35,15 @@ describe('timeUtils', () => {
 
         it('handles different locales', () => {
             const duration = 2500; // 2.5 seconds
-            
+
             const enResult = formatDurationPositive(duration, 'en-US');
             const esResult = formatDurationPositive(duration, 'es');
             const frResult = formatDurationPositive(duration, 'fr');
-            
+
             // Check that results contain the expected values for each locale
             expect(enResult).toContain('2.5');
             expect(enResult).toContain('second');
-            
+
             // Different locales may use different decimal separators and translations
             expect(esResult).toMatch(/2[.,]5/); // Spanish may use comma or period
             expect(frResult).toMatch(/2[.,]5/); // French may use comma or period
@@ -89,10 +89,10 @@ describe('timeUtils', () => {
 
         it('handles different locales for relative time', () => {
             const duration = 45000; // 45 seconds
-            
+
             const enResult = formatDuration(duration, 'en-US');
             const esResult = formatDuration(duration, 'es');
-            
+
             expect(enResult).toBe('45 seconds ago');
             expect(esResult).toBe('hace 45 segundos');
         });

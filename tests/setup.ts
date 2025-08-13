@@ -1,5 +1,30 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+// Initialize i18n for tests
+i18n.use(initReactI18next).init({
+    lng: 'en',
+    fallbackLng: 'en',
+    debug: false,
+    interpolation: {
+        escapeValue: false,
+    },
+    resources: {
+        en: {
+            translation: {
+                // Add common translation keys used in tests
+                toggle_sidebar: 'Toggle sidebar',
+                unload_model: 'Unload model',
+                clear_chat_history: 'Clear chat history',
+                'model_selector.no_model_loaded': 'No model loaded',
+                'welcome.title': 'Welcome to Hammerhead',
+                'welcome.choose_a_model': 'Choose a model to get started',
+            },
+        },
+    },
+});
 
 Object.defineProperty(process, 'versions', {
     value: {

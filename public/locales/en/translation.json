@@ -20,11 +20,13 @@
     "no_chats": "No chats yet. Start a conversation!",
     "import": "Import",
     "export": "Export",
+    "message": "Message",
     "msg": {
         "chat_exported": "Chat exported successfully!",
         "chat_imported": "Chat imported successfully!",
         "chat_export_failed": "Failed to export chat.",
-        "chat_import_failed": "Failed to import chat."
+        "chat_import_failed": "Failed to import chat.",
+        "model_not_loaded": "Model not loaded. Please select a model to interact with this chat."
     },
     "model_selector": {
         "no_model_loaded": "No model loaded.",
@@ -39,6 +41,7 @@
         "thought_for": "Thought for {{duration}}",
         "finished_thinking": "Finished thinking"
     },
+    "tokens_per_second": "tokens/sec",
     "nav": {
         "settings": {
             "general": "General",

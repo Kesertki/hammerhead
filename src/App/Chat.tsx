@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useExternalState } from '../hooks/useExternalState.ts';
 import { useChatStore, initializeChatStore } from '@/stores/chatStore.ts';
+import { useTranslation } from 'react-i18next';
 import { electronLlmRpc } from '../rpc/llmRpc.ts';
 import { electronChatRpc } from '../rpc/chatRpc.ts';
 import { llmState } from '../state/llmState.ts';
@@ -14,6 +15,7 @@ import { Welcome } from './components/Welcome';
 import './Chat.css';
 
 export function Chat() {
+    const { t } = useTranslation();
     const state = useExternalState(llmState);
     const { generatingResult } = state.chatSession;
     const { chatId } = useParams<{ chatId: string }>();
@@ -467,7 +469,7 @@ export function Chat() {
                 {showMessage && (
                     <div className="message">
                         {error != null && <div className="error">{String(error)}</div>}
-                        {loading && <div className="loading">Loading...</div>}
+                        {loading && <div className="loading">{t('loading')}</div>}
                         {(state.selectedModelFilePath == null || state.llama.error != null) && <Welcome />}
                         {!loading &&
                             state.selectedModelFilePath != null &&
@@ -491,7 +493,7 @@ export function Chat() {
                         />
                         {chatId && !state.model.loaded && selectedChatMessages.length > 0 && (
                             <div className="text-center text-sm text-yellow-600 bg-yellow-50 border border-yellow-200 rounded p-2 mb-4">
-                                ⚠️ Model not loaded. Please select a model to interact with this chat.
+                                ⚠️ {t('msg.model_not_loaded')}
                             </div>
                         )}
                     </>

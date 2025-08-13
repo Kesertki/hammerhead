@@ -20,11 +20,13 @@
     "no_chats": "Ще немає чатів. Розпочніть розмову!",
     "import": "Імпорт",
     "export": "Експорт",
+    "message": "Повідомлення",
     "msg": {
         "chat_exported": "Чат успішно експортовано!",
         "chat_imported": "Чат успішно імпортовано!",
         "chat_export_failed": "Не вдалося експортувати чат.",
-        "chat_import_failed": "Не вдалося імпортувати чат."
+        "chat_import_failed": "Не вдалося імпортувати чат.",
+        "model_not_loaded": "Модель не завантажена. Будь ласка, виберіть модель для взаємодії з цим чатом."
     },
     "model_selector": {
         "no_model_loaded": "Модель не завантажена.",
@@ -39,6 +41,7 @@
         "thought_for": "Думав протягом {{duration}}",
         "finished_thinking": "Закінчив думати"
     },
+    "tokens_per_second": "токенів/сек",
     "nav": {
         "settings": {
             "general": "Загальні",

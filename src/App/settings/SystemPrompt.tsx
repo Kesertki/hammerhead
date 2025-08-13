@@ -14,8 +14,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { SystemPromptConfig } from '@/types.ts';
 import { eventBus } from '@/utils/eventBus.ts';
+import { useTranslation } from 'react-i18next';
 
 const SystemPrompt = () => {
+    const { t } = useTranslation();
     const [systemPrompts, setSystemPrompts] = useState<SystemPromptConfig>();
     const [activePromptId, setActivePromptId] = useState('');
     const [promptText, setPromptText] = useState('');
@@ -282,10 +284,10 @@ const SystemPrompt = () => {
                     </div>
                     <DialogFooter>
                         <Button variant="outline" onClick={handleCancelNameDialog}>
-                            Cancel
+                            {t('actions.cancel')}
                         </Button>
                         <Button onClick={handleConfirmNameDialog} disabled={!nameDialogValue.trim()}>
-                            {nameDialogMode === 'create' ? 'Create' : 'Rename'}
+                            {nameDialogMode === 'create' ? t('actions.create') : t('actions.rename')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

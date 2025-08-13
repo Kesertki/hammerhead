@@ -2,6 +2,7 @@ import { Save, RotateCcw, AlignJustify, RotateCcw as Reset } from 'lucide-react'
 import { Badge } from '@/components/ui/badge.tsx';
 import { Button } from '@/components/ui/button.tsx';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip.tsx';
+import { useTranslation } from 'react-i18next';
 
 export interface McpState {
     hasUnsavedChanges: boolean;
@@ -14,69 +15,68 @@ interface McpActionsProps {
 }
 
 export function McpActions({ mcpState, onAction }: McpActionsProps) {
+    const { t } = useTranslation();
+
     return (
         <div className="flex gap-2 items-center">
             {mcpState.hasUnsavedChanges && (
                 <Badge variant="secondary" className="text-xs ml-2">
-                    Unsaved
+                    {t('mcp.unsaved')}
                 </Badge>
             )}
             {mcpState.validationErrors > 0 && (
                 <Badge variant="destructive" className="text-xs ml-1">
-                    {mcpState.validationErrors} Error(s)
+                    {mcpState.validationErrors} {t('mcp.errors')}
                 </Badge>
             )}
 
             <Tooltip>
                 <TooltipTrigger asChild>
                     <Button
+                        variant="ghost"
                         size="sm"
                         onClick={() => onAction('save')}
                         disabled={!mcpState.hasUnsavedChanges || mcpState.validationErrors > 0}
-                        className="gap-1"
+                        className="cursor-pointer"
                     >
                         <Save className="h-3 w-3" />
-                        Save
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Save MCP configuration</p>
+                    <p>{t('mcp.save_tooltip')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => onAction('reload')} className="gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => onAction('reload')} className="cursor-pointer">
                         <RotateCcw className="h-3 w-3" />
-                        Reload
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Reload configuration from file</p>
+                    <p>{t('mcp.reload_tooltip')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => onAction('format')} className="gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => onAction('format')} className="cursor-pointer">
                         <AlignJustify className="h-3 w-3" />
-                        Format
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Format JSON configuration</p>
+                    <p>{t('mcp.format_tooltip')}</p>
                 </TooltipContent>
             </Tooltip>
 
             <Tooltip>
                 <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm" onClick={() => onAction('reset')} className="gap-1">
+                    <Button variant="ghost" size="sm" onClick={() => onAction('reset')} className="cursor-pointer">
                         <Reset className="h-3 w-3" />
-                        Reset
                     </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                    <p>Reset to default configuration</p>
+                    <p>{t('mcp.reset_tooltip')}</p>
                 </TooltipContent>
             </Tooltip>
         </div>

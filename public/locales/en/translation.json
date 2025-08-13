@@ -24,7 +24,22 @@
     "actions": {
         "delete": "Delete",
         "edit": "Edit",
-        "copy": "Copy"
+        "copy": "Copy",
+        "add": "Add",
+        "create": "Create",
+        "rename": "Rename",
+        "save": "Save",
+        "cancel": "Cancel",
+        "reload": "Reload",
+        "format": "Format"
+    },
+    "mcp": {
+        "reload_tooltip": "Reload configuration from file",
+        "format_tooltip": "Format JSON configuration",
+        "save_tooltip": "Save MCP configuration",
+        "reset_tooltip": "Reset to default configuration",
+        "unsaved": "unsaved",
+        "errors": "error(s)"
     },
     "msg": {
         "chat_exported": "Chat exported successfully!",

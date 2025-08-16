@@ -1,7 +1,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import { defineChatSessionFunction } from 'node-llama-cpp';
-import { modelFunctions } from '../llm/modelFunctions.js';
+import { systemFunctions } from '../llm/modelFunctions.js';
 import { getMcpConfig } from '../settings/mcp.ts';
 
 interface Channel {
@@ -10,7 +10,7 @@ interface Channel {
 
 const channels: Channel[] = [];
 const mcpFunctions: Record<string, any> = {
-    ...modelFunctions,
+    ...systemFunctions,
 };
 
 async function registerTools(client: Client) {
@@ -60,7 +60,7 @@ async function connect() {
 
     // clear mcpFunctions but preserve modelFunctions
     Object.keys(mcpFunctions).forEach((key) => {
-        if (!(key in modelFunctions)) {
+        if (!(key in systemFunctions)) {
             delete mcpFunctions[key];
         }
     });

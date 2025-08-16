@@ -1,6 +1,6 @@
 import { ChatSessionModelFunctions, defineChatSessionFunction } from 'node-llama-cpp';
 
-export const modelFunctions = {
+export const systemFunctions = {
     getDate: defineChatSessionFunction({
         description: 'Get the current date',
         handler() {

@@ -1,10 +1,12 @@
 import classNames from 'classnames';
-import { ArrowUp, CircleStop } from 'lucide-react';
-import React, { useCallback, useRef, useState } from 'react';
+import { ArrowUp, CircleStop, Blocks } from 'lucide-react';
+import { useCallback, useRef, useState, KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button.tsx';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
 import { DEFAULT_VOICE_SETTINGS } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { Toggle } from '@/components/ui/toggle';
 import { VoiceInput } from '../VoiceInput';
 
 import './InputRow.css';
@@ -87,7 +89,7 @@ export function InputRow({
     }, [resizeInput]);
 
     const onInputKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        (event: KeyboardEvent<HTMLTextAreaElement>) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 submitPrompt();
@@ -118,9 +120,22 @@ export function InputRow({
                         disabled={disabled}
                         onScroll={resizeInput}
                         placeholder={t('message')}
-                        // placeholder={autocompleteText === '' ? 'Message' : ''}
                     />
-                    {/* <span>Assistant selector</span> */}
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Toggle disabled={disabled || generatingResult} className="cursor-pointer">
+                                <Blocks />
+                                {t('chat.tools')}
+                            </Toggle>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>{t('chat.tools_description')}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                    {/* <Toggle disabled={disabled || generatingResult} className="cursor-pointer">
+                        <Blocks />
+                        {t('chat.tools')}
+                    </Toggle> */}
                 </div>
 
                 <div className="flex items-center space-x-2">

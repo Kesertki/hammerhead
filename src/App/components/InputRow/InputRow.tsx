@@ -132,10 +132,6 @@ export function InputRow({
                             <p>{t('chat.tools_description')}</p>
                         </TooltipContent>
                     </Tooltip>
-                    {/* <Toggle disabled={disabled || generatingResult} className="cursor-pointer">
-                        <Blocks />
-                        {t('chat.tools')}
-                    </Toggle> */}
                 </div>
 
                 <div className="flex items-center space-x-2">

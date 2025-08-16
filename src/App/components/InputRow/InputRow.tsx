@@ -1,10 +1,12 @@
 import classNames from 'classnames';
-import { ArrowUp, CircleStop } from 'lucide-react';
-import React, { useCallback, useRef, useState } from 'react';
+import { ArrowUp, CircleStop, Blocks } from 'lucide-react';
+import { useCallback, useRef, useState, KeyboardEvent } from 'react';
 import { Button } from '@/components/ui/button.tsx';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import type { TranscriptionResult, VoiceSettings } from '@/types';
 import { DEFAULT_VOICE_SETTINGS } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { Toggle } from '@/components/ui/toggle';
 import { VoiceInput } from '../VoiceInput';
 
 import './InputRow.css';
@@ -21,6 +23,7 @@ export function InputRow({
     const [inputText, setInputText] = useState<string>('');
     const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const [withTools, setWithTools] = useState<boolean>(false);
 
     const setInputValue = useCallback((value: string) => {
         if (inputRef.current != null) inputRef.current.value = value;
@@ -43,8 +46,8 @@ export function InputRow({
 
         setInputValue('');
         resizeInput();
-        sendPrompt(message);
-    }, [setInputValue, generatingResult, resizeInput, sendPrompt, isVoiceActive]);
+        sendPrompt(message, { withTools });
+    }, [setInputValue, generatingResult, resizeInput, sendPrompt, isVoiceActive, withTools]);
 
     const handleVoiceTranscriptionComplete = useCallback(
         (result: TranscriptionResult) => {
@@ -87,7 +90,7 @@ export function InputRow({
     }, [resizeInput]);
 
     const onInputKeyDown = useCallback(
-        (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        (event: KeyboardEvent<HTMLTextAreaElement>) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 submitPrompt();
@@ -118,9 +121,23 @@ export function InputRow({
                         disabled={disabled}
                         onScroll={resizeInput}
                         placeholder={t('message')}
-                        // placeholder={autocompleteText === '' ? 'Message' : ''}
                     />
-                    {/* <span>Assistant selector</span> */}
+                    <Tooltip>
+                        <TooltipTrigger>
+                            <Toggle
+                                disabled={disabled || generatingResult}
+                                className="cursor-pointer"
+                                onPressedChange={(pressed) => setWithTools(pressed)}
+                                pressed={withTools}
+                            >
+                                <Blocks />
+                                {t('chat.tools')}
+                            </Toggle>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom">
+                            <p>{t('chat.tools_description')}</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -173,7 +190,7 @@ export function InputRow({
 type InputRowProps = {
     disabled?: boolean;
     stopGeneration?(): void;
-    sendPrompt(prompt: string): void;
+    sendPrompt(prompt: string, opts?: { withTools: boolean }): void;
     generatingResult: boolean;
     autoSubmitVoice?: boolean;
     voiceSettings?: VoiceSettings;

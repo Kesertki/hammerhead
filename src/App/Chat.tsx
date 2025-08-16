@@ -435,13 +435,13 @@ export function Chat() {
     }, []);
 
     const sendPrompt = useCallback(
-        (prompt: string) => {
+        (prompt: string, opts?: { withTools: boolean }) => {
             if (generatingResult) return;
 
             console.log('Chat: User sending prompt, marking user interaction');
             setHasUserInteraction(true); // Mark that user has interacted
             scrollToBottom();
-            void electronLlmRpc.prompt(prompt);
+            void electronLlmRpc.prompt(prompt, opts);
         },
         [generatingResult, scrollToBottom, setHasUserInteraction]
     );

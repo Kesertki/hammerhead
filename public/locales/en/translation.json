@@ -89,6 +89,10 @@
         "confidence": "Confidence",
         "duration": "Duration"
     },
+    "chat": {
+        "tools": "Tools",
+        "tools_description": "Toggle tools on or off."
+    },
     "msg": {
         "chat_exported": "Chat exported successfully!",
         "chat_imported": "Chat imported successfully!",

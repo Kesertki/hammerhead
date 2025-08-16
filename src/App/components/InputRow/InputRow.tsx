@@ -23,6 +23,7 @@ export function InputRow({
     const [inputText, setInputText] = useState<string>('');
     const [isVoiceActive, setIsVoiceActive] = useState<boolean>(false);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+    const [withTools, setWithTools] = useState<boolean>(false);
 
     const setInputValue = useCallback((value: string) => {
         if (inputRef.current != null) inputRef.current.value = value;
@@ -45,8 +46,8 @@ export function InputRow({
 
         setInputValue('');
         resizeInput();
-        sendPrompt(message);
-    }, [setInputValue, generatingResult, resizeInput, sendPrompt, isVoiceActive]);
+        sendPrompt(message, { withTools });
+    }, [setInputValue, generatingResult, resizeInput, sendPrompt, isVoiceActive, withTools]);
 
     const handleVoiceTranscriptionComplete = useCallback(
         (result: TranscriptionResult) => {
@@ -123,7 +124,12 @@ export function InputRow({
                     />
                     <Tooltip>
                         <TooltipTrigger>
-                            <Toggle disabled={disabled || generatingResult} className="cursor-pointer">
+                            <Toggle
+                                disabled={disabled || generatingResult}
+                                className="cursor-pointer"
+                                onPressedChange={(pressed) => setWithTools(pressed)}
+                                pressed={withTools}
+                            >
                                 <Blocks />
                                 {t('chat.tools')}
                             </Toggle>
@@ -184,7 +190,7 @@ export function InputRow({
 type InputRowProps = {
     disabled?: boolean;
     stopGeneration?(): void;
-    sendPrompt(prompt: string): void;
+    sendPrompt(prompt: string, opts?: { withTools: boolean }): void;
     generatingResult: boolean;
     autoSubmitVoice?: boolean;
     voiceSettings?: VoiceSettings;

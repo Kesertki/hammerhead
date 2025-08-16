@@ -584,10 +584,12 @@ export const llmFunctions = {
                 }
             });
         },
-        async prompt(message: string) {
+        async prompt(message: string, opts?: { withTools?: boolean }) {
             await withLock([llmFunctions, 'chatSession'], async () => {
                 if (chatSession == null) throw new Error('Chat session not loaded');
                 if (contextSequence == null) throw new Error('Context sequence not loaded');
+
+                console.log('Prompting LLM with message:', message, 'and options:', opts);
 
                 let promptMessage = message.trim();
 
@@ -620,7 +622,7 @@ export const llmFunctions = {
                     await chatSession.prompt(promptMessage, {
                         signal: abortSignal,
                         stopOnAbortSignal: true,
-                        functions: mcpFunctions,
+                        functions: opts?.withTools ? mcpFunctions : undefined,
                         onResponseChunk(chunk) {
                             inProgressResponse = squashMessageIntoModelChatMessages(
                                 inProgressResponse,

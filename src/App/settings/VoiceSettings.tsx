@@ -407,7 +407,7 @@ export function VoiceSettings() {
                                             <PopoverContent className="w-[200px] p-0">
                                                 <Command>
                                                     <CommandInput
-                                                        placeholder={t('model.search_model')}
+                                                        placeholder={t('voice.search_model')}
                                                         className="h-9"
                                                     />
                                                     <CommandList>

@@ -33,7 +33,7 @@
 				"additionalProperties": false
 			}
 		},
-		"servers": {
+		"mcpServers": {
 			"type": "object",
 			"description": "MCP server configurations",
 			"patternProperties": {
@@ -159,6 +159,6 @@
 			"additionalProperties": false
 		}
 	},
-	"required": ["servers"],
+	"required": ["mcpServers"],
 	"additionalProperties": false
 }

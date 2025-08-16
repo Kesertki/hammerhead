@@ -5,7 +5,7 @@ export interface McpConfig {
         description: string;
         password?: boolean;
     }>;
-    servers: {
+    mcpServers: {
         [key: string]: {
             disabled?: boolean;
             type?: 'stdio' | 'sse';

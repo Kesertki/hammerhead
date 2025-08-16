@@ -19,7 +19,7 @@ loader.config({
 });
 
 const defaultMcpConfig = `{
-  "servers": {}
+  "mcpServers": {}
 }`;
 
 interface McpConfig {
@@ -29,7 +29,7 @@ interface McpConfig {
         description: string;
         password?: boolean;
     }>;
-    servers: {
+    mcpServers: {
         [key: string]: {
             type?: 'stdio' | 'sse';
             command?: string;

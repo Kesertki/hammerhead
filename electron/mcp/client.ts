@@ -65,11 +65,11 @@ async function connect() {
         }
     });
 
-    if (!config?.servers) {
+    if (!config?.mcpServers) {
         return;
     }
 
-    for (const [name, connection] of Object.entries(config?.servers ?? {})) {
+    for (const [name, connection] of Object.entries(config?.mcpServers ?? {})) {
         if (!connection) {
             console.warn(`No connection configuration found for server: ${name}`);
             continue;

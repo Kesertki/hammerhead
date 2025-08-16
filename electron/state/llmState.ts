@@ -19,6 +19,7 @@ import packageJson from '../../package.json';
 import { loadMcpTools } from '../mcp/client.ts';
 import { getSelectedPrompt } from '../settings/prompts.ts';
 import { eventBus } from '../utils/eventBus.ts';
+import { systemFunctions } from '../llm/modelFunctions.ts';
 
 // const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -622,7 +623,7 @@ export const llmFunctions = {
                     await chatSession.prompt(promptMessage, {
                         signal: abortSignal,
                         stopOnAbortSignal: true,
-                        functions: opts?.withTools ? mcpFunctions : undefined,
+                        functions: opts?.withTools ? mcpFunctions : systemFunctions,
                         onResponseChunk(chunk) {
                             inProgressResponse = squashMessageIntoModelChatMessages(
                                 inProgressResponse,

@@ -39,7 +39,12 @@
         "save_tooltip": "Save MCP configuration",
         "reset_tooltip": "Reset to default configuration",
         "unsaved": "unsaved",
-        "errors": "error(s)"
+        "errors": "error(s)",
+        "saved_successfully": "MCP configuration saved successfully",
+        "failed_to_save": "Failed to save MCP configuration",
+        "failed_to_format": "Cannot format invalid JSON",
+        "invalid_json": "Invalid JSON syntax. Please fix the syntax errors before saving.",
+        "failed_to_load": "Failed to load MCP configuration"
     },
     "prompts": {
         "select_a_prompt": "Select a prompt",

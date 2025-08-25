@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
 import { eventBus } from '@/utils/eventBus.ts';
+import { useTranslation } from 'react-i18next';
 
 // Set up Monaco environment for Electron before loader config
 (self as any).MonacoEnvironment = {
@@ -43,6 +44,7 @@ interface McpConfig {
 }
 
 export default function McpServersConfig() {
+    const { t } = useTranslation();
     const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof Monaco | null>(null);
     const [currentConfig, setCurrentConfig] = useState<string>(defaultMcpConfig);
@@ -67,7 +69,7 @@ export default function McpServersConfig() {
                 }
             } catch (error) {
                 console.error('Error loading MCP config:', error);
-                toast.error('Failed to load MCP configuration');
+                toast.error(t('mcp.failed_to_load'));
             } finally {
                 setIsLoading(false);
                 setTimeout(() => setIsProgrammaticChange(false), 100);
@@ -104,7 +106,7 @@ export default function McpServersConfig() {
             }
         } catch (error) {
             console.error('Error loading MCP config:', error);
-            toast.error('Failed to load MCP configuration');
+            toast.error(t('mcp.failed_to_load'));
         } finally {
             setIsLoading(false);
             // Reset the flag after a brief delay to allow editor to update
@@ -120,7 +122,7 @@ export default function McpServersConfig() {
             try {
                 parsedConfig = JSON.parse(currentConfig);
             } catch {
-                toast.error('Invalid JSON syntax. Please fix the syntax errors before saving.');
+                toast.error(t('mcp.invalid_json'));
                 return;
             }
 
@@ -134,10 +136,10 @@ export default function McpServersConfig() {
             // Save to Electron store
             await window.electronAPI.setMCPConfig(parsedConfig);
             setHasUnsavedChanges(false);
-            toast.success('MCP configuration saved successfully');
+            toast.success(t('mcp.saved_successfully'));
         } catch (error) {
             console.error('Error saving MCP config:', error);
-            toast.error('Failed to save MCP configuration');
+            toast.error(t('mcp.failed_to_save'));
         }
     }, [currentConfig, validationErrors]);
 
@@ -168,7 +170,7 @@ export default function McpServersConfig() {
                 setTimeout(() => setIsProgrammaticChange(false), 100);
             }
         } catch {
-            toast.error('Cannot format invalid JSON');
+            toast.error(t('mcp.failed_to_format'));
         }
     }, [currentConfig]);
 
@@ -206,8 +208,6 @@ export default function McpServersConfig() {
     }
 
     function handleEditorDidMount(editor: Monaco.editor.IStandaloneCodeEditor, monaco: typeof Monaco) {
-        console.log('onMount: the editor instance:', editor);
-        console.log('onMount: the monaco instance:', monaco);
         editorRef.current = editor;
         monacoRef.current = monaco;
 
@@ -224,8 +224,6 @@ export default function McpServersConfig() {
     }
 
     function handleEditorWillMount(monaco: typeof Monaco) {
-        console.log('beforeMount: the monaco instance:', monaco);
-
         // Configure JSON language features for MCP server configurations
         monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
             validate: true,

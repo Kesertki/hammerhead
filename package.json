@@ -24,7 +24,7 @@
 		"clean": "rm -rf ./node_modules ./dist ./dist-electron ./release ./models",
 		"test": "npm run test:main && npm run test:renderer",
 		"test:renderer": "vitest run --config vitest.config.renderer.ts",
-		"test:main": "vitest run --config vitest.config.main.ts --exclude=\"**/chatStorageSqlite.test.ts\"",
+		"test:main": "vitest run --config vitest.config.main.ts",
 		"test:ui": "vitest --ui"
 	},
 	"dependencies": {

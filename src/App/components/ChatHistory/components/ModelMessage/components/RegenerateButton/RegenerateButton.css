@@ -1,0 +1,31 @@
+.appChatHistory > .message.model > .buttons {
+    > .regenerateButton {
+        display: grid;
+        grid-template-areas: 'icon';
+        padding: 6px;
+        border: none;
+
+        transition: background-color 0.1s ease-in-out;
+
+        &:not(:hover, :focus-visible) {
+            background-color: transparent;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        > .icon {
+            grid-area: icon;
+            width: 18px;
+            height: 18px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+
+            &:hover {
+                color: var(--color-text-primary);
+            }
+        }
+    }
+}

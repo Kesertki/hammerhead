@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageMarkdownWithSVG } from '../../../MessageMarkdownWithSVG/MessageMarkdownWithSVG.tsx';
 import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
 import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.tsx';
+import { RegenerateButton } from './components/RegenerateButton/RegenerateButton.tsx';
 
 import './ModelMessage.css';
 
@@ -39,6 +40,7 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
             {modelMessage.message.length === 0 && active && <MessageMarkdownWithSVG className="text" activeDot />}
             <div className="buttons items-center" inert={active}>
                 <ModelMessageCopyButton modelMessage={modelMessage.message} />
+                <RegenerateButton modelMessage={modelMessage} disabled={active} />
 
                 {modelMessage.performanceStats && (
                     <div className="flex items-center">

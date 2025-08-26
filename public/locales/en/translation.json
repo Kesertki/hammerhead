@@ -31,7 +31,8 @@
         "save": "Save",
         "cancel": "Cancel",
         "reload": "Reload",
-        "format": "Format"
+        "format": "Format",
+        "regenerate": "Regenerate"
     },
     "mcp": {
         "reload_tooltip": "Reload configuration from file",

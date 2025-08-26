@@ -18,6 +18,7 @@ import {
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import { getSystemPrompts, SystemPromptConfig, setSystemPrompts } from './settings/prompts.ts';
 import { initMainI18n, changeMainLanguage, t } from './i18n.ts';
+import { chatStorageSqlite } from './settings/chatStorageSqlite.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -217,9 +218,16 @@ function createWindow() {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
+        // Clean up SQLite connection before quitting
+        chatStorageSqlite.close();
         app.quit();
         win = null;
     }
+});
+
+app.on('before-quit', () => {
+    // Clean up SQLite connection before app quits
+    chatStorageSqlite.close();
 });
 
 app.on('activate', () => {

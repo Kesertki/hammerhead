@@ -938,7 +938,8 @@ export const llmFunctions = {
                 },
             };
 
-            // Now regenerate the response by prompting with the user message
+            // Now regenerate the response by calling prompt normally
+            // The user message is already in the history, so prompt() will generate a response
             console.log(`Regenerating response for message: ${userMessage.message}`);
             await llmFunctions.chatSession.prompt(userMessage.message);
         },

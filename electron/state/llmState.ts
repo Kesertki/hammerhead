@@ -1058,7 +1058,7 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
             return [];
         });
 
-    if (generatingResult && currentPrompt != null) {
+    if (generatingResult && currentPrompt != null && currentPrompt.trim() !== '') {
         chatHistory.push({
             id: 'temp-user-generating',
             type: 'user',
@@ -1071,6 +1071,13 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
                 type: 'model',
                 message: inProgressResponse,
             });
+    } else if (generatingResult && inProgressResponse.length > 0) {
+        // For regeneration (empty prompt), only show the model response being generated
+        chatHistory.push({
+            id: 'temp-model-generating',
+            type: 'model',
+            message: inProgressResponse,
+        });
     }
 
     return chatHistory;

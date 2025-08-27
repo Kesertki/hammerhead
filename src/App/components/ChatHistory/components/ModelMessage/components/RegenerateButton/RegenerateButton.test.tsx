@@ -2,11 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { RegenerateButton } from './RegenerateButton';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState';
+import * as llmRpc from '@/rpc/llmRpc.ts';
+import * as eventBusModule from '@/utils/eventBus.ts';
 
 // Mock the RPC module
 vi.mock('@/rpc/llmRpc.ts', () => ({
     electronLlmRpc: {
         regenerateMessage: vi.fn(),
+    },
+}));
+
+// Mock the event bus
+vi.mock('@/utils/eventBus.ts', () => ({
+    eventBus: {
+        emit: vi.fn(),
+        on: vi.fn(),
+        off: vi.fn(),
     },
 }));
 
@@ -61,6 +72,7 @@ describe('RegenerateButton', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.restoreAllMocks();
     });
 
     it('renders the regenerate button with correct icon', () => {
@@ -73,27 +85,34 @@ describe('RegenerateButton', () => {
         expect(icon).toBeInTheDocument();
     });
 
-    it('calls regenerateMessage when clicked and not disabled', () => {
-        const { electronLlmRpc } = vi.mocked(require('@/rpc/llmRpc.ts'));
+    it('calls regenerateMessage and emits event when clicked and not disabled', () => {
+        const llmRpcModule = vi.mocked(llmRpc);
+        const eventBusModuleMocked = vi.mocked(eventBusModule);
 
         render(<RegenerateButton modelMessage={mockModelMessage} disabled={false} />);
 
         const regenerateButton = screen.getByTestId('regenerate-button');
         fireEvent.click(regenerateButton);
 
-        expect(electronLlmRpc.regenerateMessage).toHaveBeenCalledTimes(1);
-        expect(electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(mockModelMessage);
+        expect(eventBusModuleMocked.eventBus.emit).toHaveBeenCalledTimes(1);
+        expect(eventBusModuleMocked.eventBus.emit).toHaveBeenCalledWith('message-regenerated', {
+            modelMessage: mockModelMessage,
+        });
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).toHaveBeenCalledTimes(1);
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(mockModelMessage);
     });
 
-    it('does not call regenerateMessage when disabled', () => {
-        const { electronLlmRpc } = vi.mocked(require('@/rpc/llmRpc.ts'));
+    it('does not call regenerateMessage or emit event when disabled', () => {
+        const llmRpcModule = vi.mocked(llmRpc);
+        const eventBusModuleMocked = vi.mocked(eventBusModule);
 
         render(<RegenerateButton modelMessage={mockModelMessage} disabled={true} />);
 
         const regenerateButton = screen.getByTestId('regenerate-button');
         fireEvent.click(regenerateButton);
 
-        expect(electronLlmRpc.regenerateMessage).not.toHaveBeenCalled();
+        expect(eventBusModuleMocked.eventBus.emit).not.toHaveBeenCalled();
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).not.toHaveBeenCalled();
     });
 
     it('button is disabled when disabled prop is true', () => {
@@ -111,7 +130,8 @@ describe('RegenerateButton', () => {
     });
 
     it('calls regenerateMessage with the correct model message object', () => {
-        const { electronLlmRpc } = vi.mocked(require('@/rpc/llmRpc.ts'));
+        const llmRpcModule = vi.mocked(llmRpc);
+        const eventBusModuleMocked = vi.mocked(eventBusModule);
 
         const customModelMessage: SimplifiedModelChatItem = {
             id: 'custom-model-id',
@@ -129,11 +149,15 @@ describe('RegenerateButton', () => {
         const regenerateButton = screen.getByTestId('regenerate-button');
         fireEvent.click(regenerateButton);
 
-        expect(electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(customModelMessage);
+        expect(eventBusModuleMocked.eventBus.emit).toHaveBeenCalledWith('message-regenerated', {
+            modelMessage: customModelMessage,
+        });
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(customModelMessage);
     });
 
     it('handles multiple clicks correctly', () => {
-        const { electronLlmRpc } = vi.mocked(require('@/rpc/llmRpc.ts'));
+        const llmRpcModule = vi.mocked(llmRpc);
+        const eventBusModuleMocked = vi.mocked(eventBusModule);
 
         render(<RegenerateButton modelMessage={mockModelMessage} />);
 
@@ -143,8 +167,9 @@ describe('RegenerateButton', () => {
         fireEvent.click(regenerateButton);
         fireEvent.click(regenerateButton);
 
-        expect(electronLlmRpc.regenerateMessage).toHaveBeenCalledTimes(3);
-        expect(electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(mockModelMessage);
+        expect(eventBusModuleMocked.eventBus.emit).toHaveBeenCalledTimes(3);
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).toHaveBeenCalledTimes(3);
+        expect(llmRpcModule.electronLlmRpc.regenerateMessage).toHaveBeenCalledWith(mockModelMessage);
     });
 
     it('wraps button in tooltip structure', () => {

@@ -8,6 +8,7 @@ import { electronChatRpc } from '../rpc/chatRpc.ts';
 import { llmState } from '../state/llmState.ts';
 import type { VoiceSettings } from '../types';
 import { DEFAULT_VOICE_SETTINGS } from '../types';
+import { eventBus } from '../utils/eventBus.ts';
 import { ChatHistory } from './components/ChatHistory/ChatHistory.tsx';
 import { InputRow } from './components/InputRow/InputRow.tsx';
 import { Welcome } from './components/Welcome';
@@ -45,6 +46,7 @@ export function Chat() {
     const [isNavigating, setIsNavigating] = useState(false);
     const [lastAutoSaveMessageLength, setLastAutoSaveMessageLength] = useState(0);
     const [hasUserInteraction, setHasUserInteraction] = useState(false);
+    const [preserveUserInteraction, setPreserveUserInteraction] = useState(false);
     const previousChatIdRef = useRef<string | undefined>(undefined);
 
     // Auto-save effect - save chat automatically when there are both user and model messages
@@ -59,7 +61,15 @@ export function Chat() {
             console.log('Chat: Detected chat navigation, setting navigation flag');
             setIsNavigating(true);
             setLastAutoSaveMessageLength(0); // Reset the last auto-save count
-            setHasUserInteraction(false); // Reset user interaction flag
+
+            // Only reset user interaction flag if we're not preserving it (not auto-navigation)
+            if (!preserveUserInteraction) {
+                setHasUserInteraction(false); // Reset user interaction flag
+            } else {
+                console.log('Chat: Preserving user interaction flag during auto-navigation');
+                setPreserveUserInteraction(false); // Reset the preserve flag
+            }
+
             previousChatIdRef.current = chatId;
 
             // Clear navigation flag after a delay to allow chat loading to complete
@@ -103,6 +113,8 @@ export function Chat() {
                     if (!chatId) {
                         // New chat - save it
                         console.log('Chat: Auto-saving new chat...');
+                        // Preserve user interaction flag for auto-navigation after save
+                        setPreserveUserInteraction(true);
                         const savedChat = await saveCurrentChat();
                         if (savedChat) {
                             console.log('Chat: Auto-save successful, navigating to:', `/chats/${savedChat.id}`);
@@ -306,6 +318,16 @@ export function Chat() {
     // Load voice settings on component mount
     useEffect(() => {
         loadVoiceSettings();
+    }, []);
+
+    // Listen for regeneration events to mark user interaction
+    useEffect(() => {
+        const unsubscribe = eventBus.on('message-regenerated', () => {
+            console.log('Chat: Message regeneration detected, marking user interaction');
+            setHasUserInteraction(true);
+        });
+
+        return unsubscribe;
     }, []);
 
     const loadVoiceSettings = async () => {

@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { SimplifiedModelChatItem } from '@/electron/state/llmState';
 import { electronLlmRpc } from '@/rpc/llmRpc.ts';
 import { useTranslation } from 'react-i18next';
+import { eventBus } from '@/utils/eventBus';
 
 import './RegenerateButton.css';
 
@@ -13,6 +14,8 @@ export function RegenerateButton({ modelMessage, disabled }: RegenerateButtonPro
 
     const onClick = useCallback(() => {
         if (!disabled) {
+            // Emit event to notify Chat component about regeneration
+            eventBus.emit('message-regenerated', { modelMessage });
             void electronLlmRpc.regenerateMessage(modelMessage);
         }
     }, [modelMessage, disabled]);

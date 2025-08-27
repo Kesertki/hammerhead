@@ -1,6 +1,8 @@
 import { Timer } from 'lucide-react';
 import { SimplifiedModelChatItem } from '@/electron/state/llmState.ts';
 import { useTranslation } from 'react-i18next';
+import { useExternalState } from '@/hooks/useExternalState.ts';
+import { llmState } from '@/state/llmState.ts';
 import { MessageMarkdownWithSVG } from '../../../MessageMarkdownWithSVG/MessageMarkdownWithSVG.tsx';
 import { ModelResponseThought } from '../ModelResponseThought/ModelResponseThought.tsx';
 import { ModelMessageCopyButton } from './components/ModelMessageCopyButton/ModelMessageCopyButton.tsx';
@@ -10,6 +12,7 @@ import './ModelMessage.css';
 
 export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
     const { t } = useTranslation();
+    const state = useExternalState(llmState);
 
     return (
         <div className="message model">
@@ -40,7 +43,7 @@ export function ModelMessage({ modelMessage, active }: ModelMessageProps) {
             {modelMessage.message.length === 0 && active && <MessageMarkdownWithSVG className="text" activeDot />}
             <div className="buttons items-center" inert={active}>
                 <ModelMessageCopyButton modelMessage={modelMessage.message} />
-                <RegenerateButton modelMessage={modelMessage} disabled={active} />
+                {state.model.loaded && <RegenerateButton modelMessage={modelMessage} disabled={active} />}
 
                 {modelMessage.performanceStats && (
                     <div className="flex items-center">

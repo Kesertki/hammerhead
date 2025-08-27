@@ -29,15 +29,9 @@ export const useChatStore = create<ChatState>()(
 
         loadChats: async () => {
             try {
-                console.log('chatStore: Starting to load chats');
                 set({ loading: true });
-                console.log('chatStore: electronChatRpc:', electronChatRpc);
-                console.log('chatStore: electronChatRpc.getAllChats:', electronChatRpc.getAllChats);
                 const allChats = await electronChatRpc.getAllChats();
-                console.log('chatStore: Loaded chats:', allChats);
-                console.log('chatStore: Setting chats state to:', allChats);
                 set({ chats: allChats });
-                console.log('chatStore: Chats state has been set');
             } catch (error) {
                 console.error('chatStore: Failed to load chats:', error);
             } finally {
@@ -47,10 +41,7 @@ export const useChatStore = create<ChatState>()(
 
         createNewChat: async () => {
             try {
-                console.log('chatStore: *** createNewChat called ***');
-                console.log('chatStore: Calling electronChatRpc.createNewChat()...');
                 await electronChatRpc.createNewChat();
-                console.log('chatStore: New chat created successfully');
             } catch (error) {
                 console.error('chatStore: Failed to create new chat:', error);
                 console.error('chatStore: Error details:', {
@@ -64,10 +55,8 @@ export const useChatStore = create<ChatState>()(
 
         saveCurrentChat: async (title?: string) => {
             try {
-                console.log('chatStore: saveCurrentChat called with title:', title);
                 const savedChat = await electronChatRpc.saveCurrentChat(title);
                 if (savedChat) {
-                    console.log('chatStore: Chat saved successfully:', savedChat);
                     // Note: No need to update state here, the IPC event will handle it
                     return savedChat;
                 }
@@ -79,10 +68,8 @@ export const useChatStore = create<ChatState>()(
 
         updateCurrentChat: async (chatId?: string) => {
             try {
-                console.log('chatStore: Updating current chat session for chatId:', chatId);
                 const updatedChat = await electronChatRpc.updateCurrentChatIfExists(chatId);
                 if (updatedChat) {
-                    console.log('chatStore: Chat updated successfully:', updatedChat);
                     // Note: No need to update state here, the IPC event will handle it
                     return updatedChat;
                 }
@@ -121,32 +108,27 @@ export const useChatStore = create<ChatState>()(
 
         // Internal state actions for IPC events
         addChat: (chat: SavedChat) => {
-            console.log('chatStore: *** RECEIVED chat-saved, adding chat ***:', chat);
             set((state) => {
                 const existingIndex = state.chats.findIndex((c) => c.id === chat.id);
                 if (existingIndex >= 0) {
                     // Update existing chat
                     const newChats = [...state.chats];
                     newChats[existingIndex] = chat;
-                    console.log('chatStore: Updated existing chat in list');
                     return { chats: newChats };
                 } else {
                     // Add new chat at the beginning
-                    console.log('chatStore: Added new chat to list');
                     return { chats: [chat, ...state.chats] };
                 }
             });
         },
 
         updateChat: (chat: SavedChat) => {
-            console.log('chatStore: Chat updated event received:', chat);
             set((state) => ({
                 chats: state.chats.map((c) => (c.id === chat.id ? chat : c)),
             }));
         },
 
         removeChat: (chatId: string) => {
-            console.log('chatStore: Chat deleted event received:', chatId);
             set((state) => ({
                 chats: state.chats.filter((c) => c.id !== chatId),
             }));
@@ -167,8 +149,6 @@ export const setupChatIpcListeners = () => {
         return;
     }
 
-    console.log('chatStore: Setting up IPC event listeners');
-
     const handleChatSaved = (_event: any, chat: SavedChat) => {
         useChatStore.getState().addChat(chat);
     };
@@ -182,7 +162,6 @@ export const setupChatIpcListeners = () => {
     };
 
     // Add IPC listeners
-    console.log('chatStore: Adding IPC listeners, window.ipcRenderer:', !!window.ipcRenderer);
     window.ipcRenderer?.on('chat-saved', handleChatSaved);
     window.ipcRenderer?.on('chat-updated', handleChatUpdated);
     window.ipcRenderer?.on('chat-deleted', handleChatDeleted);
@@ -191,7 +170,6 @@ export const setupChatIpcListeners = () => {
 
     // Return cleanup function
     return () => {
-        console.log('chatStore: Cleaning up IPC listeners');
         window.ipcRenderer?.off('chat-saved', handleChatSaved);
         window.ipcRenderer?.off('chat-updated', handleChatUpdated);
         window.ipcRenderer?.off('chat-deleted', handleChatDeleted);

@@ -858,6 +858,91 @@ export const llmFunctions = {
 
             console.log('State updated, new simplified chat length:', getSimplifiedChatHistory(false).length);
         },
+        async regenerateMessage(modelMessageToRegenerate: SimplifiedModelChatItem) {
+            if (chatSession == null) return;
+
+            const currentHistory = chatSession.getChatHistory();
+            const simplifiedHistory = getSimplifiedChatHistory(false);
+
+            console.log(`Regenerating model message with ID: ${modelMessageToRegenerate.id}`);
+
+            // Find the index of the model message to regenerate
+            const modelMessageIndex = simplifiedHistory.findIndex((msg) => {
+                return msg.type === 'model' && msg.id === modelMessageToRegenerate.id;
+            });
+
+            if (modelMessageIndex === -1) {
+                console.log('Model message not found in simplified history');
+                return;
+            }
+
+            // Find the corresponding user message (should be right before the model message)
+            let userMessageIndex = -1;
+            for (let i = modelMessageIndex - 1; i >= 0; i--) {
+                const historyItem = simplifiedHistory[i];
+                if (historyItem && historyItem.type === 'user') {
+                    userMessageIndex = i;
+                    break;
+                }
+            }
+
+            if (userMessageIndex === -1) {
+                console.log('No user message found before the model message');
+                return;
+            }
+
+            const userMessage = simplifiedHistory[userMessageIndex] as SimplifiedUserChatItem;
+            console.log(`Found user message: ${userMessage.message}`);
+
+            // Find the actual index in the chat history for the user message
+            let actualUserIndex = 0;
+            let simplifiedIndex = 0;
+
+            for (let i = 0; i < currentHistory.length; i++) {
+                const historyItem = currentHistory[i];
+                if (!historyItem || historyItem.type === 'system') continue;
+
+                if (simplifiedIndex === userMessageIndex) {
+                    actualUserIndex = i;
+                    break;
+                }
+                simplifiedIndex++;
+            }
+
+            console.log(`Actual user message index in chat history: ${actualUserIndex}`);
+
+            // Remove everything after the user message (including the model response and any subsequent messages)
+            const newHistory = currentHistory.slice(0, actualUserIndex + 1);
+            console.log(`New history length after truncation: ${newHistory.length}`);
+
+            // Clear ID cache entries for deleted messages
+            for (let i = actualUserIndex + 1; i < currentHistory.length; i++) {
+                const item = currentHistory[i];
+                if (item?.type === 'user') {
+                    messageIdCache.delete(`user-${i}-${item.text}`);
+                } else if (item?.type === 'model') {
+                    messageIdCache.delete(`model-${i}`);
+                }
+            }
+
+            // Set the truncated history
+            chatSession.setChatHistory(newHistory);
+
+            // Update the state to reflect the truncated chat
+            llmState.state = {
+                ...llmState.state,
+                chatSession: {
+                    ...llmState.state.chatSession,
+                    simplifiedChat: getSimplifiedChatHistory(false),
+                    sessionTokenStats: getSessionTokenStats(),
+                },
+            };
+
+            // Now regenerate the response by calling prompt with empty string
+            // The user message is already in the history, so prompt('') will generate a response
+            console.log(`Regenerating response for existing conversation context`);
+            await llmFunctions.chatSession.prompt('');
+        },
     },
 } as const;
 
@@ -973,7 +1058,7 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
             return [];
         });
 
-    if (generatingResult && currentPrompt != null) {
+    if (generatingResult && currentPrompt != null && currentPrompt.trim() !== '') {
         chatHistory.push({
             id: 'temp-user-generating',
             type: 'user',
@@ -986,6 +1071,13 @@ function getSimplifiedChatHistory(generatingResult: boolean, currentPrompt?: str
                 type: 'model',
                 message: inProgressResponse,
             });
+    } else if (generatingResult && inProgressResponse.length > 0) {
+        // For regeneration (empty prompt), only show the model response being generated
+        chatHistory.push({
+            id: 'temp-model-generating',
+            type: 'model',
+            message: inProgressResponse,
+        });
     }
 
     return chatHistory;

@@ -20,8 +20,8 @@ Good for testing and experimenting with LLMs, Hammerhead is designed to be exten
 
 - 🤖 **Multi-LLM Support**: Chat with various large language models locally
 - 🌐 **Multi-language Interface**: Support for multiple languages
-- 🔌 **Extensible Architecture**: Easy to add custom components and features
-- 📚 **RAG Integration**: Retrieval-Augmented Generation with vector database support
+- 🔌 **Extensible Architecture**: Easy to add custom components and features (coming soon)
+- 📚 **RAG Integration**: Retrieval-Augmented Generation with vector database support (coming soon)
 - 🔗 **MCP Protocol**: Model Context Protocol server integration
 - 💬 **User-friendly Chat Interface**: Intuitive design for seamless interactions
 - 🖥️ **Cross-platform Desktop App**: Built with Electron for Windows, macOS, and Linux

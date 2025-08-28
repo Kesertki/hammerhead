@@ -21,7 +21,7 @@ class ChatStorageSqlite {
     constructor() {
         // Set up database path in app data directory
         const userDataPath = app.getPath('userData');
-        this.databasePath = path.join(userDataPath, 'chats.db');
+        this.databasePath = path.join(userDataPath, 'data.db');
     }
 
     async initialize(): Promise<void> {

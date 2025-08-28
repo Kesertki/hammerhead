@@ -22,23 +22,82 @@ async function registerTools(client: Client) {
             description: tool.description,
             params: (tool.inputSchema as any) || undefined,
             handler: async (params: any) => {
-                console.log(`Calling MCP tool: ${tool.name} with params:`, params);
-                const toolResult = await client.callTool({
-                    name: tool.name,
-                    arguments: params,
-                });
+                console.log(`MCP tool execution requested: ${tool.name} with params:`, params);
 
-                console.log(`MCP tool response for ${tool.name}:`, toolResult);
-                // if (toolResult && Array.isArray(toolResult.content)) {
-                // 	return toolResult.content
-                // 		.filter((item) => item.type === 'text')
-                // 		.map((item) => item.text)
-                // 		.join('');
-                // }
+                // Request user consent before executing the tool
+                try {
+                    const consent = await requestToolConsent(tool.name, params);
 
-                return toolResult.content;
+                    if (!consent) {
+                        console.log(`User denied consent for MCP tool: ${tool.name}`);
+                        throw new Error(`User denied permission to execute tool: ${tool.name}`);
+                    }
+
+                    console.log(`User approved MCP tool: ${tool.name}, executing...`);
+                    const toolResult = await client.callTool({
+                        name: tool.name,
+                        arguments: params,
+                    });
+
+                    console.log(`MCP tool response for ${tool.name}:`, toolResult);
+                    return toolResult.content;
+                } catch (error) {
+                    console.error(`Error executing MCP tool ${tool.name}:`, error);
+                    throw error;
+                }
             },
         });
+    }
+}
+
+// Function to request user consent via IPC
+async function requestToolConsent(toolName: string, args: any): Promise<boolean> {
+    try {
+        const { ipcMain, BrowserWindow } = await import('electron');
+        const windows = BrowserWindow.getAllWindows();
+
+        if (windows.length === 0) {
+            console.warn('No browser windows available for consent dialog');
+            return false;
+        }
+
+        const mainWindow = windows[0];
+        if (!mainWindow) {
+            console.warn('Main window is not available for consent dialog');
+            return false;
+        }
+
+        return new Promise((resolve) => {
+            const requestId = Date.now().toString();
+
+            // Send consent request to renderer
+            mainWindow.webContents.send('show-mcp-consent-dialog', {
+                toolName,
+                args,
+                requestId,
+            });
+
+            // Listen for the response
+            const handleResponse = (_event: any, response: { requestId: string; approved: boolean }) => {
+                if (response.requestId === requestId) {
+                    ipcMain.removeListener('mcp-consent-response', handleResponse);
+                    resolve(response.approved);
+                }
+            };
+
+            ipcMain.on('mcp-consent-response', handleResponse);
+
+            // Set a timeout to avoid hanging indefinitely
+            setTimeout(() => {
+                ipcMain.removeListener('mcp-consent-response', handleResponse);
+                console.warn(`Timeout waiting for consent for tool: ${toolName}`);
+                resolve(false);
+            }, 60000); // 1 minute timeout
+        });
+    } catch (error) {
+        console.error('Failed to request tool consent:', error);
+        // Default to denying consent if there's an error
+        return false;
     }
 }
 

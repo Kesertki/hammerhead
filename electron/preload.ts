@@ -45,4 +45,15 @@ contextBridge.exposeInMainWorld('electronAPI', {
     onNavigateToRoute: (callback: (route: string) => void) => {
         ipcRenderer.on('navigate-to-route', (_event, route) => callback(route));
     },
+
+    // MCP tool consent handling
+    requestMcpToolConsent: (toolName: string, args: any) =>
+        ipcRenderer.invoke('request-mcp-tool-consent', toolName, args),
+
+    onShowMcpConsentDialog: (callback: (data: { toolName: string; args: any; requestId: string }) => void) => {
+        ipcRenderer.on('show-mcp-consent-dialog', (_event, data) => callback(data));
+    },
+
+    respondMcpToolConsent: (response: { requestId: string; approved: boolean }) =>
+        ipcRenderer.send('mcp-consent-response', response),
 });

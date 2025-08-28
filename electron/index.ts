@@ -296,6 +296,47 @@ ipcMain.handle('get-log-file-path', async () => {
     return getLogFilePath();
 });
 
+// MCP tool consent handling
+ipcMain.handle('request-mcp-tool-consent', async (_event, toolName: string, args: any) => {
+    return new Promise((resolve) => {
+        if (!win) {
+            resolve(false);
+            return;
+        }
+
+        const requestId = Date.now().toString();
+
+        // Send consent request to renderer
+        win.webContents.send('show-mcp-consent-dialog', {
+            toolName,
+            args,
+            requestId,
+        });
+
+        // Listen for the response
+        const handleResponse = (_event: any, response: { requestId: string; approved: boolean }) => {
+            if (response.requestId === requestId) {
+                ipcMain.removeListener('mcp-consent-response', handleResponse);
+                resolve(response.approved);
+            }
+        };
+
+        ipcMain.on('mcp-consent-response', handleResponse);
+
+        // Set a timeout to avoid hanging indefinitely
+        setTimeout(() => {
+            ipcMain.removeListener('mcp-consent-response', handleResponse);
+            console.warn(`Timeout waiting for consent for tool: ${toolName}`);
+            resolve(false);
+        }, 60000); // 1 minute timeout
+    });
+});
+
+ipcMain.handle('respond-mcp-tool-consent', async (_event, _response: { requestId: string; approved: boolean }) => {
+    // This will be handled by the Promise in 'request-mcp-tool-consent'
+    return true;
+});
+
 app.whenReady().then(async () => {
     // Initialize logger before anything else
     await initializeLogger();

@@ -92,26 +92,6 @@ export const DEFAULT_VOICE_SETTINGS: VoiceSettings = {
     language: DEFAULT_WHISPER_LANGUAGE,
 };
 
-declare global {
-    interface Window {
-        electronAPI: {
-            getMCPConfig: () => Promise<McpConfig>;
-            setMCPConfig: (config: McpConfig) => Promise<void>;
-            getSystemPrompts: () => Promise<SystemPromptConfig>;
-            setSystemPrompts: (prompts: SystemPromptConfig) => Promise<void>;
-            getVoiceSettings: () => Promise<VoiceSettings>;
-            setVoiceSettings: (settings: VoiceSettings) => Promise<void>;
-            getGeneralSettings: () => Promise<GeneralSettings>;
-            setGeneralSettings: (settings: GeneralSettings) => Promise<void>;
-            openExternal: (url: string) => Promise<void>;
-            getLogs: (limit?: number) => Promise<LogEntry[]>;
-            clearLogs: () => Promise<void>;
-            getLogFilePath: () => Promise<string>;
-            onNavigateToRoute: (callback: (route: string) => void) => void;
-        };
-    }
-}
-
 export interface ModelDownloadProgress {
     modelId: string;
     title: string;
@@ -141,29 +121,4 @@ export interface ModelInfo {
 export interface ModelMetadata {
     models: Record<string, ModelInfo>;
     lastUpdated: string;
-}
-
-// Model types
-export interface ModelDownloadProgress {
-    modelId: string;
-    title: string;
-    downloadUrl: string;
-    totalSize: number;
-    downloadedSize: number;
-    percentage: number;
-    status: 'downloading' | 'completed' | 'error' | 'cancelled';
-    error?: string;
-    filePath?: string;
-}
-
-export interface ModelInfo {
-    id: string;
-    title: string;
-    description: string;
-    size: number;
-    author: string;
-    variants: string[];
-    filePath: string;
-    fileSize: number;
-    downloadedAt: string;
 }

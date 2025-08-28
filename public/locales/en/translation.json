@@ -45,7 +45,19 @@
         "failed_to_save": "Failed to save MCP configuration",
         "failed_to_format": "Cannot format invalid JSON",
         "invalid_json": "Invalid JSON syntax. Please fix the syntax errors before saving.",
-        "failed_to_load": "Failed to load MCP configuration"
+        "failed_to_load": "Failed to load MCP configuration",
+        "consent": {
+            "title": "Tool Execution Request",
+            "description": "A tool wants to execute an action. Please review and approve or deny this request.",
+            "toolName": "Tool Name",
+            "parameters": "Parameters",
+            "approve": "Approve",
+            "deny": "Deny",
+            "warning": {
+                "title": "Security Warning",
+                "message": "This tool may perform actions that could affect your system or data. Only approve if you trust the source and understand what the tool will do."
+            }
+        }
     },
     "prompts": {
         "select_a_prompt": "Select a prompt",

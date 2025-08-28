@@ -81,6 +81,10 @@ Recommended servers:
 
 - [DuckDuckGo](https://hub.docker.com/mcp/server/duckduckgo/overview)
 
+Includes support for user consent for tool execution:
+
+![User Consent](docs/images/function-consent.png)
+
 ## Development
 
 ### Building from Source

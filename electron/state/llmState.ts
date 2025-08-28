@@ -652,9 +652,39 @@ export const llmFunctions = {
                         },
                     });
                 } catch (err) {
-                    if (err !== abortSignal.reason) throw err;
+                    // Check if this is an abort signal
+                    if (err === abortSignal.reason) {
+                        // if the prompt was aborted before the generation even started, we ignore the error
+                        console.log('Prompt was aborted by user');
+                    }
+                    // Check if this is a tool consent denial
+                    else if (err instanceof Error && err.message.includes('User denied permission to execute tool')) {
+                        console.log('Tool execution denied by user, stopping generation:', err.message);
 
-                    // if the prompt was aborted before the generation even started, we ignore the error
+                        // Add an error message to the chat to inform the user
+                        inProgressResponse = squashMessageIntoModelChatMessages(inProgressResponse, {
+                            type: 'text',
+                            text: `\n\n❌ **Tool execution cancelled**: ${err.message.replace('User denied permission to execute tool: ', 'Permission denied for ')}`,
+                        });
+                    }
+                    // Check for other tool-related errors
+                    else if (
+                        err instanceof Error &&
+                        (err.message.includes('tool') ||
+                            err.message.includes('MCP') ||
+                            err.message.includes('function'))
+                    ) {
+                        console.log('Tool execution error, stopping generation:', err.message);
+
+                        // Add an error message to the chat
+                        inProgressResponse = squashMessageIntoModelChatMessages(inProgressResponse, {
+                            type: 'text',
+                            text: `\n\n❌ **Tool execution error**: ${err.message}`,
+                        });
+                    } else {
+                        // For other errors, re-throw them
+                        throw err;
+                    }
                 }
 
                 // Calculate token usage and timing using TokenMeter diff API

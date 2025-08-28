@@ -619,8 +619,34 @@ export const llmFunctions = {
                 };
 
                 const abortSignal = promptAbortController.signal;
+
+                // For non-empty messages, add the user message to chat history first
+                // This ensures the user message is preserved even if tool execution fails
+                if (promptMessage.trim() !== '') {
+                    const currentHistory = chatSession.getChatHistory();
+                    currentHistory.push({
+                        type: 'user',
+                        text: promptMessage,
+                    });
+                    chatSession.setChatHistory(currentHistory);
+
+                    // Update UI to show the user message is now part of the history
+                    llmState.state = {
+                        ...llmState.state,
+                        chatSession: {
+                            ...llmState.state.chatSession,
+                            simplifiedChat: getSimplifiedChatHistory(true),
+                            sessionTokenStats: getSessionTokenStats(),
+                        },
+                    };
+                }
+
                 try {
-                    await chatSession.prompt(promptMessage, {
+                    // For non-empty messages, we already added the user message, so prompt with empty string
+                    // For empty messages (regeneration), prompt normally
+                    const actualPrompt = promptMessage.trim() !== '' ? '' : promptMessage;
+
+                    await chatSession.prompt(actualPrompt, {
                         signal: abortSignal,
                         stopOnAbortSignal: true,
                         functions: opts?.withTools ? mcpFunctions : systemFunctions,
@@ -645,16 +671,52 @@ export const llmFunctions = {
                                 ...llmState.state,
                                 chatSession: {
                                     ...llmState.state.chatSession,
-                                    simplifiedChat: getSimplifiedChatHistory(true, message),
+                                    simplifiedChat: getSimplifiedChatHistory(true),
                                     sessionTokenStats: getSessionTokenStats(),
                                 },
                             };
                         },
                     });
                 } catch (err) {
-                    if (err !== abortSignal.reason) throw err;
+                    // Check if this is an abort signal
+                    if (err === abortSignal.reason) {
+                        // if the prompt was aborted before the generation even started, we ignore the error
+                        console.log('Prompt was aborted by user');
+                    }
+                    // Check if this is a tool consent denial
+                    else if (err instanceof Error && err.message.includes('User denied permission to execute tool')) {
+                        console.log('Tool execution denied by user, stopping generation:', err.message);
 
-                    // if the prompt was aborted before the generation even started, we ignore the error
+                        // Add an error message to the response to inform the user
+                        const errorMessage = `❌ **Tool execution cancelled**: ${err.message.replace('User denied permission to execute tool: ', 'Permission denied for ')}`;
+
+                        // Update inProgressResponse so it shows in the UI
+                        inProgressResponse = squashMessageIntoModelChatMessages(inProgressResponse, {
+                            type: 'text',
+                            text: errorMessage,
+                        });
+                    }
+                    // Check for other tool-related errors
+                    else if (
+                        err instanceof Error &&
+                        (err.message.includes('tool') ||
+                            err.message.includes('MCP') ||
+                            err.message.includes('function'))
+                    ) {
+                        console.log('Tool execution error, stopping generation:', err.message);
+
+                        // Add an error message to inform the user
+                        const errorMessage = `❌ **Tool execution error**: ${err.message}`;
+
+                        // Update inProgressResponse so it shows in the UI
+                        inProgressResponse = squashMessageIntoModelChatMessages(inProgressResponse, {
+                            type: 'text',
+                            text: errorMessage,
+                        });
+                    } else {
+                        // For other errors, re-throw them
+                        throw err;
+                    }
                 }
 
                 // Calculate token usage and timing using TokenMeter diff API

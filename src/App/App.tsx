@@ -6,6 +6,7 @@ import SettingsLayout from './settings/SettingsLayout.tsx';
 import Settings from './settings/Settings.tsx';
 import { Logs } from './pages/Logs.tsx';
 import { Models } from './pages/Models.tsx';
+import { McpConsentDialog } from '../components/McpConsentDialog.tsx';
 import { setNavigationHistory } from '../utils/navigationHistory.ts';
 
 import './App.css';
@@ -44,6 +45,7 @@ export function App() {
     return (
         <Router>
             <NavigationHandler />
+            <McpConsentDialog />
             <Routes>
                 {/* Settings route with custom layout */}
                 <Route

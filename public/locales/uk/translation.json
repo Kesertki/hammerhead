@@ -1,5 +1,13 @@
 {
     "language": "Мова",
+    "theme": "Тема",
+    "select_theme": "Виберіть тему",
+    "search_theme": "Пошук теми...",
+    "no_theme_found": "Тему не знайдено.",
+    "theme_description": "Виберіть тему оформлення для програми.",
+    "theme_system": "Системна",
+    "theme_dark": "Темна",
+    "theme_light": "Світла",
     "settings": "Налаштування",
     "welcome": {
         "title": "Hammerhead",
@@ -140,6 +148,7 @@
     "nav": {
         "settings": {
             "general": "Загальні",
+            "appearance": "Зовнішній вигляд",
             "models": "Моделі",
             "voice": "Голос",
             "system_prompt": "Системний запит",

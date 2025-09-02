@@ -1,3 +1,4 @@
+export * from './appearance';
 export * from './general';
 export * from './logger';
 export * from './mcp';

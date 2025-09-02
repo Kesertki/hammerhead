@@ -1,5 +1,3 @@
-// import { useExternalState } from '@/hooks/useExternalState';
-// import { llmState } from '@/state/llmState';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -10,32 +8,36 @@ import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { DEFAULT_GENERAL_SETTINGS, GeneralSettings } from '@/types';
+import { DEFAULT_APPEARANCE_SETTINGS, AppearanceSettings } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'next-themes';
 
-const languages = [
-    { value: 'en', label: 'English' },
-    { value: 'uk', label: 'Ukrainian' },
-];
+const themes = [
+    { value: 'system', labelKey: 'theme_system' },
+    { value: 'dark', labelKey: 'theme_dark' },
+    { value: 'light', labelKey: 'theme_light' },
+] as const;
 
 const FormSchema = z.object({
-    language: z.string().min(1, 'Please select a language.'),
+    theme: z.enum(['system', 'dark', 'light']),
 });
 
-export const GeneralSettingsPage = () => {
-    // const state = useExternalState(llmState);
-    const { t, i18n } = useTranslation();
-    const [langOpen, setLangOpen] = useState(false);
+type FormData = z.infer<typeof FormSchema>;
+
+const AppearanceSettingsPage = () => {
+    const { t } = useTranslation();
+    const { setTheme } = useTheme();
+    const [themeOpen, setThemeOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [settings, setSettings] = useState<GeneralSettings>(DEFAULT_GENERAL_SETTINGS);
+    const [settings, setSettings] = useState<AppearanceSettings>(DEFAULT_APPEARANCE_SETTINGS);
 
     // Debouncing for text inputs
     const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const DEBOUNCE_DELAY = 500;
 
-    const form = useForm<z.infer<typeof FormSchema>>({
+    const form = useForm<FormData>({
         resolver: zodResolver(FormSchema),
-        defaultValues: { language: DEFAULT_GENERAL_SETTINGS.language },
+        defaultValues: { theme: DEFAULT_APPEARANCE_SETTINGS.theme },
     });
 
     // Load settings on component mount
@@ -46,12 +48,14 @@ export const GeneralSettingsPage = () => {
     const loadSettings = async () => {
         try {
             setIsLoading(true);
-            const loadedSettings = await window.electronAPI.getGeneralSettings();
+            const loadedSettings = await window.electronAPI.getAppearanceSettings();
             if (loadedSettings) {
                 setSettings(loadedSettings);
+                // Apply the theme when settings are loaded
+                setTheme(loadedSettings.theme);
             }
         } catch (error) {
-            console.error('Error loading general settings:', error);
+            console.error('Error loading appearance settings:', error);
             // Use default settings if loading fails
         } finally {
             setIsLoading(false);
@@ -62,13 +66,13 @@ export const GeneralSettingsPage = () => {
     useEffect(() => {
         if (settings) {
             form.reset({
-                language: settings.language,
+                theme: settings.theme,
             });
         }
     }, [settings, form]);
 
     // Debounced save function for text inputs
-    const debouncedSave = useCallback((newSettings: GeneralSettings) => {
+    const debouncedSave = useCallback((newSettings: AppearanceSettings) => {
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
         }
@@ -78,7 +82,7 @@ export const GeneralSettingsPage = () => {
     }, []);
 
     // Immediate save function for switches and dropdowns
-    const immediateSave = useCallback((newSettings: GeneralSettings) => {
+    const immediateSave = useCallback((newSettings: AppearanceSettings) => {
         if (debounceTimeoutRef.current) {
             clearTimeout(debounceTimeoutRef.current);
         }
@@ -91,12 +95,12 @@ export const GeneralSettingsPage = () => {
             if (name && value[name as keyof typeof value] !== undefined) {
                 const currentFormData = form.getValues();
                 // Only auto-save if all required fields have values
-                if (currentFormData.language !== undefined) {
-                    const newSettings: GeneralSettings = {
-                        language: currentFormData.language,
+                if (currentFormData.theme !== undefined) {
+                    const newSettings: AppearanceSettings = {
+                        theme: currentFormData.theme,
                     };
 
-                    // Use immediate save for language changes
+                    // Use immediate save for theme changes
                     immediateSave(newSettings);
                 }
             }
@@ -117,9 +121,9 @@ export const GeneralSettingsPage = () => {
                 clearTimeout(debounceTimeoutRef.current);
                 // Execute any pending save immediately on unmount
                 const currentFormData = form.getValues();
-                if (currentFormData.language !== undefined) {
-                    const newSettings: GeneralSettings = {
-                        language: currentFormData.language,
+                if (currentFormData.theme !== undefined) {
+                    const newSettings: AppearanceSettings = {
+                        theme: currentFormData.theme,
                     };
                     saveSettings(newSettings);
                 }
@@ -127,14 +131,14 @@ export const GeneralSettingsPage = () => {
         };
     }, [form]);
 
-    const saveSettings = async (newSettings: GeneralSettings) => {
+    const saveSettings = async (newSettings: AppearanceSettings) => {
         try {
-            await window.electronAPI.setGeneralSettings(newSettings);
+            await window.electronAPI.setAppearanceSettings(newSettings);
             setSettings(newSettings);
 
-            // Update i18n language when language setting changes
-            if (newSettings.language && i18n.language !== newSettings.language) {
-                await i18n.changeLanguage(newSettings.language);
+            // Update theme when theme setting changes
+            if (newSettings.theme) {
+                setTheme(newSettings.theme);
             }
 
             // toast.success('Settings updated successfully');
@@ -154,11 +158,11 @@ export const GeneralSettingsPage = () => {
                         <>
                             <FormField
                                 control={form.control}
-                                name="language"
+                                name="theme"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel>{t('language')}</FormLabel>
-                                        <Popover open={langOpen} onOpenChange={setLangOpen}>
+                                        <FormLabel>{t('theme')}</FormLabel>
+                                        <Popover open={themeOpen} onOpenChange={setThemeOpen}>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
                                                     <Button
@@ -170,36 +174,37 @@ export const GeneralSettingsPage = () => {
                                                         )}
                                                     >
                                                         {field.value !== undefined
-                                                            ? languages.find(
-                                                                  (language) => language.value === field.value
-                                                              )?.label
-                                                            : t('select_language')}
+                                                            ? t(
+                                                                  themes.find((theme) => theme.value === field.value)
+                                                                      ?.labelKey || 'theme_system'
+                                                              )
+                                                            : t('select_theme')}
                                                         <ChevronsUpDown className="opacity-50" />
                                                     </Button>
                                                 </FormControl>
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[200px] p-0">
                                                 <Command>
-                                                    <CommandInput placeholder={t('search_language')} className="h-9" />
+                                                    <CommandInput placeholder={t('search_theme')} className="h-9" />
                                                     <CommandList>
-                                                        <CommandEmpty>{t('no_language_found')}</CommandEmpty>
+                                                        <CommandEmpty>{t('no_theme_found')}</CommandEmpty>
                                                         <CommandGroup>
-                                                            {languages.map((language) => (
+                                                            {themes.map((theme) => (
                                                                 <CommandItem
-                                                                    value={language.label}
-                                                                    key={language.value}
+                                                                    value={t(theme.labelKey)}
+                                                                    key={theme.value}
                                                                     onSelect={() => {
-                                                                        form.setValue('language', language.value, {
+                                                                        form.setValue('theme', theme.value, {
                                                                             shouldValidate: true,
                                                                         });
-                                                                        setLangOpen(false);
+                                                                        setThemeOpen(false);
                                                                     }}
                                                                 >
-                                                                    {language.label}
+                                                                    {t(theme.labelKey)}
                                                                     <Check
                                                                         className={cn(
                                                                             'ml-auto',
-                                                                            language.value === field.value
+                                                                            theme.value === field.value
                                                                                 ? 'opacity-100'
                                                                                 : 'opacity-0'
                                                                         )}
@@ -211,7 +216,7 @@ export const GeneralSettingsPage = () => {
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
-                                        <FormDescription>{t('language_description')}</FormDescription>
+                                        <FormDescription>{t('theme_description')}</FormDescription>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -223,3 +228,5 @@ export const GeneralSettingsPage = () => {
         </div>
     );
 };
+
+export default AppearanceSettingsPage;

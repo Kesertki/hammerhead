@@ -34,6 +34,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getGeneralSettings: () => ipcRenderer.invoke('get-general-settings'),
     setGeneralSettings: (settings: import('../src/types').GeneralSettings) =>
         ipcRenderer.invoke('set-general-settings', settings),
+    getAppearanceSettings: () => ipcRenderer.invoke('get-appearance-settings'),
+    setAppearanceSettings: (settings: import('../src/types').AppearanceSettings) =>
+        ipcRenderer.invoke('set-appearance-settings', settings),
     openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
 
     // Log-related functions

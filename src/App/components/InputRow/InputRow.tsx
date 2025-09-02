@@ -103,10 +103,10 @@ export function InputRow({
     );
 
     return (
-        <div className="w-full p-3 md:p-4 bg-white">
+        <div className="w-full p-3 md:p-4 bg-background">
             <div
                 className={classNames(
-                    'flex flex-row items-end justify-between w-full rounded-lg border border-gray-300 shadow-lg p-3 bg-white z-10 sticky bottom-4',
+                    'flex flex-row items-end justify-between w-full rounded-lg border border-border shadow-lg p-3 bg-card z-10 sticky bottom-4',
                     disabled && 'opacity-50'
                 )}
             >
@@ -115,7 +115,7 @@ export function InputRow({
                         ref={inputRef}
                         onInput={onInput}
                         onKeyDownCapture={onInputKeyDown}
-                        className="input w-full border-none resize-none outline-none bg-transparent"
+                        className="input w-full border-none resize-none outline-none bg-transparent text-foreground placeholder:text-muted-foreground"
                         autoComplete="off"
                         spellCheck
                         disabled={disabled}
@@ -145,7 +145,9 @@ export function InputRow({
                         variant="outline"
                         size="icon"
                         className={`transition duration-200 ${
-                            generatingResult ? 'bg-black text-white hover:bg-black hover:text-white' : 'text-gray-300'
+                            generatingResult
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'text-muted-foreground'
                         }`}
                         disabled={disabled || stopGeneration == null || !generatingResult}
                         onClick={stopGeneration}
@@ -173,8 +175,8 @@ export function InputRow({
                         size="icon"
                         className={`transition duration-200 ${
                             inputText.trim() === '' || disabled || generatingResult || isVoiceActive
-                                ? 'text-gray-300'
-                                : 'bg-black text-white hover:bg-black hover:text-white'
+                                ? 'text-muted-foreground'
+                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
                         }`}
                         disabled={disabled || inputText === '' || generatingResult || isVoiceActive}
                         onClick={submitPrompt}

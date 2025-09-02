@@ -78,6 +78,14 @@ export const DEFAULT_GENERAL_SETTINGS: GeneralSettings = {
     language: 'en',
 };
 
+export interface AppearanceSettings {
+    theme: 'system' | 'dark' | 'light';
+}
+
+export const DEFAULT_APPEARANCE_SETTINGS: AppearanceSettings = {
+    theme: 'system',
+};
+
 export interface VoiceSettings {
     enabled: boolean;
     dockerImage: string;

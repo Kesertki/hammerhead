@@ -10,10 +10,12 @@ import {
     getMcpConfig,
     getVoiceSettings,
     getGeneralSettings,
+    getAppearanceSettings,
     initializeLogger,
     setMcpConfig,
     setVoiceSettings,
     setGeneralSettings,
+    setAppearanceSettings,
 } from './settings';
 import { initializeAudioStorage } from './settings/audioStorage.ts';
 import { getSystemPrompts, SystemPromptConfig, setSystemPrompts } from './settings/prompts.ts';
@@ -278,6 +280,14 @@ ipcMain.handle('set-general-settings', async (_event, settings) => {
         await changeMainLanguage(settings.language);
         createMenu(); // Rebuild menu with new language
     }
+});
+
+ipcMain.handle('get-appearance-settings', async () => {
+    return await getAppearanceSettings();
+});
+
+ipcMain.handle('set-appearance-settings', async (_event, settings) => {
+    await setAppearanceSettings(settings);
 });
 
 // Log-related IPC handlers

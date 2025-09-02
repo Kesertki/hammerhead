@@ -37,7 +37,12 @@ export function MessageMarkdownWithSVG({ children, activeDot = false, className 
         // If no SVG content, use the original MessageMarkdown behavior
         return (
             <MarkdownContent
-                className={classNames('appMessageMarkdown', 'prose prose-neutral', activeDot && 'active', className)}
+                className={classNames(
+                    'appMessageMarkdown',
+                    'prose prose-neutral dark:prose-invert',
+                    activeDot && 'active',
+                    className
+                )}
             >
                 {typeof processedContent === 'string' ? processedContent : children || ''}
             </MarkdownContent>
@@ -46,7 +51,14 @@ export function MessageMarkdownWithSVG({ children, activeDot = false, className 
 
     // If SVG content is detected, render mixed content
     return (
-        <div className={classNames('appMessageMarkdown', 'prose prose-neutral', activeDot && 'active', className)}>
+        <div
+            className={classNames(
+                'appMessageMarkdown',
+                'prose prose-neutral dark:prose-invert',
+                activeDot && 'active',
+                className
+            )}
+        >
             {Array.isArray(processedContent) &&
                 processedContent.map((part, index) => {
                     if (part.type === 'svg') {

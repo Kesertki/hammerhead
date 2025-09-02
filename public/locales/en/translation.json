@@ -1,5 +1,13 @@
 {
     "language": "Language",
+    "theme": "Theme",
+    "select_theme": "Select theme",
+    "search_theme": "Search theme...",
+    "no_theme_found": "No theme found.",
+    "theme_description": "Choose the appearance theme for the application.",
+    "theme_system": "System",
+    "theme_dark": "Dark",
+    "theme_light": "Light",
     "settings": "Settings",
     "welcome": {
         "title": "Hammerhead",

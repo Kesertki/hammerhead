@@ -33,6 +33,8 @@ interface Window {
         setVoiceSettings: (settings: import('../src/types').VoiceSettings) => Promise<void>;
         getGeneralSettings: () => Promise<import('../src/types').GeneralSettings>;
         setGeneralSettings: (settings: import('../src/types').GeneralSettings) => Promise<void>;
+        getAppearanceSettings: () => Promise<import('../src/types').AppearanceSettings>;
+        setAppearanceSettings: (settings: import('../src/types').AppearanceSettings) => Promise<void>;
         openExternal: (url: string) => Promise<void>;
         getLogs: (limit?: number) => Promise<import('../src/types').LogEntry[]>;
         clearLogs: () => Promise<void>;

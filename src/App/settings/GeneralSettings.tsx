@@ -19,9 +19,7 @@ const languages = [
 ];
 
 const FormSchema = z.object({
-    language: z.string({
-        required_error: 'Please select a language.',
-    }),
+    language: z.string().min(1, 'Please select a language.'),
 });
 
 export const GeneralSettingsPage = () => {

@@ -1,4 +1,4 @@
-import { ArrowLeft, Server, Settings as SettingsIcon, Volume2, FileText, Container } from 'lucide-react';
+import { ArrowLeft, Server, Settings as SettingsIcon, Volume2, FileText, Container, Palette } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     Sidebar,
@@ -27,6 +27,11 @@ export function SettingsSidebar() {
             icon: SettingsIcon,
         },
         {
+            title: 'Appearance',
+            url: '/settings/appearance',
+            icon: Palette,
+        },
+        {
             title: t('nav.settings.models'),
             url: '/settings/models',
             icon: Container,
@@ -41,11 +46,7 @@ export function SettingsSidebar() {
             url: '/settings/system-prompt',
             icon: FileText,
         },
-        // {
-        //     title: 'Appearance',
-        //     url: '/settings/appearance',
-        //     icon: Palette,
-        // },
+
         // {
         //     title: 'Knowledge Base',
         //     url: '/settings/knowledge-base',

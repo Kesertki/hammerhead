@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import mcpSchema from '../../schemas/mcp-config.schema.json';
 import { eventBus } from '@/utils/eventBus.ts';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from 'next-themes';
 
 // Set up Monaco environment for Electron before loader config
 (self as any).MonacoEnvironment = {
@@ -45,6 +46,7 @@ interface McpConfig {
 
 export default function McpServersConfig() {
     const { t } = useTranslation();
+    const { theme, resolvedTheme } = useTheme();
     const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null);
     const monacoRef = useRef<typeof Monaco | null>(null);
     const [currentConfig, setCurrentConfig] = useState<string>(defaultMcpConfig);
@@ -53,6 +55,14 @@ export default function McpServersConfig() {
     const [isLoading, setIsLoading] = useState(true);
     const [isUserEditing, setIsUserEditing] = useState(false);
     const [isProgrammaticChange, setIsProgrammaticChange] = useState(false);
+
+    // Determine Monaco theme based on current theme
+    const getMonacoTheme = useCallback(() => {
+        if (theme === 'system') {
+            return resolvedTheme === 'dark' ? 'vs-dark' : 'vs';
+        }
+        return theme === 'dark' ? 'vs-dark' : 'vs';
+    }, [theme, resolvedTheme]);
 
     useEffect(() => {
         // Call loadConfig once on mount
@@ -91,6 +101,14 @@ export default function McpServersConfig() {
             editorRef.current.setValue(currentConfig);
         }
     }, [currentConfig, isLoading, isUserEditing]);
+
+    // Update Monaco editor theme when theme changes
+    useEffect(() => {
+        if (editorRef.current && monacoRef.current) {
+            const newTheme = getMonacoTheme();
+            monacoRef.current.editor.setTheme(newTheme);
+        }
+    }, [theme, resolvedTheme, getMonacoTheme]);
 
     const loadConfig = useCallback(async () => {
         try {
@@ -253,6 +271,7 @@ export default function McpServersConfig() {
                     height="100%"
                     width="100%"
                     defaultLanguage="json"
+                    theme={getMonacoTheme()}
                     value={currentConfig}
                     onChange={handleEditorChange}
                     onMount={handleEditorDidMount}
@@ -265,7 +284,6 @@ export default function McpServersConfig() {
                         wordWrap: 'on',
                         formatOnPaste: true,
                         formatOnType: true,
-                        // theme: 'vs-dark' // Optional: dark theme
                     }}
                 />
             </div>

@@ -514,7 +514,7 @@ export function Chat() {
                             ref={chatHistoryRef}
                         />
                         {chatId && !state.model.loaded && selectedChatMessages.length > 0 && (
-                            <div className="text-center text-sm text-yellow-600 bg-yellow-50 border border-yellow-200 rounded p-2 mb-4">
+                            <div className="text-center text-sm text-yellow-800 dark:text-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded p-2 mb-4">
                                 ⚠️ {t('msg.model_not_loaded')}
                             </div>
                         )}

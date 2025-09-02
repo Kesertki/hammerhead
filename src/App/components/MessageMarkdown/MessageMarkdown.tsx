@@ -29,7 +29,12 @@ export function MessageMarkdown({ children, activeDot = false, className }: Mess
 
     return (
         <MarkdownContent
-            className={classNames('appMessageMarkdown', 'prose prose-neutral', activeDot && 'active', className)}
+            className={classNames(
+                'appMessageMarkdown',
+                'prose prose-neutral dark:prose-invert',
+                activeDot && 'active',
+                className
+            )}
         >
             {renderContent}
         </MarkdownContent>

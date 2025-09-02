@@ -148,6 +148,7 @@
     "nav": {
         "settings": {
             "general": "General",
+            "appearance": "Appearance",
             "models": "Models",
             "voice": "Voice",
             "system_prompt": "System Prompt",

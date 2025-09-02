@@ -148,6 +148,7 @@
     "nav": {
         "settings": {
             "general": "Загальні",
+            "appearance": "Зовнішній вигляд",
             "models": "Моделі",
             "voice": "Голос",
             "system_prompt": "Системний запит",

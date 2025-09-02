@@ -27,7 +27,7 @@ export function SettingsSidebar() {
             icon: SettingsIcon,
         },
         {
-            title: 'Appearance',
+            title: t('nav.settings.appearance'),
             url: '/settings/appearance',
             icon: Palette,
         },

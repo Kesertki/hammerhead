@@ -1,3 +1,9 @@
+## [0.3.0] - 2025-09-11
+
+### 🚀 Features
+
+- Add Appearance settings and theme management (#47)
+
 ## [0.2.0] - 2025-08-28
 
 ### 🚀 Features

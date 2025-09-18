@@ -6,6 +6,7 @@ import { registerAudioRpc } from './rpc/audioRpc.ts';
 import { registerChatRpc } from './rpc/chatRpc.ts';
 import { registerLlmRpc } from './rpc/llmRpc.ts';
 import { registerModelRpc } from './rpc/modelRpc.ts';
+import { registerSummarizationRpc } from './rpc/summarizationRpc.ts';
 import {
     getMcpConfig,
     getVoiceSettings,
@@ -197,6 +198,7 @@ function createWindow() {
     registerAudioRpc(win);
     registerModelRpc(win);
     registerChatRpc(win);
+    registerSummarizationRpc(win);
 
     // open external links in the default browser
     win.webContents.setWindowOpenHandler(({ url }) => {

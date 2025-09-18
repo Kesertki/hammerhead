@@ -40,7 +40,7 @@ export class ElectronChatRpc {
                 // Clean up temp file
                 await fs.unlink(tmpPath).catch(() => {});
 
-                const chatTitle = title || chatStorage.generateChatTitle(chatData.messages);
+                const chatTitle = title || (await chatStorage.generateChatTitle(chatData.messages));
                 const model = llmState.state.model.name;
 
                 const savedChat = await chatStorage.saveChat({

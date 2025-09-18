@@ -44,8 +44,8 @@ class SummarizationService {
                 // In production, use the bundled model cache
                 cacheDir = join(process.resourcesPath, 'model-cache');
             } else {
-                // In development, use the node_modules cache
-                cacheDir = join(process.cwd(), 'node_modules/.cache');
+                // In development, use the @xenova/transformers cache
+                cacheDir = join(process.cwd(), 'node_modules/@xenova/transformers/.cache');
             }
 
             this.summarizer = await pipeline('summarization', 'Xenova/distilbart-cnn-6-6', {

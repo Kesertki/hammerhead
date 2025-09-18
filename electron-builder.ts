@@ -43,7 +43,7 @@ export default {
     ],
     extraResources: [
         {
-            from: 'node_modules/.cache',
+            from: 'node_modules/@xenova/transformers/.cache',
             to: 'model-cache',
             filter: ['**/*'],
         },

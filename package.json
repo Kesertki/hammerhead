@@ -92,7 +92,7 @@
 		"electron": "^37.4.0",
 		"electron-builder": "^26.0.12",
 		"happy-dom": "^18.0.1",
-		"oxlint": "^1.14.0",
+		"oxlint": "^1.16.0",
 		"prettier": "3.6.2",
 		"rimraf": "^6.0.1",
 		"tw-animate-css": "^1.3.8",

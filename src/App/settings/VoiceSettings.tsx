@@ -139,14 +139,14 @@ const FormSchema = z.object({
     enabled: z.boolean(),
     dockerImage: z
         .string({
-            required_error: 'Please enter a Docker image name.',
+            message: 'Please enter a Docker image name.',
         })
         .min(1, 'Docker image name is required.'),
     model: z.string({
-        required_error: 'Please select a transcription model.',
+        message: 'Please select a transcription model.',
     }),
     language: z.string({
-        required_error: 'Please select a language.',
+        message: 'Please select a language.',
     }),
 });
 

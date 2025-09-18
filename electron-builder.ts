@@ -41,6 +41,13 @@ export default {
         '!node_modules/@node-llama-cpp/*/bins/**/*',
         'node_modules/@node-llama-cpp/${os}-${arch}*/bins/**/*',
     ],
+    extraResources: [
+        {
+            from: 'node_modules/@xenova/transformers/.cache',
+            to: 'model-cache',
+            filter: ['**/*'],
+        },
+    ],
     asarUnpack: [
         'node_modules/node-llama-cpp/bins',
         'node_modules/node-llama-cpp/llama/localBuilds',

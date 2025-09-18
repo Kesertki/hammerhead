@@ -1,7 +1,6 @@
-import { app } from 'electron';
-import path from 'node:path';
 import { ChatHistoryItem } from 'node-llama-cpp';
 import { chatStorageSqlite } from './chatStorageSqlite.ts';
+import { summarizationService } from '../services/summarizationService.ts';
 
 export interface SavedChat {
     id: string;
@@ -13,15 +12,8 @@ export interface SavedChat {
 }
 
 class ChatStorage {
-    private chatsDirectoryPath: string;
     private isInitialized = false;
     private migrationCompleted = false;
-
-    constructor() {
-        // Set up chats directory path in app data directory
-        const userDataPath = app.getPath('userData');
-        this.chatsDirectoryPath = path.join(userDataPath, 'chats');
-    }
 
     async initialize(): Promise<void> {
         if (this.isInitialized) return;
@@ -97,8 +89,20 @@ class ChatStorage {
     }
 
     // Helper method to generate chat title from first message
-    generateChatTitle(messages: ChatHistoryItem[]): string {
-        // Delegate to SQLite storage
+    async generateChatTitle(messages: ChatHistoryItem[]): Promise<string> {
+        try {
+            // Try to use AI summarization for better titles
+            const aiTitle = await summarizationService.generateChatTitle(messages);
+            return aiTitle;
+        } catch (error) {
+            console.warn('Failed to generate AI title, falling back to simple title:', error);
+            // Fallback to simple title generation
+            return chatStorageSqlite.generateChatTitle(messages);
+        }
+    }
+
+    // Synchronous fallback method for compatibility
+    generateChatTitleSync(messages: ChatHistoryItem[]): string {
         return chatStorageSqlite.generateChatTitle(messages);
     }
 }

@@ -20,7 +20,7 @@
 		"start:build": "electron ./dist-electron",
 		"prebuild": "rimraf ./dist ./dist-electron ./release",
 		"build": "tsc && vite build && electron-builder --config ./electron-builder.ts",
-		"lint": "oxlint . && prettier . --check",
+		"lint": "oxlint . --type-aware && prettier . --check",
 		"clean": "rm -rf ./node_modules ./dist ./dist-electron ./release ./models",
 		"test": "npm run test:main && npm run test:renderer",
 		"test:renderer": "vitest run --config vitest.config.renderer.ts",

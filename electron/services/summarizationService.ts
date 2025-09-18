@@ -27,12 +27,12 @@ class SummarizationService {
         try {
             console.log('Initializing summarization service...');
 
-            // Temporarily skip AI initialization during development due to bundling issues
-            if (process.env.NODE_ENV === 'development') {
-                console.log('Skipping AI model loading in development mode - using fallback titles');
-                this.initializationFailed = true;
-                return;
-            }
+            // Note: If bundling issues occur, uncomment the lines below to use fallback titles
+            // if (process.env.NODE_ENV === 'development') {
+            //     console.log('Skipping AI model loading in development mode - using fallback titles');
+            //     this.initializationFailed = true;
+            //     return;
+            // }
 
             // Try to import the transformer library
             const { pipeline } = await import('@xenova/transformers');

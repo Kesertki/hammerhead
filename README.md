@@ -20,11 +20,15 @@ Good for testing and experimenting with LLMs, Hammerhead is designed to be exten
 
 - 🤖 **Multi-LLM Support**: Chat with various large language models locally
 - 🌐 **Multi-language Interface**: Support for multiple languages
-- 🔌 **Extensible Architecture**: Easy to add custom components and features (coming soon)
-- 📚 **RAG Integration**: Retrieval-Augmented Generation with vector database support (coming soon)
 - 🔗 **MCP Protocol**: Model Context Protocol server integration
 - 💬 **User-friendly Chat Interface**: Intuitive design for seamless interactions
 - 🖥️ **Cross-platform Desktop App**: Built with Electron for Windows, macOS, and Linux
+- 🎨 **Light and Dark Themes**: Choose between light and dark modes, or follow the system theme
+
+### Upcoming Features
+
+- 📚 **RAG Integration**: Retrieval-Augmented Generation with vector database support (coming soon)
+- 🔌 **Extensible Architecture**: Easy to add custom components and features (coming soon)
 
 ## Prerequisites
 
@@ -84,6 +88,12 @@ Recommended servers:
 Includes support for user consent for tool execution:
 
 ![User Consent](docs/images/function-consent.png)
+
+## Theme Support
+
+Hammerhead supports light and dark themes. You can switch between themes in the settings, or set it to follow the system theme.
+
+![Theme Settings](docs/images/settings-theme.png)
 
 ## Development
 

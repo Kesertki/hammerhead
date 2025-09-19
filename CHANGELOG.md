@@ -1,3 +1,18 @@
+## [0.4.0] - 2025-09-19
+
+### 🚀 Features
+
+- Integrate AI summarization for chat title generation (#66)
+
+### 🐛 Bug Fixes
+
+- Update button styles for dark theme
+- Update button styles for improved accessibility and dark theme support
+
+### 📚 Documentation
+
+- Add theme support and upcoming features to README
+
 ## [0.3.0] - 2025-09-11
 
 ### 🚀 Features

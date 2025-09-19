@@ -146,7 +146,7 @@ export function InputRow({
                         size="icon"
                         className={`transition duration-200 ${
                             generatingResult
-                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                ? 'bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:text-white dark:hover:bg-red-700'
                                 : 'text-muted-foreground'
                         }`}
                         disabled={disabled || stopGeneration == null || !generatingResult}

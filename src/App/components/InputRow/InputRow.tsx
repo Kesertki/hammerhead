@@ -176,7 +176,7 @@ export function InputRow({
                         className={`transition duration-200 ${
                             inputText.trim() === '' || disabled || generatingResult || isVoiceActive
                                 ? 'text-muted-foreground'
-                                : 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'bg-blue-500 text-white hover:bg-blue-600 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700'
                         }`}
                         disabled={disabled || inputText === '' || generatingResult || isVoiceActive}
                         onClick={submitPrompt}
